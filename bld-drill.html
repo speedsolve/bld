@@ -7141,7 +7141,7 @@ const BACKEND = (() => {
 })();
 const get = async k => JSON.parse((await BACKEND.get(k)).value);
 const put = (k,v) => { try{ BACKEND.set(k, JSON.stringify(v)) }catch(e){} };
-const KEYS = ['bld:stats2','bld:days','bld:th2','bld:log','bld:ltr','bld:words','bld:algs','bld:conf','bld:rep','bld:seen','bld:sel','bld:trials','bld:tset','bld:ealgs','bld:etrials','bld:erep'];
+const KEYS = ['bld:stats2','bld:days','bld:th2','bld:log','bld:ltr','bld:words','bld:algs','bld:conf','bld:rep','bld:seen','bld:sel','bld:trials','bld:tset','bld:ealgs','bld:etrials','bld:erep','bld:gist'];
 let STORE_OK = true;
 async function probe(){
   if(!BACKEND){ STORE_OK = false; return }
@@ -7157,7 +7157,8 @@ async function load(){
                  ['bld:words', v=>wOver=v], ['bld:algs', v=>aOver=v], ['bld:conf', v=>CONF=v], ['bld:rep', v=>rep=v],
                  ['bld:seen', v=>seenToday=v], ['bld:sel', v=>{ SEL.memo={...SEL.memo,...(v.memo||{})}; SEL.alg={...SEL.alg,...(v.alg||{})} }],
                  ['bld:trials', v=>trials=v], ['bld:tset', v=>TSET={...TSET,...v}],
-                 ['bld:ealgs', v=>eaOver=v], ['bld:etrials', v=>etrials=v], ['bld:erep', v=>erep=v]];
+                 ['bld:ealgs', v=>eaOver=v], ['bld:etrials', v=>etrials=v], ['bld:erep', v=>erep=v],
+                 ['bld:gist', v=>GIST={...GIST,...v}]];
   if(BACKEND) for(const [k,f] of tries){ try{ const v = await get(k); if(v) f(v) }catch(e){} }
   await probe();
   Object.assign(W, wOver); Object.assign(A, aOver); Object.assign(EA, eaOver);
@@ -7523,6 +7524,86 @@ function chainDone(){
   keys({Space: press('again')});
 }
 
+/* ---------- gist 同期 ---------- */
+let GIST = {id:'', tok:'', at:0};
+const GAPI = 'https://api.github.com/gists/';
+async function gistLoad(){
+  const r = await fetch(GAPI + GIST.id, {
+    headers:{ Authorization:'Bearer ' + GIST.tok, Accept:'application/vnd.github+json' }, cache:'no-store' });
+  if(!r.ok) throw new Error('取得に失敗しました（' + r.status + '）' +
+    (r.status===401?'：トークンを確認してください':r.status===404?'：gist ID を確認してください':''));
+  const j = await r.json();
+  const f = j.files && (j.files['bld-data.json'] || Object.values(j.files)[0]);
+  if(!f) throw new Error('gist にファイルがありません');
+  const txt = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;
+  if(!txt || !txt.trim() || txt.trim()==='{}') return null;
+  return JSON.parse(txt);
+}
+async function gistSave(obj){
+  const r = await fetch(GAPI + GIST.id, {
+    method:'PATCH',
+    headers:{ Authorization:'Bearer ' + GIST.tok, Accept:'application/vnd.github+json',
+              'Content-Type':'application/json' },
+    body: JSON.stringify({ files:{ 'bld-data.json': { content: JSON.stringify(obj) } } })
+  });
+  if(!r.ok) throw new Error('書き込みに失敗しました（' + r.status + '）' +
+    (r.status===401?'：トークンの権限（Gists: Read and write）を確認してください':''));
+}
+async function syncNow(log){
+  const say = m => { if(log) log(m) };
+  say('取得中…');
+  const remote = await gistLoad();
+  if(remote && remote.stats){
+    say('統合中…');
+    applyDump(remote, true);
+  } else say('向こうは空でした');
+  say('書き込み中…');
+  const snap = snapshot();
+  await gistSave(snap);
+  GIST.at = Date.now(); put('bld:gist', GIST);
+  return remote ? '統合して書き戻しました' : 'こちらの記録を書き込みました';
+}
+function gistScreen(){
+  keys(null);
+  const when = GIST.at ? new Date(GIST.at).toLocaleString('ja-JP') : 'まだ同期していません';
+  app.innerHTML = `
+    <div class="top"><div class="ttl">gist で同期</div><div class="cnt" id="back">戻る</div></div>
+    <div class="lab">gist ID</div>
+    <input id="gid" placeholder="32桁の英数字" autocapitalize="off" spellcheck="false">
+    <div class="lab" style="margin-top:14px">アクセストークン</div>
+    <input id="gtk" type="password" placeholder="github_pat_..." autocapitalize="off" spellcheck="false">
+    <div class="sr"><button class="gh" style="margin:0" id="gsave">保存</button>
+      <button class="gh" style="margin:0" id="gclear">消す</button></div>
+    <button class="go" style="margin-top:16px" id="gsync">いま同期する</button>
+    <div id="gmsg" class="note"></div>
+    <div class="note">最終同期：${when}<br>
+      両方の記録を統合してから書き戻します。2台で使っても取りこぼしません。<br>
+      トークンはこの端末の中だけに保存されます。共用の端末では使わないでください。</div>`;
+  qs('gid').value = GIST.id; qs('gtk').value = GIST.tok;
+  const msg = (m, bad) => { const e=qs('gmsg');
+    e.innerHTML = `<span style="color:var(--${bad?'coral':'mint'})">${m}</span>` };
+  qs('back').onclick = settings;
+  qs('gsave').onclick = () => {
+    GIST.id = qs('gid').value.trim().replace(/^.*\//,'');
+    GIST.tok = qs('gtk').value.trim();
+    put('bld:gist', GIST); msg('保存しました');
+  };
+  qs('gclear').onclick = () => {
+    if(!confirm('この端末から gist の設定を消します')) return;
+    GIST = {id:'', tok:'', at:0}; put('bld:gist', GIST); gistScreen();
+  };
+  qs('gsync').onclick = async () => {
+    GIST.id = qs('gid').value.trim().replace(/^.*\//,'');
+    GIST.tok = qs('gtk').value.trim();
+    if(!GIST.id || !GIST.tok) return msg('gist ID とトークンを入れてください', true);
+    put('bld:gist', GIST);
+    qs('gsync').disabled = true;
+    try{ const r = await syncNow(m=>msg(m)); msg(r); setTimeout(gistScreen, 900) }
+    catch(e){ msg((e && e.message) || String(e), true) }
+    finally{ const b=qs('gsync'); if(b) b.disabled = false }
+  };
+}
+
 /* ---------- 設定 ---------- */
 function settings(){
   const nEdit = Object.keys(wOver).length + Object.keys(aOver).length + Object.keys(eaOver).length;
@@ -7539,6 +7620,7 @@ function settings(){
       : '<span style="color:var(--coral)">保存されません（閉じると消えます）</span>'}</div>
     <div class="lab" style="margin-top:18px">記録</div>
     <button class="gh" style="margin-top:0" id="bk">持ち出し / 取り込み</button>
+    <button class="gh" id="gs">gist で同期${GIST.id?'（設定済み）':''}</button>
     <div class="lab" style="margin-top:18px">語・手順</div>
     <button class="gh" style="margin-top:0" id="e1">コーナーの語（${PAIRS.length}件）</button>
     <button class="gh" id="e2">コーナーの手順（${Object.keys(A).length}件）</button>
@@ -7549,6 +7631,7 @@ function settings(){
       コーナー ${SCRAMBLES.length}／パリティ ${PSCRAMBLES.length}／エッジ ${ESCRAMBLES.length} 本</div>`;
   qs('back').onclick = () => EDGE() ? (MODE==='etrial'?etrialHome():setup()) : (MODE==='trial'?trialHome():setup());
   qs('bk').onclick = backup;
+  qs('gs').onclick = gistScreen;
   const go = m => { MODE=m; paint(); browse('') };
   qs('e1').onclick = ()=>go('memo');
   qs('e2').onclick = ()=>go('alg');
