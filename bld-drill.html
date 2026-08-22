@@ -7143,7 +7143,7 @@ const BACKEND = (() => {
 })();
 const get = async k => JSON.parse((await BACKEND.get(k)).value);
 const put = (k,v) => { try{ BACKEND.set(k, JSON.stringify(v)) }catch(e){} };
-const KEYS = ['bld:stats2','bld:days','bld:th2','bld:log','bld:ltr','bld:words','bld:algs','bld:conf','bld:rep','bld:seen','bld:sel','bld:trials','bld:tset','bld:ealgs','bld:etrials','bld:erep','bld:gist'];
+const KEYS = ['bld:stats2','bld:days','bld:th2','bld:log','bld:ltr','bld:words','bld:algs','bld:conf','bld:rep','bld:seen','bld:sel','bld:trials','bld:tset','bld:ealgs','bld:etrials','bld:erep','bld:gist','bld:base'];
 let STORE_OK = true;
 async function probe(){
   if(!BACKEND){ STORE_OK = false; return }
@@ -7160,7 +7160,7 @@ async function load(){
                  ['bld:seen', v=>seenToday=v], ['bld:sel', v=>{ SEL.memo={...SEL.memo,...(v.memo||{})}; SEL.alg={...SEL.alg,...(v.alg||{})} }],
                  ['bld:trials', v=>trials=v], ['bld:tset', v=>TSET={...TSET,...v}],
                  ['bld:ealgs', v=>eaOver=v], ['bld:etrials', v=>etrials=v], ['bld:erep', v=>erep=v],
-                 ['bld:gist', v=>GIST={...GIST,...v}]];
+                 ['bld:gist', v=>GIST={...GIST,...v}], ['bld:base', v=>BASE=v]];
   if(BACKEND) for(const [k,f] of tries){ try{ const v = await get(k); if(v) f(v) }catch(e){} }
   await probe();
   Object.assign(W, wOver); Object.assign(A, aOver); Object.assign(EA, eaOver);
@@ -7528,6 +7528,37 @@ function chainDone(){
   syncPush();
 }
 
+/* ---------- 差分マージ（往復しても二重に数えない） ---------- */
+let BASE = null;                    // 前回同期した時点の集計値
+const counterSnap = () => ({
+  stats: JSON.parse(JSON.stringify({memo:stats.memo||{}, alg:stats.alg||{}, ealg:stats.ealg||{}})),
+  rep: {...rep}, erep: {...erep}
+});
+function mergeCounters(remote){
+  const b = BASE || {stats:{memo:{},alg:{},ealg:{}}, rep:{}, erep:{}};
+  const R = (remote && remote.stats) || {};
+  for(const m of ['memo','alg','ealg']){
+    const lo = stats[m] = stats[m]||{}, re = R[m]||{}, ba = (b.stats&&b.stats[m])||{};
+    for(const p of new Set([...Object.keys(lo), ...Object.keys(re)])){
+      const L = lo[p]||{seen:0,stuck:0,wrong:0,avg:0,debt:0};
+      const E = re[p]||{seen:0,stuck:0,wrong:0,avg:0,debt:0};
+      const B2 = ba[p]||{seen:0,stuck:0,wrong:0,avg:0,debt:0};
+      const add = k => Math.max(0, (E[k]||0) + (L[k]||0) - (B2[k]||0));
+      const seen = add('seen');
+      const tot = (E.avg||0)*(E.seen||0) + (L.avg||0)*(L.seen||0) - (B2.avg||0)*(B2.seen||0);
+      lo[p] = { seen, stuck:add('stuck'), wrong:add('wrong'),
+                avg: seen>0 ? Math.max(0,tot)/seen : 0, debt: add('debt') };
+    }
+  }
+  for(const [name, cur] of [['rep', rep], ['erep', erep]]){
+    const re = (remote && remote[name]) || {}, ba = b[name]||{};
+    for(const p of new Set([...Object.keys(cur), ...Object.keys(re)])){
+      const v = Math.max(0, (re[p]||0) + (cur[p]||0) - (ba[p]||0));
+      if(v) cur[p] = v; else delete cur[p];
+    }
+  }
+}
+
 /* ---------- gist 同期 ---------- */
 let GIST = {id:'', tok:'', at:0};
 const GAPI = 'https://api.github.com/gists/';
@@ -7567,11 +7598,12 @@ async function syncNow(log){
   const remote = await gistLoad();
   if(remote && remote.stats){
     say('統合中…');
-    applyDump(remote, true);
+    applyDump(remote, true, true);
   } else say('向こうは空でした');
   say('書き込み中…');
   const snap = snapshot();
   await gistSave(snap);
+  BASE = counterSnap(); put('bld:base', BASE);
   GIST.at = Date.now(); put('bld:gist', GIST);
   return remote ? '統合して書き戻しました' : 'こちらの記録を書き込みました';
 }
@@ -7635,25 +7667,37 @@ function refreshBadge(){
     : SYNC.state==='ok' ? '同期済み' : '未同期';
   e.title = SYNC.msg || '';
 }
+const atHome = () => !!(qs('start') || qs('tstart') || qs('estart'));
+const rerender = () => { if(atHome()) goMode(MODE) };
 async function autoSync(pull){
   if(!syncOn() || SYNC.busy) { SYNC.dirty = SYNC.dirty || !pull; return }
   SYNC.busy = true; SYNC.state='run'; refreshBadge();
+  let got = false;
   try{
     if(pull){
       const remote = await gistLoad();
-      if(remote && remote.stats) applyDump(remote, true);
+      if(remote && remote.stats){ applyDump(remote, true, true); got = true }
     }
     await gistSave(snapshot());
+    BASE = counterSnap(); put('bld:base', BASE);
     GIST.at = Date.now(); put('bld:gist', GIST);
     SYNC.state='ok'; SYNC.msg = new Date(GIST.at).toLocaleTimeString('ja-JP');
   }catch(e){
     SYNC.state='ng'; SYNC.msg = (e && e.message) || String(e);
   }finally{
-    SYNC.busy = false; refreshBadge();
+    SYNC.busy = false;
+    if(got) rerender();
+    refreshBadge();
     if(SYNC.dirty){ SYNC.dirty = false; setTimeout(()=>autoSync(false), 1200) }
   }
 }
 const syncPush = () => { if(syncOn()) setTimeout(()=>autoSync(false), 100) };
+document.addEventListener('visibilitychange', () => {
+  if(!syncOn()) return;
+  if(document.visibilityState === 'hidden') autoSync(false);
+  else autoSync(true);
+});
+window.addEventListener('pagehide', () => { if(syncOn()) autoSync(false) });
 
 /* ---------- 設定 ---------- */
 function settings(){
@@ -8082,32 +8126,31 @@ function snapshot(){
     stats, days, th:TH, log, ltr:LTR, words:wOver, algs:aOver, conf:CONF, rep, seen:seenToday, sel:SEL,
     trials, etrials, tset:TSET, ealgs:eaOver, erep};
 }
-function applyDump(d, merge){
+function applyDump(d, merge, counters){
   const nz = o => o && typeof o === 'object' ? o : {};
   if(merge){
-    // 統計：ペアごとに足し合わせる（平均は回数で加重）
-    for(const m of ['memo','alg','ealg']){
-      const src = nz(d.stats && d.stats[m]); stats[m] = stats[m]||{};
-      for(const [k,b] of Object.entries(src)){
-        const a = stats[m][k];
-        if(!a){ stats[m][k] = {...b, debt: b.debt===undefined ? (b.wrong||0) : b.debt}; continue }
-        const n = (a.seen||0) + (b.seen||0);
-        stats[m][k] = {
-          seen: n,
-          stuck: (a.stuck||0)+(b.stuck||0),
-          wrong: (a.wrong||0)+(b.wrong||0),
-          avg: n ? ((a.avg||0)*(a.seen||0) + (b.avg||0)*(b.seen||0))/n : 0,
-          debt: Math.max(a.debt||0, b.debt===undefined ? (b.wrong||0) : b.debt)
-        };
+    if(counters) mergeCounters(d);
+    else {
+      // ファイル取り込み（基準が無いので足し合わせ）
+      for(const m of ['memo','alg','ealg']){
+        const src = nz(d.stats && d.stats[m]); stats[m] = stats[m]||{};
+        for(const [k,b] of Object.entries(src)){
+          const a = stats[m][k];
+          if(!a){ stats[m][k] = {...b, debt: b.debt===undefined ? (b.wrong||0) : b.debt}; continue }
+          const n = (a.seen||0) + (b.seen||0);
+          stats[m][k] = { seen:n, stuck:(a.stuck||0)+(b.stuck||0), wrong:(a.wrong||0)+(b.wrong||0),
+            avg: n ? ((a.avg||0)*(a.seen||0) + (b.avg||0)*(b.seen||0))/n : 0,
+            debt: Math.max(a.debt||0, b.debt===undefined ? (b.wrong||0) : b.debt) };
+        }
       }
+      for(const [k,v] of Object.entries(nz(d.rep))) rep[k] = Math.max(rep[k]||0, v);
+      for(const [k,v] of Object.entries(nz(d.erep))) erep[k] = Math.max(erep[k]||0, v);
     }
     days = [...new Set([...days, ...(d.days||[])])].sort().slice(-400);
     const key = t => `${t.at}|${t.ms}|${t.n}`;
     const mix = (a,b) => { const seen=new Set(a.map(key)); 
       return [...a, ...b.filter(t=>!seen.has(key(t)))].sort((x,y)=>x.at<y.at?-1:1).slice(-400) };
     trials = mix(trials, d.trials||[]); etrials = mix(etrials, d.etrials||[]);
-    for(const [k,v] of Object.entries(nz(d.rep))) rep[k] = Math.max(rep[k]||0, v);
-    for(const [k,v] of Object.entries(nz(d.erep))) erep[k] = Math.max(erep[k]||0, v);
     if(seenToday.d === (d.seen||{}).d)
       for(const m of ['memo','alg','ealg'])
         seenToday[m] = [...new Set([...(seenToday[m]||[]), ...((d.seen[m])||[])])];
@@ -8129,6 +8172,7 @@ function applyDump(d, merge){
   put('bld:ltr',LTR); put('bld:words',wOver); put('bld:algs',aOver); put('bld:conf',CONF);
   put('bld:rep',rep); put('bld:seen',seenToday); put('bld:sel',SEL); put('bld:erep',erep);
   put('bld:ealgs',eaOver); put('bld:trials',trials); put('bld:etrials',etrials); put('bld:tset',TSET);
+  if(!merge){ BASE = null; put('bld:base', null) }
 }
 function backup(){
   const dump = JSON.stringify(snapshot());
