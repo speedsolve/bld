@@ -7527,11 +7527,19 @@ function chainDone(){
 /* ---------- gist 同期 ---------- */
 let GIST = {id:'', tok:'', at:0};
 const GAPI = 'https://api.github.com/gists/';
+const clean = t => (t||'').replace(/\s+/g,'');
+const tokInfo = () => {
+  const t = GIST.tok || '';
+  const shape = /^github_pat_/.test(t) ? 'github_pat_…' : /^ghp_/.test(t) ? 'ghp_…' : '形式が不明';
+  return `<br><span style="color:var(--muted);font-size:11px">入力：${shape}／${t.length}文字`
+    + `（github_pat_ は93文字前後、ghp_ は40文字）</span>`;
+};
 async function gistLoad(){
   const r = await fetch(GAPI + GIST.id, {
     headers:{ Authorization:'Bearer ' + GIST.tok, Accept:'application/vnd.github+json' }, cache:'no-store' });
   if(!r.ok) throw new Error('取得に失敗しました（' + r.status + '）' +
-    (r.status===401?'：トークンを確認してください':r.status===404?'：gist ID を確認してください':''));
+    (r.status===401?'：トークンが無効です' + tokInfo()
+     : r.status===404?'：gist ID を確認してください' : ''));
   const j = await r.json();
   const f = j.files && (j.files['bld-data.json'] || Object.values(j.files)[0]);
   if(!f) throw new Error('gist にファイルがありません');
@@ -7584,17 +7592,18 @@ function gistScreen(){
     e.innerHTML = `<span style="color:var(--${bad?'coral':'mint'})">${m}</span>` };
   qs('back').onclick = settings;
   qs('gsave').onclick = () => {
-    GIST.id = qs('gid').value.trim().replace(/^.*\//,'');
-    GIST.tok = qs('gtk').value.trim();
-    put('bld:gist', GIST); msg('保存しました');
+    GIST.id = clean(qs('gid').value).replace(/^.*\//,'');
+    GIST.tok = clean(qs('gtk').value);
+    put('bld:gist', GIST);
+    msg('保存しました' + (GIST.tok?`（${GIST.tok.length}文字）`:''));
   };
   qs('gclear').onclick = () => {
     if(!confirm('この端末から gist の設定を消します')) return;
     GIST = {id:'', tok:'', at:0}; put('bld:gist', GIST); gistScreen();
   };
   qs('gsync').onclick = async () => {
-    GIST.id = qs('gid').value.trim().replace(/^.*\//,'');
-    GIST.tok = qs('gtk').value.trim();
+    GIST.id = clean(qs('gid').value).replace(/^.*\//,'');
+    GIST.tok = clean(qs('gtk').value);
     if(!GIST.id || !GIST.tok) return msg('gist ID とトークンを入れてください', true);
     put('bld:gist', GIST);
     qs('gsync').disabled = true;
