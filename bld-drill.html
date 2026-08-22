@@ -27,6 +27,8 @@
   .app{background:var(--bg);color:var(--ink);font-family:var(--sans);
        min-height:580px;padding:18px 18px 24px;border-radius:10px;-webkit-font-smoothing:antialiased}
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
+  .sy{margin-left:auto;font-size:11px;align-self:center;padding-bottom:8px;letter-spacing:.06em}
+  .sy + .cog{margin-left:10px}
   .cog{margin-left:auto;background:transparent;border:0;color:var(--muted);font-size:17px;
        cursor:pointer;padding:0 4px 8px;line-height:1}
   .cog:hover{color:var(--ink)}
@@ -7180,6 +7182,7 @@ function setVal(pair, val){
     delete CONF[pair]; put('bld:conf', CONF);
   }
   put(MODE==='memo' ? 'bld:words' : EDGE() ? 'bld:ealgs' : 'bld:algs', overOf());
+  syncPush();
 }
 function setConf(pair, list){
   (CONF[pair]||[]).forEach(q=>{ if(CONF[q]){ CONF[q]=CONF[q].filter(x=>x!==pair); if(!CONF[q].length) delete CONF[q] } });
@@ -7244,7 +7247,7 @@ const tabs = () => `<div class="grp">
     ? [['ealg','手順'],['etrial','実地']]
     : [['memo','変換'],['alg','手順'],['trial','実地']])
     .map(([v,l])=>`<button class="tab ${MODE===v?'on':''}" data-m="${v}">${l}</button>`).join('')}
-    <button class="cog" id="cog" title="設定">⚙</button></div>`;
+    ${syncBadge()}<button class="cog" id="cog" title="設定">⚙</button></div>`;
 const goMode = m => { MODE=m; paint(); m==='trial' ? trialHome() : m==='etrial' ? etrialHome() : setup() };
 const paint = () => { const e = EDGE();
   app.classList.toggle('eg', e);
@@ -7366,7 +7369,7 @@ function trialResult(){
   const fin = ok => {
     if(T.commit) T.commit();
     trials.push({at:today(), ms:T.ms, split:T.split, ok, memo:T.memo, n:np, par:T.par||0});
-    trials = trials.slice(-400); put('bld:trials', trials);
+    trials = trials.slice(-400); put('bld:trials', trials); syncPush();
     if(days[days.length-1] !== today()){ days.push(today()); days = days.slice(-400); put('bld:days', days) }
     trialHome();
   };
@@ -7522,6 +7525,7 @@ function chainDone(){
   qs('top').onclick = setup; qs('home').onclick = setup;
   qs('again').onclick = ()=>chainStart(S.q.length, SEL.memo.src);
   keys({Space: press('again')});
+  syncPush();
 }
 
 /* ---------- gist 同期 ---------- */
@@ -7612,6 +7616,44 @@ function gistScreen(){
     finally{ const b=qs('gsync'); if(b) b.disabled = false }
   };
 }
+
+/* ---------- 自動同期 ---------- */
+let SYNC = {busy:false, dirty:false, msg:'', state:''};
+const syncOn = () => !!(GIST.id && GIST.tok);
+function syncBadge(){
+  if(!syncOn()) return '';
+  const c = SYNC.state==='ng' ? 'coral' : SYNC.state==='ok' ? 'mint' : 'muted';
+  const t = SYNC.state==='ng' ? '同期できず' : SYNC.state==='run' ? '同期中…'
+          : SYNC.state==='ok' ? '同期済み' : '未同期';
+  return `<span class="sy" id="sy" style="color:var(--${c})" title="${SYNC.msg||''}">${t}</span>`;
+}
+function refreshBadge(){
+  const e = qs('sy'); if(!e) return;
+  const c = SYNC.state==='ng' ? 'coral' : SYNC.state==='ok' ? 'mint' : 'muted';
+  e.style.color = 'var(--'+c+')';
+  e.textContent = SYNC.state==='ng' ? '同期できず' : SYNC.state==='run' ? '同期中…'
+    : SYNC.state==='ok' ? '同期済み' : '未同期';
+  e.title = SYNC.msg || '';
+}
+async function autoSync(pull){
+  if(!syncOn() || SYNC.busy) { SYNC.dirty = SYNC.dirty || !pull; return }
+  SYNC.busy = true; SYNC.state='run'; refreshBadge();
+  try{
+    if(pull){
+      const remote = await gistLoad();
+      if(remote && remote.stats) applyDump(remote, true);
+    }
+    await gistSave(snapshot());
+    GIST.at = Date.now(); put('bld:gist', GIST);
+    SYNC.state='ok'; SYNC.msg = new Date(GIST.at).toLocaleTimeString('ja-JP');
+  }catch(e){
+    SYNC.state='ng'; SYNC.msg = (e && e.message) || String(e);
+  }finally{
+    SYNC.busy = false; refreshBadge();
+    if(SYNC.dirty){ SYNC.dirty = false; setTimeout(()=>autoSync(false), 1200) }
+  }
+}
+const syncPush = () => { if(syncOn()) setTimeout(()=>autoSync(false), 100) };
 
 /* ---------- 設定 ---------- */
 function settings(){
@@ -7834,7 +7876,7 @@ function etrialResult(){
   const fin = ok => {
     if(T.commit) T.commit();
     etrials.push({at:today(), ms:T.ms, split:T.split, ok, memo:T.memo, n:np});
-    etrials = etrials.slice(-400); put('bld:etrials', etrials);
+    etrials = etrials.slice(-400); put('bld:etrials', etrials); syncPush();
     if(days[days.length-1] !== today()){ days.push(today()); days = days.slice(-400); put('bld:days', days) }
     etrialHome();
   };
@@ -8341,6 +8383,7 @@ function done(redo){
   qs('again').onclick = () => { MODE = S.mode; start(S.n, S.src) };
   qs('top').onclick = setup; qs('home').onclick = setup;
   keys({Space: press('again')});
+  syncPush();
   app.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ MODE=S.mode; sheet(b.dataset.p, ()=>done(true)) });
   app.querySelectorAll('[data-i]').forEach(el=>el.onclick=()=>flip(+el.dataset.i));
 }
@@ -8350,7 +8393,7 @@ window.onerror = (m, src, ln, col) => {
   if(e){ e.style.display='block'; e.textContent = '起動できませんでした\n' + m + '\n(' + ln + ':' + col + ')' }
 };
 (async () => {
-  try{ await load(); paint(); setup() }
+  try{ await load(); paint(); setup(); autoSync(true) }
   catch(err){
     const e = document.getElementById('err');
     if(e){ e.style.display='block'; e.textContent = '起動できませんでした\n' + (err && err.message || err) }
