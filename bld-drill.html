@@ -7355,9 +7355,9 @@ function trialResult(){
     ${T.ms!=null?`<div class="clock"><div class="now">${ms(T.ms)}</div>
       <div class="prog">${T.split!=null?`記憶 ${ms(T.split)} ／ 実行 ${ms(T.ms-T.split)}`:''}</div></div>`:''}
     <div class="note">${np}ペア${T.par?'＋パリティ':''}${T.ms==null?'　（計測なし）':''}</div>
-    <div class="marks two" style="margin-top:14px">
+    <div class="marks two" id="tmarks" style="margin-top:14px">
       <button class="mk ok" id="tok">成功<span class="kbd">Space</span></button>
-      <button class="mk ng" id="tng">ミス<span class="kbd">2</span></button></div>
+      <button class="mk ng" id="tng">ミス<span class="kbd">Space</span></button></div>
     <div class="lab" style="margin-top:16px">こなしたペア（${TAP}で ◯ → ✕ → 対象外）</div>
     <div id="dlist"></div>
     <div class="note" style="margin-top:2px">ブレークインの選び方で変わるので、違っていたら「対象外」にして下で足してください。</div>
@@ -7379,7 +7379,9 @@ function trialResult(){
   qs('tlk').onclick = ()=>trialLookup('');
   bindDonePairs(false);
   bindFlagInput(false);
-  keys({Space: press('tok'), '1': press('tok'), '2': press('tng')});
+  const primary = () => { const ok=qs('tok');
+    (ok && ok.style.display!=='none' ? ok : qs('tng')).click() };
+  keys({Space: primary, '1': press('tok'), '2': press('tng')});
 }
 function trialLookup(q){
   keys(null);
@@ -7745,6 +7747,13 @@ function bindDonePairs(edge){
   T.pairs = ps;
   ps.forEach(p=>{ if(T.state[p]===undefined) T.state[p]=0 });
   const LB=['◯','✕','—'];
+  const marks = () => {
+    const ng = ps.some(p=>T.state[p]===1);
+    const row = qs('tmarks'), ok = qs('tok');
+    if(!row || !ok) return;
+    ok.style.display = ng ? 'none' : '';
+    row.classList.toggle('two', !ng);
+  };
   const paint = () => {
     wrap.innerHTML = ps.map(p=>`<span class="dp s${T.state[p]}" data-dp="${p}">${p}<b>${
       lbl[p[0]]}→${lbl[p[1]]}</b><i>${LB[T.state[p]]}</i></span>${
@@ -7752,6 +7761,7 @@ function bindDonePairs(edge){
     wrap.querySelectorAll('[data-dp]').forEach(b=>b.onclick=()=>{
       const p=b.dataset.dp; T.state[p]=(T.state[p]+1)%3; paint();
     });
+    marks();
   };
   paint();
   T.commit = () => {
@@ -7906,9 +7916,9 @@ function etrialResult(){
     ${T.ms!=null?`<div class="clock"><div class="now">${ms(T.ms)}</div>
       <div class="prog">${T.split!=null?`記憶 ${ms(T.split)} ／ 実行 ${ms(T.ms-T.split)}`:''}</div></div>`:''}
     <div class="note">${np}ペア${T.ms==null?'　（計測なし）':''}</div>
-    <div class="marks two" style="margin-top:14px">
+    <div class="marks two" id="tmarks" style="margin-top:14px">
       <button class="mk ok" id="tok">成功<span class="kbd">Space</span></button>
-      <button class="mk ng" id="tng">ミス<span class="kbd">2</span></button></div>
+      <button class="mk ng" id="tng">ミス<span class="kbd">Space</span></button></div>
     <div class="lab" style="margin-top:16px">こなしたペア（${TAP}で ◯ → ✕ → 対象外）</div>
     <div id="dlist"></div>
     <div class="note" style="margin-top:2px">ブレークインの選び方で変わるので、違っていたら「対象外」にして下で足してください。</div>
@@ -7930,7 +7940,9 @@ function etrialResult(){
   qs('elk').onclick = ()=>etrialLookup('');
   bindDonePairs(true);
   bindFlagInput(true);
-  keys({Space: press('tok'), '1': press('tok'), '2': press('tng')});
+  const primary = () => { const ok=qs('tok');
+    (ok && ok.style.display!=='none' ? ok : qs('tng')).click() };
+  keys({Space: primary, '1': press('tok'), '2': press('tng')});
 }
 function etrialLookup(q){
   keys(null);
