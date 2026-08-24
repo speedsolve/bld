@@ -7142,10 +7142,11 @@ let TH = {memo:1000, alg:4000, ealg:4500}, MODE = 'memo', S = null, T = null, VI
 const ms = m => (m/1000).toFixed(2);
 const today = () => new Date().toLocaleDateString('sv-SE');
 const seenSet = () => {
-  if(seenToday.d !== today()) seenToday = {d:today(), memo:[], alg:[], ealg:[]};
+  seenToday.memo = seenToday.memo||[]; seenToday.alg = seenToday.alg||[];
   seenToday.ealg = seenToday.ealg||[];
   return seenToday;
 };
+const seenReset = mode => { seenSet()[mode] = []; put('bld:seen', seenToday) };
 const noteSeen = (mode, pair) => {
   const s = seenSet();
   if(!s[mode].includes(pair)){ s[mode].push(pair); put('bld:seen', seenToday) }
@@ -7895,6 +7896,14 @@ function settings(){
     <div class="lab" style="margin-top:18px">記録</div>
     <button class="gh" style="margin-top:0" id="bk">持ち出し / 取り込み</button>
     <button class="gh" id="csv">分析用に書き出す（${hist.length}件）</button>
+    <div class="lab" style="margin-top:18px">一周の進み（消化したペア）</div>
+    ${[['memo','変換',PAIRS.length],['alg','手順',Object.keys(A).length],
+       ['ealg','エッジ手順',Object.keys(EA).length]].map(([m,l,n])=>{
+      const c = (seenSet()[m]||[]).length;
+      return `<div class="li" style="cursor:default"><div class="k" style="font-size:13px">${l}</div>
+        <div class="v"><b style="font-family:var(--mono);color:${c>=n?'var(--mint)':'var(--ink)'}">${c}</b>
+          <span style="color:var(--muted)"> / ${n}</span></div>
+        <button class="chip" data-sr="${m}" ${c?'':'disabled'}>リセット</button></div>`}).join('')}
     <button class="gh" id="gs">gist で同期${GIST.id?'（設定済み）':''}</button>
     <div class="lab" style="margin-top:18px">語・手順</div>
     <button class="gh" style="margin-top:0" id="e1">コーナーの語（${PAIRS.length}件）</button>
@@ -7907,6 +7916,12 @@ function settings(){
   qs('back').onclick = () => EDGE() ? (MODE==='etrial'?etrialHome():setup()) : (MODE==='trial'?trialHome():setup());
   qs('bk').onclick = backup;
   qs('gs').onclick = gistScreen;
+  app.querySelectorAll('[data-sr]').forEach(b=>b.onclick=()=>{
+    if(b.disabled) return;
+    const l = {memo:'変換', alg:'手順', ealg:'エッジ手順'}[b.dataset.sr];
+    if(!confirm(l + 'の一周をリセットします（正答率などの記録はそのまま）')) return;
+    seenReset(b.dataset.sr); syncPush(); settings();
+  });
   qs('csv').onclick = () => {
     const MODES = ['変換','手順','エッジ手順','実地','エッジ実地'];
     const rows = [['日時','種別','ペア','語','結果','ミリ秒','ペア数','パリティ']];
@@ -8195,7 +8210,7 @@ function setup(){
         <div class="sub">${last ? (gap===0?'今日は実施済み':gap===1?'最終 昨日':`最終 ${gap}日前`) : '記録なし'}</div></div>
       <div class="cal">${calendar()}</div></div>
     <div class="tdy"><b>${tdy}</b><small> / ${pool.length}</small>
-      <span>今日やったペア（重複なし）</span></div>
+      <span>一周の進み</span></div>
     ${trend(MODE)}
     <div class="cfg">
       <div class="fld"><div class="lab">出題数</div><div class="row" id="n"></div></div>
@@ -8224,10 +8239,10 @@ function setup(){
   const nEl=qs('n'), sEl=qs('src'), tEl=qs('th');
   const nO=[[4,'4'],[8,'8'],[12,'12'],[21,'21'],[40,'40']];
   const sO=MODE==='memo'
-    ? [['all','全'+PAIRS.length],['new','今日まだ'+(rest?' '+rest:'')],['ltr','文字別'],['ha','は行・な行'],['conf','干渉ペア'],['miss','ミスの残り'+(miss.length?' '+miss.length:'')],['weak','苦手のみ']]
+    ? [['all','全'+PAIRS.length],['new','まだ'+(rest?' '+rest:'')],['ltr','文字別'],['ha','は行・な行'],['conf','干渉ペア'],['miss','ミスの残り'+(miss.length?' '+miss.length:'')],['weak','苦手のみ']]
     : isE
-    ? [['all','全'+pool.length],['new','今日まだ'+(rest?' '+rest:'')],['ltr','文字別'],['miss','ミスの残り'+(miss.length?' '+miss.length:'')],['rep','要反復'+(rpL.length?' '+rpL.length:'')],['weak','苦手のみ']]
-    : [['all','全'+pool.length],['new','今日まだ'+(rest?' '+rest:'')],['ltr','文字別'],['ha','は行・な行'],['miss','ミスの残り'+(miss.length?' '+miss.length:'')],['rep','要反復'+(rpL.length?' '+rpL.length:'')],['weak','苦手のみ']];
+    ? [['all','全'+pool.length],['new','まだ'+(rest?' '+rest:'')],['ltr','文字別'],['miss','ミスの残り'+(miss.length?' '+miss.length:'')],['rep','要反復'+(rpL.length?' '+rpL.length:'')],['weak','苦手のみ']]
+    : [['all','全'+pool.length],['new','まだ'+(rest?' '+rest:'')],['ltr','文字別'],['ha','は行・な行'],['miss','ミスの残り'+(miss.length?' '+miss.length:'')],['rep','要反復'+(rpL.length?' '+rpL.length:'')],['weak','苦手のみ']];
   const tO=MODE==='memo' ? [[800,'0.8s'],[1000,'1.0s'],[1500,'1.5s'],[2000,'2.0s'],[3000,'3.0s']]
                          : [[7500,'2.5×3'],[9000,'3.0×3'],[12000,'4.0×3'],[13500,'4.5×3'],[15000,'5.0×3'],[24000,'8.0×3']];
   const dis = v => (v==='weak'&&!w.length)||(v==='miss'&&!miss.length)||(v==='rep'&&!rpL.length)||(v==='new'&&rest<=0);
@@ -8245,7 +8260,7 @@ function setup(){
       app.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{
         FMT=b.dataset.f; SEL.memo.fmt=FMT; put('bld:sel',SEL); draw() });
     }
-    if(chain) sEl.innerHTML = [['all','おまかせ'],['new','今日まだ優先'+(rest>0?' '+rest:'')]]
+    if(chain) sEl.innerHTML = [['all','おまかせ'],['new','まだ優先'+(rest>0?' '+rest:'')]]
       .map(([v,l])=>`<button class="chip ${src===v?'on':''}" data-s="${v}">${l}</button>`).join('');
     qs('ltrwrap').style.display = (!chain && src==='ltr') ? 'block' : 'none';
     nEl.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{n=+b.dataset.n;saveSel(n,src);draw()});
@@ -8358,9 +8373,8 @@ function applyDump(d, merge, counters){
       return [...a, ...b.filter(t=>!seen.has(key(t)))].sort((x,y)=>x.at<y.at?-1:1).slice(-400) };
     trials = mix(trials, d.trials||[]); etrials = mix(etrials, d.etrials||[]);
     if(d.hist) hist = mergeHist(hist, d.hist);
-    if(seenToday.d === (d.seen||{}).d)
-      for(const m of ['memo','alg','ealg'])
-        seenToday[m] = [...new Set([...(seenToday[m]||[]), ...((d.seen[m])||[])])];
+    if(d.seen) for(const m of ['memo','alg','ealg'])
+      seenToday[m] = [...new Set([...(seenToday[m]||[]), ...((d.seen[m])||[])])];
     // 語・手順の編集は「読み込んだ側」を優先
     wOver = {...wOver, ...nz(d.words)}; aOver = {...aOver, ...nz(d.algs)}; eaOver = {...eaOver, ...nz(d.ealgs)};
     if(d.conf) CONF = d.conf;
