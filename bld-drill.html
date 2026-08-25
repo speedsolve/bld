@@ -104,6 +104,9 @@
   .fx1 b{font-family:var(--mincho);font-size:19px;font-weight:400;color:var(--ink)}
   .fx1 .ps{font-family:var(--mono);font-size:11px;color:var(--muted)}
   .fx1 .wd{font-family:var(--mincho);font-size:14px;color:var(--key)}
+  .wp .x{font-style:normal;font-size:11px;color:var(--muted);margin-left:7px;
+         padding:1px 5px;border-radius:4px;border:1px solid var(--line)}
+  .wp .x:hover{color:var(--coral);border-color:var(--coral)}
   .fx1 .ed{margin-left:auto;font-style:normal;font-size:11px;color:var(--muted);
            border:1px solid var(--line);border-radius:5px;padding:2px 7px;cursor:pointer}
   .fx1 .ag{font-family:var(--mono);font-size:13px;color:var(--cy);line-height:1.6;
@@ -7981,7 +7984,6 @@ function bindDonePairs(edge){
       const v = S2[p] || {seen:0,stuck:0,wrong:0,avg:0,debt:0};
       v.seen++;
       if(st===1){ v.wrong++; v.debt=(v.debt||0)+1; store[p]=(store[p]||0)+1 }
-      else if(store[p] && --store[p] <= 0) delete store[p];
       S2[p]=v;
     }
     put('bld:stats2', stats); put(key, store); put('bld:seen', seenToday);
@@ -8223,10 +8225,13 @@ function setup(){
     <button class="gh" id="edit">${MODE==='memo'?'語':'手順'}の編集（${pool.length}件・変更 ${Object.keys(overOf()).length}件）</button>
     ${STORE_OK ? '' : `<div class="note" style="border-color:var(--coral)">
       この環境では記録が保存されません。閉じると消えるので、続きをやるときは設定（右上の歯車）で書き出しておいてください。</div>`}
-    ${miss.length ? `<div class="note">ミスの残り（正解で1つ減る・${TAP}で編集）
-      <div class="weak">${miss.map(([k,v])=>`<span class="wp" data-e="${k}">${k}<span class="c">${v.debt}</span></span>`).join('')}</div>
+    ${miss.length ? `<div class="note">ミスの残り（${MODE==='memo'
+        ? '正解で1つ減る・'+TAP+'で編集'
+        : '自動では減りません。✕で1つ消す／'+TAP+'で編集'}）
+      <div class="weak">${miss.map(([k,v])=>`<span class="wp" data-e="${k}">${k}<span class="c">${v.debt}</span>${
+        MODE==='memo'?'':`<i class="x" data-x="${k}">✕</i>`}</span>`).join('')}</div>
       <button class="gh" style="margin-top:10px;font-size:13px;padding:9px" id="clr">残りをゼロにする</button></div>` : ''}
-    ${rpL.length ? `<div class="note">要反復（回せなかった／要練習・${TAP}で外す）
+    ${rpL.length ? `<div class="note">要反復（自動では減りません・${TAP}で外す）
       <div class="weak">${rpL.map(([k,v])=>`<span class="wp" data-r="${k}">${k}${v>1?`<span class="a">${v}</span>`:''}</span>`).join('')}</div>
       <button class="gh" style="margin-top:10px;font-size:13px;padding:9px" id="clrrep">すべて外す</button></div>` : ''}
     ${w.length ? `<div class="note">要注意（<span style="color:var(--coral)">${MODE==='memo'?'誤変換':'ミス'}</span> ／ <span style="color:var(--amber)">${MODE==='memo'?'詰まり':'遅い'}</span>）${TAP}で編集
@@ -8278,6 +8283,12 @@ function setup(){
     }
   };
   draw(); bindTabs();
+  if(miss.length) app.querySelectorAll('[data-x]').forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const p=b.dataset.x, v=stats[MODE][p];
+    if(v){ v.debt = Math.max(0,(v.debt||0)-1); put('bld:stats2', stats); syncPush() }
+    setup();
+  });
   if(miss.length) qs('clr').onclick = () => {
     if(!confirm('ミスの残りをすべて0に戻します（通算のミス回数は残ります）')) return;
     Object.values(stats[MODE]).forEach(v=>{ v.debt=0 });
@@ -8566,19 +8577,11 @@ function run(){
     s.avg = (s.avg*s.seen + S.el)/(s.seen+1); s.seen++;
     if(k===1) s.stuck++;
     if(k===2){ s.wrong++; s.debt = (s.debt||0)+1 }
-    else s.debt = Math.max(0, (s.debt||0)-1);
+    else if(S.mode==='memo') s.debt = Math.max(0, (s.debt||0)-1);
     st[pair] = s; put('bld:stats2', stats);
     noteSeen(S.mode, pair);
     logQ(S.mode, pair, k, S.el);
     if(flag){ rep[pair] = (rep[pair]||0)+1; put('bld:rep', rep) }
-    if(S.mode==='ealg' && k!==2 && erep[pair]){
-      if(--erep[pair] <= 0) delete erep[pair];
-      put('bld:erep', erep);
-    }
-    if(S.mode==='alg' && k!==2 && rep[pair] && !flag){
-      if(--rep[pair] <= 0) delete rep[pair];
-      put('bld:rep', rep);
-    }
     S.i++; S.i < S.q.length ? run() : done();
   };
   qs('card').onclick = () => S.shown ? mark(true) : reveal();
