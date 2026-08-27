@@ -98,6 +98,16 @@
   .dpa{display:block;font-family:var(--mono);font-size:13px;color:var(--cy);
        line-height:1.6;margin:-2px 0 10px;padding-left:2px;word-break:break-word;animation:fade .18s}
   .dpa .wd{font-family:var(--mincho);font-size:14px;color:var(--key);margin-right:10px}
+  .fm{background:var(--surface);border:1px solid var(--line);border-radius:10px;
+      padding:12px 14px;margin-bottom:10px}
+  .fm .hd{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .fm .d{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .fm .p{font-size:11px;color:var(--muted)}
+  .fm .chip{margin-left:auto;padding:6px 12px;font-size:12px}
+  .fm .ed{font-style:normal;font-size:11px;color:var(--muted);
+          border:1px solid var(--line);border-radius:5px;padding:3px 8px;cursor:pointer}
+  .fm .ed:hover{color:var(--coral);border-color:var(--coral)}
+  .fm .scr{background:var(--bg)}
   .fx1{background:var(--surface);border:1px solid var(--line);border-radius:8px;
        padding:10px 12px;margin-bottom:8px}
   .fx1 .hd{display:flex;align-items:baseline;gap:9px}
@@ -7117,6 +7127,1406 @@ F2 D' U R2 D2 U' R' D U2 B D' U L' F2 B' R U'|ふすつひねさけにくせ|0
 D U2 R2 D' B2 L2 R2 D' F2 D2 L' B D2 F2 R U L' D' U R B|せあえきぬたすいちし|0
 D2 F2 U' F2 L2 F2 D B2 R2 U2 L' F B' U' L' F' B U' R2|ひえなへきてしにくた|0
 L2 R2 B2 U2 L2 B2 D2 B2 R2 D' F D B L' D2 R' B' U' F' U F2|なあくひへけたせにさ|0`.split("\n").map(l=>{const [s,m,b]=l.split("|");return {s,m,b:+b}});
+const FSCRAMBLES = `R2 U' F L2 F R' L D' L' D2 L' D2 U2 R' B F2 D' F2 L2 F' D2|あえちいはへねあ|あはしてえついへいきねたふちぬに|1|5
+L2 B U D2 F2 U R' D' L2 F L' D' U' F' B' D' L' R' D' F' U2|にくてえかけすせふへ|にえあひけすせねついなくふは|3|3
+D' U2 F2 D' R' U2 F2 U2 D F' B' D L2 B' L R' D2 R B L D|あせくけあいにえふえ|ねすふあくぬあいちいえけせさ|3|3
+U F' R2 B' L D2 F2 U2 R B R' D2 U2 L D' L2 B2 L F' R D2|くあはぬたしつあ|なきくあつえさけしすにすせぬたて|1|5
+L2 D2 U' B' F' D' U L2 U L D2 F B L2 F B2 L2 F' R' D B'|はあさいしにくぬたね|くつふいひへきしいえさせにて|3|3
+F2 D2 U B2 R' U D2 F2 B' L U2 L D B2 F2 U2 L B D' B R'|かあにすさくねせちた|けてひあすちなつえはえきたね|3|3
+D U' L' U L R F' L' R2 F' D' U R L' U2 F2 R F L2 R2 B|あにさえねかけふへけ|せあいしへふあえくひさきにき|3|3
+D' L U2 F' B' L' R' D' R D' F' L U2 F2 D B2 F D2 R' B' R|ちへいあえけひえ|あになさぬつきはふすきけてし|1|3
+D L' R2 U R B U2 F' L' F2 R' F U R2 B D2 R U' D' B U|えたちさねいすい|ちしてあふきへあいぬなえくえ|1|3
+R U D' F2 D' B2 U F2 L' U2 D2 F B' L' R' U D2 L2 R' D' B'|ぬけひつあたして|あさひいたにしきつくはすてす|1|3
+R' L' D F2 U R2 F U' B' D R2 D L' B U F2 L2 R B2 R2 D'|はかせねあふにて|あけへいてつえたはさきぬちき|1|3
+U F' U B U' D' B2 L2 U' R U' F D B2 D R2 L U R' F2 L|えあへていふいくけく|たえあすねてぬちはいけな|3|1
+L' F2 B L' F' R2 F2 B2 D B' R2 B2 D2 R B' F2 L2 U' D' F2 L2|はにぬあたえくさ|えあちひしいあきてねくたすく|1|3
+F' R' D B L2 R2 D' B2 F' R2 D' L' F D' L' U2 L2 F B2 D' U'|たにけあえひふさ|けあいせはなえひちねえすたへ|1|3
+U' B D L D U' B2 F' R2 L U L U' F L2 F L2 F2 D' F L|あへねさいしふつ|ふつにいへなえしくさきせぬね|2|3
+L' B' D2 B U' F' D2 F2 L2 F2 B2 L2 F2 U R2 U F B U L' D|あはていひかつせぬへ|へぬふせにつけはきいえい|3|1
+L D U2 F' U' R' F' U B' D2 F' R D' B D R2 L U' R L D|へはふてしいひに|せちねつくいさたなけすけ|1|2
+D' F2 U2 D' B U' F' D' L2 B D2 U2 F L' D2 B2 L' U' F U F'|いひあけふしせさ|けへふさにあねいひてはつ|1|1
+U2 B' R' L F' B R2 B F' R U' L2 F' L D U2 B' F' L2 D U|ぬかねてせいけつ|すねさつなにくせたしぬは|1|1
+F U F B' R2 F2 B' D2 B D L D L D L U' D F B' U D'|せていねちすえつ|あねくすせひいちつけふけ|1|2
+F2 U2 R L' D2 L B2 L2 R D F' U D R2 U' L U2 D' L U2 D2|ちてにねえへはし|ねあしせはふひえちすいつ|1|1
+R2 U2 F' U R L U2 L' U' F2 R2 L' D2 R D2 U' F' U B2 F R2|つはたてしくふひ|はえあへきてたいひにしあ|1|1
+U2 L D' B U2 B2 L2 D' U' B D2 L B2 U B L' D' B2 D2 R2 F'|にひあぬたはかて|あたついにさへせねしいくぬく|1|3
+L' R U' F2 R F2 R' U F2 D2 L2 F' B R' U F D' U R U2 F2|けしせふにあひさ|へきくちいあえぬてふけつ|1|1
+D B D' F U' R2 F R2 D2 U2 B2 L F2 R L D L U' R2 U' F|へあくいぬはかに|しくぬいあてさちすきたあ|1|1
+D' U' B' U B' U2 R2 D2 U' F B U D R L2 U' L2 U B' R F|しあすつくせふせ|いひしたさあきちへはせつ|1|1
+B D' F R F' B' U' F2 U2 B2 F2 R' U2 D B' R2 B F D' U L2|あくつへふすえさ|なふてきひはしえさすちへ|1|2
+F2 B U2 D' R F' U F' U' R' L B2 U R' U2 B' F2 D2 L U' L2|ちえすあてくへく|きあふひなちさへけくせは|2|1
+D' F2 U' L' D B' U' R' B' F' U' R2 L2 U R B2 D2 R B' F2 D2|ふはてつくえへし|ついえふけきさくにへはせひせ|1|3
+F2 B2 R' D R B2 F2 D2 L' U' L' D B2 F' D' B' U' F B2 L' B|ちあたつえはくし|けはあぬきふなすつせちて|1|2
+R L U2 F' L U' B' U D F2 B U2 F R' D L2 U R2 B' L2 B2|ぬしあねいすせに|けあてちひくいたすえきえ|1|1
+B2 L U F' D' L B R2 B' R2 F' B2 U' L R B' F L U D' L2|いちはつえせねし|あなねぬさはにてけふすあ|2|1
+F' B2 U2 F2 R' B R' B2 R2 U2 L R D U' B' R B2 D L D2 F2|ふねあつへえけさ|なあきにたへさしてぬはあ|1|1
+R D2 L D' R2 B R F D' L D' F' D2 L' R2 F L F' R L U2|さへえいはねちに|けあへついえくきせなたぬにふ|1|3
+B' U' B2 D' F2 L R B' D F' U' R' B D2 R2 U' L2 R U R L|てぬへねはいかい|ねさぬちあくいけすたせす|1|1
+U R2 U' F D U2 F' B' D2 B' D2 U2 L2 B' U F' L' F' B R' F2|しちてにくせすく|にぬいえつきねくへてくけふし|1|3
+B2 L' R2 F U' F2 B' U' R2 B' F' R2 F2 L' R2 D' U2 B2 U2 F' B2|てしくすいぬせつ|あふはへきひいえせけちあ|1|1
+U D2 F B D F2 D2 F2 D2 R2 F' B' D U R' L D2 L R2 U' L2|たあすえひちにさ|けぬにくきつすなふえ|1|0
+L' R2 U' R U R2 U D F' U' F2 R' L2 B' F2 L' R D L F2 L2|あいせしふくすひ|あせすきいにけえくふひな|1|1
+F B2 D2 B U B2 U2 R U R2 B L B2 L D' B' L2 F L2 U2 B'|あしくふにへはさ|つひけさすてちくふい|1|0
+R U2 B2 D' B F' D' B2 D2 U B' L2 U' F R' F2 R B2 U2 B2 U|にけくたえて|へえふくせあひねけいにな|0|1
+D' R B' R L2 F U2 L' B U R' D R' L2 B' L D U F' B D'|へかふあくはにて|つすてなはにさきけたぬき|1|1
+B2 U' L' U' R2 D' B U2 F D2 R' U R D2 L' U2 L' D2 L2 B2 F|かはくあたぬつて|つなにせひきえくふへけは|1|1
+U2 B R2 L D2 U2 B L2 R B' U' B' F U' B2 U2 B L' B' U' B'|かくせていはぬつ|けあなひえにねふくへてく|1|1
+U F' L U' R' U' R U' R' D F' B' R2 B' F2 D2 R B D B' F'|ひへふけいて|なへけにたはあねてさひつ|0|1
+D' U2 L' U F U2 L R B2 L2 D B' R2 B R2 D2 U' L2 U D2 B|あすへつひしぬて|つはぬいふすえせえきねけちけ|1|3
+R U2 F' L F' D U2 B2 L B' L F R L' B R U B' D F2 U2|さけいねたふしつ|あちへけついはてねなえぬたさ|1|3
+B L' B2 L2 D F' R2 F2 L2 B F R' F U2 D F2 B2 U R' U' D2|ちひせあさいつえすし|きへけひせふさいにあくあ|3|1
+F2 R B2 U L2 D U B2 R' U2 L' D2 F2 U R D' B R' U D2 F2|ぬさにはえたくか|ぬさしあせいふにきすはね|1|1
+U R D' L' B2 R2 L2 B' L' F2 D2 B F R2 F' B D' L D R2 L'|ふいはてねえ|ひすさあいねせしにたはつ|0|1
+L' B R' F' D2 B' U' D R' U' L2 R F L' B' L U F' L R B2|にしすちくあたさ|すけあさなせたきひちくね|1|1
+F' U2 F2 R2 B L2 U B D U' R2 L' F L2 F' D B' R2 L' U' L|あふにくしへけて|てあたついぬねにくなえへしさ|1|3
+D2 L' U R2 B R D B2 F' D' F' B U2 L' B' U2 R' B' R D2 L2|さすねつえちたし|いたさねちはへしぬあてつ|1|1
+U2 B' L U L' R F' U' L' U' R L' F' U' B' R2 B' L B2 R' L|たすひあしぬつさ|ぬねえふくすいてあしちつ|1|1
+U' D2 L2 D' U2 R2 F L' D2 F B' U B2 U' F' R' U F' B2 U' B|けたぬにかね|すひてねしなつふはえちさ|0|1
+L2 R2 B L' D F R' B R L2 D' R U D' B2 R2 B' U2 L F B2|はたあいかぬひに|つてぬえちきいふしはすい|1|1
+B2 R2 F' U R' F2 L B R2 D' L B2 R2 F' U' L B2 R2 B' D' L2|ひはつしちあ|すはしちぬてたえつね|0|0
+F' B2 D2 U' L2 R' U F' L2 R B R2 B2 F2 D' U2 F2 U R' B U'|せぬしねていけい|ひへにたけねついくてえな|1|1
+D F R' L U2 L R' D B U L' R' B F' R2 L2 U2 F2 D2 F2 R'|ぬへてかつくすね|つちへくふいさいけてひし|1|2
+R' L' F' L F' U' R F' R D2 L2 B2 F' D2 U F2 U D F' R2 U2|いせえすあく|ねえくすぬなしつてたにふ|0|1
+U2 B L B F D B F L R' B F' L R D2 L' U2 L2 B' D R2|かふてねへい|ふはぬへなねあてちえしあ|0|1
+F D2 L2 R U' R D R B U R2 L' D B2 F' D F' D' L2 B R'|さちいかにくねけせけ|なはすけせひあねあたちた|3|2
+R B2 U' F' R L D2 L2 D' F L B2 D' F' L F' B U' F' D L2|へくちかつあすて|てあねついすたいえちえくはけぬけ|1|5
+B' F' D' R' B' D F2 D' R2 F2 U D F2 D' B F L2 R F' B2 D2|しはひふさい|しにひあすさなたねせ|0|0
+B U2 L2 U B' D F D' B R' B' R F2 R2 B' F2 L' B' F' R' L|ねさけかたいちに|にはすけふなきさつせぬせ|1|1
+F' U' F2 D' U L' B U2 L' D R F' U D' B' R U' B U2 L B'|あひかつすぬたあ|あなちせさけぬすふねはつ|1|1
+U2 L R U2 L R D' B2 D' U F L2 D F' B D F B L F' U2|ひぬさかいけせつ|せしさなくにひふすあ|1|0
+B2 L D2 R' F' U F2 L2 D B2 F L2 F D2 R' D' F2 U' F2 L R'|けせしあねぬいさ|はひにねついなえてけたえ|1|2
+L2 F B2 R U2 D B F L2 R2 F R U D R D R2 B' F2 R' B'|けひあえいへぬて|なしさねつにせすへたひた|1|2
+F2 U B2 D F2 U' F D U2 B D2 L R2 F R2 U2 D2 L2 B2 R' U|かあけたぬいひて|えねあちいはすつけてしたぬふ|1|3
+D2 L' U' R F' B2 R U' B' F' R' D U' B' F U2 B' R' F' R' L|ぬすていへひかに|せきへにけいはた|1|0
+B' R' F2 U F2 L D L2 F' B L2 R' F R' D' R' B D L F2 B|えふていせひけに|ていきけひさちへあは|1|0
+F' D2 F2 R2 U2 B2 F' U F L' U2 F2 L' R2 U' D' R2 B2 R' L2 F'|ねてにはしせちせ|てつたなねけすにさひ|1|0
+D' F2 L' R F2 R F U R' D' B' D2 L' B2 U F' L' U F' B' D2|くにはふてせ|くしふきてさあなへひにあ|0|1
+U F' U' R D R' U R F U' B2 R F2 U B2 F U' L2 D2 B' R|たひさにちえけえ|けへあひなさはきてたちふ|1|1
+U R' L2 B' D R F2 D R' L F' B R' L' B F' U F B' L' R2|あたちつかひはあ|はちねつすふぬしえな|1|0
+F' D' F U F2 R2 L D2 L' F2 U' R2 F B U L2 R2 U' R' U' R'|ひかさはにせふた|なえあふきくけせぬにすく|1|1
+F' B R' F D U2 B2 D' U2 R' F U D2 F R' D2 R' L2 F2 R U|さたねにえはふし|あひすえはしきたせえ|1|1
+F2 B' D B2 D' U B2 F L2 B F2 R2 U2 L' R2 F U2 L2 D B R2|へすつぬあしくて|ひけふえてにへはあねなつ|1|1
+L' D2 U2 R B' U L' U2 B' U' F2 U B2 R' F2 L' U2 R2 B D B2|ねへはえあちつさ|はあせすしねあいふぬにい|1|2
+F L2 R2 U D2 L2 R U' B2 F' L2 U B' U2 F2 U' F U B' R D2|けあねたいえふに|しさすせあひなきあくたは|1|2
+B L' R' U2 R F' U' D2 B' U2 L2 B' L' U2 R U R2 U2 B2 U L2|ぬせねえていはに|あせなぬへちしふえきくあ|1|1
+U2 B2 U2 R U2 D2 F2 U' R F D2 F L2 B' U2 D' B2 L B2 R2 D2|させえねしけちけ|さすぬちたあつきくき|2|2
+F L D' L B D U2 L2 F2 U L' F B D' F U L2 F' B' L2 F|つかてけくへちく|すたなくあきさちてし|1|0
+L2 B2 U B2 R' L2 F' U2 L F U2 B2 L R2 B2 U2 R D' F2 L' D|えぬにすあくへさ|えあにしあいぬたてすいきくね|1|3
+U' L' U D R2 F' U' B U2 B2 R' U D2 F2 R' D2 B F R D2 B|つへけかひあちあ|つしちぬねなえてたすくえ|1|1
+U2 R2 B' U' D L2 R2 U2 R F R L' U2 R B2 F' D' B' L D' U'|にあかせねちすて|しいねつたえてはすぬ|1|0
+D' L' D2 F2 B2 L' R2 F B2 D' F2 D2 L D' U' B2 R2 B F' D U|えふさつせす|えぬあくしあきにふてへね|0|2
+U2 D2 L' B F D2 F2 U2 R' D2 B R L B U' D L F' R' L2 F'|さにくえせか|さきしへぬくなてたち|1|0
+B' U B2 D2 F2 R L2 B2 U D' B' R' B U L F R2 L' U' F' B2|あふていしひつけせは|てひふいえけすなきにはね|3|2
+F L2 F' B2 D B' L U2 F' U2 L' F2 B L' D' U' L F2 B L D2|いはかてくぬたく|たくてきしひついへさにい|1|1
+R' U' F' D F' D' U2 B F L' F' L2 R B U R D2 F' L' D' B'|てにえたひけちし|しあふさぬなねへせにくあ|1|1
+F2 R D' F B2 U2 R2 B D R2 U R' B2 F L' D R' B' D' R2 L|さしつふひせ|へはしつなふえねにひせさ|0|1
+R' B' D' B2 D' U' L2 B F' R B2 L2 D R' F D R2 U' R B' F'|たかぬくさけ|いあてふすけひえねは|0|0
+R' F R' L U' R2 L' D' L2 B U2 L2 U' R U' B D U R2 D' F'|あへぬねすつしあ|てあにけねひなえへはたえ|1|1
+F2 D F2 L2 D U F' R2 B D2 R L2 U' L2 B U2 R F2 B' U D|えたあけぬひにて|ねなしあてえはすつたふちひに|1|3
+B2 U' F R U' B R' F' B2 D2 R' B' U2 R2 B' R2 D B2 F D2 R2|かさけちへいくつ|いしふさぬてはきちき|1|1
+R2 B2 U2 F' D F' B R2 L B L2 B' R' F' U R F L B2 L2 R'|しへさふいくけい|さすあにせくたなしぬきつ|1|1
+R' F' L2 R U2 B2 L2 F2 U2 R2 D F L2 F L2 D' R2 U' F L2 U|ちあたすえくいさ|あすねしたせさになぬ|1|0
+D2 U2 R' U2 R D2 U2 F2 D2 B D' L D2 B2 R2 F D F B2 D2 U2|あいつえねかけぬたけ|さきいはあしあすたひへせにせ|3|3
+R' L2 D' U2 R2 F2 R' B' R B2 F' U' F U B D F B R' L' U'|えさぬにはくせく|くちけぬふつせいえすきな|1|1
+D L2 F2 B' U D B' F2 R' L' B2 L D' B U2 R U' R' F2 B2 U|ふいくあはせしさ|へぬせたあしにねなつ|1|1
+U2 B' L' R' F2 R L2 U2 L2 U2 F' L' B2 L D F' U2 F' R2 U' R'|ひすつてぬえせし|すしふちあいつえせねさくひは|1|3
+U B R L' F L2 R U2 L2 U' R2 F B R' U L2 D' R' B U' B|すたえにねぬ|にねはいへてつさけぬふけ|0|1
+R2 L B2 L2 F D' R' U2 F R F2 U2 F R' D' R' D' L D' U2 L'|けひふかにあせて|あぬへきちなさはけてたけ|1|1
+F B R2 F B2 L2 U2 L' D' F U2 D F2 D' U2 F L' R' D2 B U2|ねふかたあつ|せへしふあなにぬさき|0|0
+D' R2 U2 R2 L2 U L' B2 L' U' F L R D2 F2 R' D' R F' U2 R2|あぬひいかすせて|くちきふてへつひいし|1|0
+L2 D2 L' U' B D' B L' U' D2 B U' R2 L2 F' L' B2 R U B2 L'|にかさねけへふけ|なちつてぬへえきけくふね|1|1
+F U F B L2 F2 L2 U2 R2 F' D' B D' B2 L U2 L2 F' D U R2|てひにえはぬせえ|せしさふあへはひいねにい|1|1
+D R' D2 R2 F' L' D' U2 F' L U2 L2 D2 U2 R L' B L U2 R F2|けねぬたあかいて|さちぬあきすなくけせ|1|0
+D L B R' U R2 U2 B L2 U2 B2 F' D2 R' D2 R2 L2 D R2 U D2|へにあちすかねさ|いたねしせひえくちあすつ|1|1
+D F' B' U D R' F2 L2 D2 F U2 L' B' L2 D' R2 D2 U' B2 D2 U'|しせてすにぬ|ちひすてあけはきふえいあ|0|1
+U' D' F' U F2 R' L D R' F R2 B2 F' R' L D F2 D2 L2 U' B2|けあつねせぬしあ|けちぬすきあついさはいせふせ|1|3
+L D L' R D R F' B2 L' F' R2 U2 L R' B2 L' D2 U B' D U|ねあへぬいけしあ|つぬすちくたしさなき|1|0
+R F2 R2 U2 B' D2 B L2 U2 F U B2 L2 D' L B' U' D L' D L2|ふすさいしたねい|しすちはさてきひふね|1|1
+R L' F D R' U R L F2 U2 D L' R2 D' R2 B2 F' R' D2 U2 L|かちくいへす|さぬねあいふてけはすちあ|0|1
+L B2 D2 F B' U L' B D' U' R' L B' U B R B' R U' R' D2|しぬねすにあたさ|あちすしふあいさいせひせ|1|3
+F' D2 U2 F L' F2 L2 B' U D F D' L B2 D' L2 U' D F' D2 R'|ちはかへねい|くせさつねひけすちす|0|1
+L' U D F D2 R' D' B2 D' B2 F2 D' R' U' D L' D B D' R' F2|ふすてへにえ|てしあいすさふあきはねちひち|0|3
+D U' L' D2 B' U F L' U' B' F2 L U B L R' F R' D B2 F'|ていえへくちすに|にへくつねさいひなけせけ|1|2
+D' R B' R D2 F2 R U' R2 D B U2 D' B' F' D' R' F2 B' D U'|ぬにしくはひ|ふあはぬえしへきせちなあ|1|1
+R B' R2 U B2 L' F2 D' U B F' L D2 U' F2 B U' B U2 L D2|さぬつえひたけか|はけすあふにあいひてえい|1|2
+B2 F2 L' U F' U R' L2 F' U' L2 R' B2 L2 D2 F' D R B2 R' D2|つたひえぬあすさ|あへいてねぬたさけにはつ|1|1
+F2 L' U' B L' U2 D' B2 L2 B' U2 D2 B D U F B' L' R2 B2 D2|つひしふてけせす|なくへきにさぬせした|1|0
+L2 R2 U F' R L' D2 B' D' U' R2 U2 D' F' B2 L' B' U L2 U' R|てかにたくけちね|ねさあへつくひちてく|1|2
+F2 B2 L' U2 B L' R B' L F2 D U2 R D2 L U2 D' B' F' L2 U2|くいへちかい|なひつへてはねえちえ|1|1
+D B2 D F' D2 U F' R U' F2 U' D' L D L F' B' U L' R2 B2|さひにえふへはか|になはたてへきあつけひけ|1|2
+D' L U F U2 L2 B R2 B2 R2 U' B U' B' U' R B' U B R L'|せちあかけつひあ|ひきあへけにふさついせい|1|2
+U2 D2 L B U' B' U2 L B' D L' F' U' B2 L U' D' R' F2 B U|つちえひしけせけ|ねえはあひへちけせいふつ|2|1
+D U F R' L2 B D U2 L' B' U2 L' D B L2 D2 U B L' D' L'|せあちつねはしあ|てひくつさちすたねいけな|1|1
+R D' R F R B D B' F2 R' F' R2 B2 L2 R' D2 U' R2 L U2 B|いたちにえくはか|すなきえけくさせふせ|2|2
+B2 D' R2 F' L' B' F D2 L2 R' F B L U2 F2 D2 U' F2 U2 L' U'|はちせえあくにて|あてちいふさきはしへぬね|1|1
+R' F' L' R B' D B D B F D R2 U' B2 D2 U F2 D2 F U' F|せねしすあちにて|てきいにあはすしえひたあ|1|1
+B' L' F2 D2 U' F U2 D L' B2 D L' R' D F' U B2 L' U F2 B2|にあすふくえへし|てなさけふはあへぬきちき|1|1
+F' U L F2 U D2 L' R F2 L' F' R2 B2 F2 U' F2 U' D B R2 D2|にふねたえあはさ|さあねあいへいくちたはせぬせ|1|4
+L' D2 L B R F' L' F' R2 U2 L2 D2 B2 F L U L F' R D F2|つすかせあふねさ|あしえなてへきふひにはあ|1|1
+D' B2 U L2 F2 R2 U2 D' B2 D' U' B' L2 D2 L2 R2 F B2 L2 R2 U'|けひにちあへ|けあいあえふはえきひきせにせ|0|4
+U' B' U L2 F2 D F' L' B L2 D L' U F B' L' D' L F B' D|てふはにひえせえ|あひはちさへきてけふなあ|1|1
+L2 F2 U' B R2 D2 F R2 D' F2 D' U2 L B' L2 D2 F2 L2 U2 L' B2|へふくかいけ|へきなさけひふせにく|0|0
+D R D' L' B2 L' U' D L2 B' D R' F2 R' D2 R' D2 F D' R2 F2|てねふいすへしい|ねぬしたあいちはへさてあ|1|1
+R D2 U' R' L2 F' L' B2 U B2 D' B2 D' B' R F B D L D L|ぬしてたいすひつ|ぬしあちせふさいすつ|1|1
+D F2 D B2 F R' U' F R U' L F' B2 R2 L' F2 R2 D2 F D' U|しあたちけいねい|いすしにねせあくたえひえ|1|1
+D2 L' U' L' D L F2 D2 U' B2 U L' D' U L' F' D2 U F D2 F2|てはたしいひふに|しきすてあくさふいひにあ|1|1
+U' B D' U' B U' R' U2 B' F' D' U2 F B2 L' F' L' R F U' F'|てちすえいひたい|きふひなはあへせあけちし|1|2
+D2 R2 F2 B' U D' B D2 B' F L' D' R' B2 R U F D' R L D|ひぬかていへけい|にふてねあはひなへさけつ|1|1
+B D L D2 B2 R U2 R F2 L' D2 B' R' L2 F' B D' B' D2 L' F'|さはふひしいせつ|さねぬつはふにいけい|1|1
+D2 B D U2 B' U' R2 B U' R2 U' F B R B F2 U2 L F' L' B2|ふえつあさくせひ|ひへけてあいきえはたにつ|2|1
+L2 F R B' D' B2 D L U D' B F' L U' L D' B2 U F' B L|しにたあすねふて|ちふはせいさきあしすひす|1|1
+L B F2 U' D2 F B D' B F R' L2 B D' B D U' F U2 D2 R'|たけいあくかちさ|ねえくつふしいひすてにい|1|1
+B2 U B2 L2 R2 B' F2 L D L2 U L' B F L D' F' B' R2 L2 D2|へけふつあえひえ|すぬえはしなふてきあちあ|1|1
+D B2 F L U2 L' F' D2 L' B L' R F2 R B2 U F U2 L' F D2|あいかちくすへい|いぬあさせたきはしすにつ|1|1
+U2 B2 F U' R2 L' B U F2 B' U2 D2 B' R B' F L B2 F' L' R'|さへかいはちひい|てえあにへなきけたぬくき|1|1
+L' D2 L' U2 D2 L R2 D B D2 L' F2 B' D2 R' F R2 D' U' F2 R|けせねちあいえさ|たあてえしいへきねくちは|1|2
+B' R2 L' F' U' R' D2 B' D' L' U' L D' R F R F' R2 U R D|ねつたさぬえけえ|いちたねしえせつくすひす|1|1
+R L2 U2 L2 U F2 B U D L F2 L D L B2 L' F2 D R2 F L2|けかぬねにあたて|してくあいふちぬさへきあ|1|1
+D2 F2 B' D' R2 B' U F2 U' L2 B' R' U2 B2 U' F' L F U2 F' B2|へぬてねいけしつ|あいひにせさふへはしねあ|1|1
+D B2 R2 B' U2 L D B L2 R2 D2 B' R2 L F' R' U B2 D B U2|いへさふかくけひ|はしなあすえつきひたせね|1|2
+F2 L U F R' D' U F R B L' D' R F2 L2 D' L U F2 L R2|かぬひけへい|すぬあえけねなふてくにつ|0|1
+L F D' U' F2 B D2 U' F' R' B2 D' F B U D2 R' B2 F' U R|しにぬせくす|けへふつえぬねくにえ|0|1
+F' L' R' D F R2 B' L U' D' L' R D' R2 F B2 R' L F2 R2 U|はてえいねちせに|ひてにねさへあふいけくあ|1|1
+D2 U L B' F R B' D F2 R2 L D F2 L2 R' B U B' R' L2 F2|くあへはふえつさ|あねになすひえせえくしは|1|2
+R' D2 B L' U B R2 B2 R B2 L2 B' R' F' R B' D' U L R2 B2|さにえふしくねけへけ|へてにくあいえぬいきふき|3|2
+U2 B U B2 F2 R' B L' U B' U' L2 B' R2 L2 F D' R' L D R2|あひへつふえけあ|さあぬへついたちはきてい|1|2
+L' D' F R' U2 R' U R U2 L B R U L2 D' U B' R U F' U|いすくふせあかあ|あへひなたしにきつえてさ|1|2
+B2 U' B' U2 R' B2 L2 R2 B U D F2 D R2 D' L2 B2 D U' B' U|あふせくあいつえけえ|くひいあてちへきしつ|3|1
+R' D R2 F2 D L' U' B2 R D' F' L' F2 R' U' F' L2 F B2 L D2|たしあくちいすに|けてあへふひさいにねはつ|1|1
+U2 R D F' L' D2 L B' L2 F B' R L2 B2 R2 F2 L2 F' U2 B R'|ねあぬいすかたさ|なにあへけぬきくてふ|1|0
+R2 L B2 F D R' D2 L' B F R' B2 F D' U2 R' D' L2 B' F U2|にすぬあせくして|あぬねいなえくけちたせえ|1|2
+U2 B2 L U R' F2 U2 B U F D B L2 F2 L F B2 L U' F R'|あいひたぬし|ねあへせちいくけたぬさつ|0|1
+B2 F2 L2 R2 U B' U2 L2 F2 U L2 B' L2 D2 U2 R F' U' L' B F'|しくぬいてけせけ|ぬへあにいさたきけてはつ|1|1
+F2 L R2 B R2 D F L' B2 R2 U2 R2 U' L' U F B' D2 R2 D' B|いたねちてえすし|ねしふちあえいはへせぬせ|1|1
+L2 F2 L R F' B2 L2 R U2 D2 L2 D L' U' L' F D' L' B' U' B|たすふかひつ|あふくてねにぬついしへい|0|2
+L' D' R2 B' R2 L' U B F2 D2 F' B' L' B R L' U2 F2 B D B2|へぬいすてひ|ひあせちさなけきすふはき|0|1
+L F2 L2 F2 R' D' F' R' U2 F2 L2 B R' D2 R B' U F U L F|さかはいせくふひ|へせはたきぬちえしあなあ|1|1
+B2 L2 F B2 L2 F2 B' U2 F B2 U2 F2 L' R2 D' L2 B' R' F' D' B|はふさいたくかに|さはきすひなけあてちたあ|1|1
+L2 R' D2 U' B2 R F' B2 R F2 D' F2 R2 B2 D2 L2 R F' L B D2|けあしせくいふあ|あたさついすいきちしきくはせぬせ|1|5
+R' L2 D B2 R' B2 R' D2 L' B2 D' L F' U R D2 U' R U D' R2|あせていくふすい|ちけくひふへあてえい|2|0
+R2 F L R2 U F B2 L D' U B' L U F R' F R' L2 D' R' U2|くけちたえあつて|てしにあぬなくさねたへつ|1|1
+D' F' U F U2 L' B' F2 R B2 U F' R' D L F' U2 L' B D' U2|いかにけすせふへ|ひなてへあけにきつくたは|3|2
+R' U' L' F2 R2 U2 L R B' U2 L' D2 U R2 B' L F D' L R' U2|すふしひあいたて|ふせつしぬいにへねさはな|1|1
+L' R F L' D2 L R D2 F L D' F' B D B' U F2 L' R2 B D2|にくあせちし|てあちねくひさあいへふい|0|2
+R D' U L U' B' D L2 U2 D2 B2 R2 D F D2 L R2 U' L2 U2 B|つすせふひあ|きさちなへあふせひけくつ|0|1
+U' R2 D' F2 D2 B R D R2 U' D F' R B' L D F2 B2 U' R2 L|せかにぬくあ|きしつふひいにさせへくい|0|1
+L2 B2 R' L2 U' L' F' L B U' R B' D2 L B' L F2 D U' F U'|あひつへちすしあ|けふえいあすにねてくぬあ|1|1
+D U2 B2 U R D' L B' F2 R B2 R2 L2 D R D2 F2 L' R' D2 U|あえはへつぬくて|くすきふしぬちてさあいあ|1|1
+F2 B2 D2 U' R L B2 L D R2 L' D2 R F2 R2 B2 F U2 B2 U' R|つひあたかぬけさ|ちすいねひけくあえふせつ|1|1
+B' R' B F D2 L D' F2 R2 F' U2 F' D' R U D R' F U R' L2|かつあくけた|なせしあひあえにたはえきへね|0|3
+F R' L U2 F2 U' R2 D F2 U2 F' R2 U' F' U' L2 F' L B' L U|あくふにてえしけせけ|なけにへたぬきあくせえつ|3|1
+D2 B D F' R B' L U2 D F' B2 L' D F D U' B U' D B F|すせつちえあねて|なあにえねえくしへぬふは|1|2
+F' R2 D2 B2 U F' B' U' L2 U' R2 D2 B L2 F' L2 B' L B2 F2 L2|いせかくあふはあ|ふくすついえきしてひ|1|0
+R' F' D' B U L' U2 L' R2 D2 F D2 F2 R D B R B F2 D' R2|ねさすちいし|ねつせいちぬたけはさ|0|0
+U2 R' L' F' U' L2 D L D2 U' B2 L2 F U2 B R' U R' U' D B2|ちえいけあねへて|あせけひいたにいきくすき|1|2
+D' B L' F' R2 U B2 F2 R L' U2 F2 B' D2 B' F' U R' F U' F2|あすさいせしくつ|ひすなしあさせふあきはき|2|2
+B' U' F B2 L F' B' L F' D U L U D2 L F2 R2 F R L2 U'|せすえふつあひあ|にふひせいくさしあすねつ|1|1
+B' U R U R U2 L2 U' F' R2 U' F2 D2 L F2 B' D U L' U D2|しぬへあはつひさ|せへはけあいたぬつえさきちね|1|3
+D2 U' R' L2 D2 B L2 U' B' L2 D L' U' B F' U' L U B2 U L2|せふすえさいくつ|くすひつせなにねえしふさ|1|1
+L' D2 F U B L U2 R U' L' D' U F' B L' D F' D2 U F2 L2|かはせていねぬつ|せいねくあひしにたへさあ|1|1
+L2 B2 D' F2 U2 L F2 L2 U' B2 U B D2 L B' R' L2 B F' L R'|あへすぬつえくさ|たえつなねくてすぬしにく|1|1
+B D F2 L2 U2 B2 U L' F D' U2 L F' U' B F2 L2 F' U' F U|くへにぬはあかあ|ちへきぬてなしえあくたあ|1|1
+F U' D2 F' D2 F B R' L' F D U2 R2 B' R' B' U' L' D2 F' L'|えちはへにひ|きなたえてくあへにぬ|0|0
+L2 B2 U2 F2 D B' F' D2 L2 U' L F2 U D' B U' F2 U' B2 U' D|けちくにさえせし|えふちくせきすぬしつ|1|0
+R' U' R U2 L U2 B2 D2 B R2 B F' U' D2 F D' F L2 U2 L2 U'|つせあちてえけえ|せくあひにふへいねえけあ|2|1
+L D' U L F2 B2 U2 F L2 D B2 L R2 D L U2 B2 D' F2 D' B|たしぬさつくけね|にたぬてあさなはあきねけすし|1|3
+D2 R' L2 F L2 U' R2 B' U' D' R' B' R' B2 U F B' R F R L'|すにぬあえくせひ|せあきけひはさにいたへつ|1|1
+B2 L2 F2 D U' F B2 D U' L' U F2 R F L' D2 F' D2 U F' U'|てかちいたひはつ|えいつけねへふはせちぬに|1|1
+F B2 U D R F B' U R L F D2 L2 U2 D2 L' U L' B2 D2 L'|ふねあいしけたて|すなひちふきせくあけさあ|1|1
+R D' U B' D2 F' R' F' B2 L' F' B' U2 B2 L R' U L R2 U' L'|くはふいかあたさ|にきくたなしあさすひてあ|1|1
+R L' B' D L B2 L' U' B2 R2 U2 F U2 F2 D2 L2 R' B' R2 U' D|あしいねせけちさ|ひはしふいちせあつきすき|1|2
+U' D R' U' D' B2 F U B' L D2 F B U' D2 B2 U2 L2 D' R2 L|あにひたえぬけて|ひせけすくあにたさなねつ|1|1
+D R2 B F2 R L' D2 F R D' L' D' U2 R F2 D U R L' F B'|ちさつえせはくし|あくちせすけなえつきたき|1|2
+L D' R B' R F D' L B2 D2 B R2 D' F' L' U D2 R L F2 D'|ねあえつはちへて|ぬふくにけいあてへさ|1|0
+B L2 F R U2 R' B2 R L' B2 R B D L F' U2 F' D2 B F2 U|しちくへけあにあ|ちてへぬあさいはあけたし|1|2
+L' F' L R F2 L B D2 R U' F' R U D R' U' F D' F2 B D|せあはにえぬくて|さひすせはにふいあきけね|1|1
+R F U' L' U' L2 F' U2 D' B2 D2 U' L2 F' U2 L D B F U' F2|くあけへいしふい|せちくあたきなぬしあ|1|1
+D U' L' F2 L2 U' D2 F' D2 R2 D U L B2 R2 D2 U B U' F B2|あふつはたえねあ|あきしすなくにてえひふえ|1|1
+L' R2 B F D' L U' L2 U L2 B' L R2 F2 L' U D R2 B L2 D|にてぬたえけくか|たちてへあひねくいしさあ|1|1
+U' L F' B' L' U D' R D2 F2 B L2 R' D2 R U B F R' D2 R|せつえあすぬねあ|ふへねさあぬけてちいはな|1|1
+B R2 L2 F D' U' R2 F' L B2 L' R U' B2 F L R B' L U F'|あちかいねけせさ|えぬけなあふあきはせきすちへ|1|3
+D B D2 U B' U L B U2 B2 R' L' D' L' D' L R' B2 D' U F2|ひあしちせいすて|いえたねしせさくへひちは|1|2
+D2 B L R B' D B2 L R U2 B' U' D' L' B D' R' U2 D F2 L'|ねぬしあにけたさ|なたねあすさちあくしせは|1|2
+L D2 F2 U' D L B2 U' F2 U R' B2 R' U2 D' B' U' L R' B2 U|へあつねてえすし|なしあねふあえちてえくすぬく|2|3
+F' U F' B' L' F R B D2 F B2 D2 B' L' F' U' B' U R' F R|くえへてすいちい|ふはつしいきすせぬせ|1|1
+L' R U L' U' B F L' D' B R' B D R B2 F' U2 R B' D' U2|にあけへてくふね|しせにさいたあはへぬ|2|0
+D2 L' D B L R' U R2 B' D R U2 L2 F B2 L' U2 D2 L2 F2 D|あいせはひつ|くねせへえたにひしあいつ|1|1
+F2 R' U R2 U' D2 F D' L2 B2 L R2 D B2 D' R B' R F2 L' F2|てつえけかくひせちた|いへふてはきひさしに|3|0
+F L2 F' U L R D L2 F2 U B2 D2 U B' F' R2 L' D' B2 R2 B2|しあいくけい|さあたはすきひいなせちせ|1|2
+F' D2 F R L' U2 L2 R2 B' F2 D2 U2 L' D R' B F U2 B2 R F|ひへてしいけぬけ|はすあさてちしたなね|1|0
+U F2 R F L F' B' U' B2 R' U R F' B2 L F' U B' F L' D|あすねかさいせつ|せひねいあにさはけへふあ|2|1
+L2 D' F L2 R' F U' R L' B2 L2 F2 U2 R2 D U' L2 D' F' U2 L|てかふはいたねに|ねてつえひいなくはけへたにし|1|3
+R' L' U' D2 R' B D B2 F D L2 B R' U2 L' D' L' U2 R F2 L2|へえつはちあねさ|はさせすふちけあぬいねい|1|1
+L2 D2 U2 F' L' B' R B F L R2 B F D B' L D2 F L' D L|ひていはせかちい|さあひあいたねしなくはすせす|1|4
+B U2 F B R' L F D2 L' B' R' L' D R' U' R B F2 U D F'|ふすさにねえせえ|いえたしはねてぬなすにへ|1|2
+R' L' B F' R L2 B' L F B R2 D2 L' U2 D' L' U2 B R2 F R2|くあえちていすい|すえせいあふあきちくしね|2|2
+B2 L2 F U2 B' R2 F' U' L2 U B L U R L2 F2 D2 R' B F2 L'|あへくえつぬけて|えひあしふあいねくせにな|1|2
+B' F U' L' U' D' F2 B2 R D' L' R F' U L2 B' U2 B2 U R' B|けえあたひつちあ|したてあはにひさいつ|1|1
+R B' F2 U2 D2 L2 R D' L F' D2 B R2 L2 B F2 U2 R F2 L U2|ちたあはひかつて|あすいたてひちくえしねえ|1|1
+R2 D' L R2 B L' R D2 F D B2 U2 R' L F U2 F' D L2 B2 F2|ぬへくあつけえあ|ひけあきてついさすいくふにく|1|3
+F B' D' R2 L B2 L' F' D L' U R' D L2 D2 F B' R U2 F' D'|えあすぬせにねあ|あねけたはすせちぬえなあ|1|1
+F B R F' L F2 L' D' U' B D L' F2 B R D' R' L B2 F2 U2|さえねちすつ|あへくひふあいにねしせい|0|2
+B R2 F' R' D B L2 U2 L2 F U' D' L2 D2 B2 U2 B2 U2 D2 F' U|えたちえ|てちふひしついくなきすね|1|2
+B' R' L U D2 L2 D L2 B' D2 U R F R' B2 R' L D2 L B D2|くたあかふすにさ|てぬすあきけふはなにさあ|1|1
+F D2 R B' F2 U' B2 F R L D2 F2 R' L2 F U' R' U' B2 L U|つかへふあはくあ|へあいちいえしくさせひせ|1|3
+B U' F2 B R' D' R B' R2 U' B' R2 U' L R2 U' L2 B' L' D' R'|あくすしにたちあ|すねはぬなふせえにし|1|0
+D2 L' D2 F B' D2 U' L' D B D2 B' U2 R2 F2 D F B' D' L' R|あいさえぬえくたはく|つきしえいぬたすくせちは|3|1
+R U' L2 B' F2 U' D L' D2 B2 U2 R2 B L2 D2 L' F L' U F2 R|ちねあつてけへけ|あくえせなしへぬきにたつ|2|1
+U D' B R' F' L' U2 L2 R B2 F' D' F' L2 B2 R U2 F' L2 F2 D2|いてしくすちへく|さあついてきはぬなけすにふし|1|3
+U2 D R' U2 F2 R' D2 U' R' U2 B2 L D2 U R2 D2 R2 D U2 L R'|すひふさいかせつ|にねはふしへえひあせ|1|0
+B2 R' D' B2 R2 L B R2 D2 U' B' U B2 F L R' F2 R2 D' B2 L|あつえへくふすひ|さぬねいへけてにつく|1|0
+B2 U' F D2 F B2 U2 F2 L U2 R' F' D' L' B F2 D2 F2 R B' R'|あへつくえふすあ|ふあすいあえぬねてえ|1|2
+L' R2 U R' B' R' U2 R2 F2 B' R2 D L2 D B R F' R D R' B2|あいぬすねかへい|くつしせすなさにきひたね|1|1
+B2 F2 R' L2 B2 R2 U B2 D' U2 R2 D U' R2 U2 B' U F2 L R2 B2|えたあけちいひつ|ひにねあすてたけいく|1|0
+F D' U R U F D2 R F2 R D' F2 R D L B' D F2 L B' U2|はさせくいえちえ|さはへあけせにたひて|1|1
+D' B L' R' D' F2 L D2 F B2 R' L' F' B2 D' U' B F L F2 R'|ちあけへえつくあ|ぬあくねえすせなあけたけ|1|2
+U F L2 D' F2 D2 B D2 B' R2 F2 U' B' F2 D U F' L2 F2 R U|かひせつあちすて|あいちへきさてけたくひい|1|1
+L' R' D2 U2 R2 D B F' D' F' U R' D L2 B L2 F' R2 U' L2 B|ぬひはへあしにて|あへねはてえしひになふあ|1|1
+R2 F2 U2 R D' F R F U2 D2 R2 B' L' F R F B2 R' L2 D' F2|すつくあちえたさ|なねけさつぬくにせすたは|1|1
+U' D2 B2 U' R' F2 U' D' B' D L B D B R2 D' F' U' R2 U L|すにくえせあふあ|いあちつえきひふすえくけては|1|3
+L2 B F' R2 L B' L2 D B D2 B U' L F' R L' F D2 F2 D2 F|かへくあぬつはさ|ふちきしあえひてすいはい|1|1
+L R F R2 U2 L' R' B2 R' U F' D' U' F' R' D L' U R' F2 U2|つせけさちか|くさいてぬにすあつけたけ|0|2
+U L2 R D R L B R' U2 F D2 F D2 L2 D2 L U' F2 R2 D2 L|すにぬかあたねあ|きちさしいせあへくあ|1|1
+L2 F B' R2 L2 D' U' B2 R F2 B' U' F L D' L' U' R2 L D2 L'|ねにへあしけぬて|にくぬへついきてきけふけ|1|2
+D' L' F' U F2 R F2 R2 F L2 F2 R L2 B2 R2 U B R D2 B R|あぬたいえひすえ|あなふてすねえくぬしにさ|1|1
+F2 L' U' L2 B2 U2 F B2 D2 R' U L' R D' R U2 B R2 F R' D2|たくてにしけふは|ていちねさはしあぬたへあ|1|1
+U2 B' R' L' U2 R2 B2 F' U D2 B' F2 D' F2 B2 L2 D2 L' F2 L' B|てせかつぬくはく|きいたけあすひさあくはせにて|1|3
+F' U B2 U D2 B' L' F' B' R2 F' U2 B2 D2 F2 B2 U' R B2 L' D|ひつちしてせ|すねにいけてぬあはえふさ|0|1
+D F' B2 U' B L2 U2 F D2 R U' F' D' R2 U L' U B' D2 L2 F|あせふねえはいあ|あいはさすひなきしちせね|1|2
+L' U' B2 F' L R2 F2 B2 R' L2 U F' B2 U D2 L' U' D L U' D|ぬいにえねはたえ|ちすなあひてふねあえくさ|2|2
+D U2 F2 D2 U R2 U2 F2 R2 D B2 U' L2 B2 F2 U2 F2 R2 F2 U F|はぬさいへねしつ|へけいはいえきてひえ|1|2
+B R L D B' L U2 L' F' B R' F2 B2 R2 U' B' D' L' B' R2 F'|くあちいすえせに|たきえすくあひてなけ|1|0
+L2 U2 B R F2 L' B2 D B R' D' L' B R2 L' U D L F D R'|えいあふくすへあ|しなえすてきねくたぬちは|1|2
+R B R2 U' D2 L2 B' U' B' L D' U2 B' L2 B' R U2 L2 D2 B L2|さしすふせひ|ちえせすけきふあいくひな|0|1
+D2 U B R L2 D2 L2 D' R F D' U' B' U' L' D B F2 R2 F2 R'|ちていえつけへす|ぬあさねすちてはいふけな|2|1
+D R L U2 D' R B L2 R U' D F' U D F2 D F' R' F' R' B'|たいしひてけふは|いつえくしへぬせたきちえ|1|1
+D' B2 U2 B2 F U2 F2 B' L' R2 F2 R2 U R2 D' L2 B2 F D2 B2 L'|えけあぬつへひさ|ひさあにけいすふせきはい|1|1
+U L' R' U D R2 B' D' L2 F U B2 D2 R L2 B D2 L F2 D B'|ふたあけかいねつ|きえあぬはへていたちしな|1|1
+B2 U2 D' B U2 B2 U L2 D2 B R' D L' D2 B2 L2 F D B2 F' R2|すちねへさに|ねふえあひいつくはけせちすけ|0|3
+F U2 F U B D2 R' U2 F' D' B2 F2 U2 L2 B2 R2 D F U2 B F2|しぬあへねにすあ|けへあえちたいきぬくては|1|1
+D' U2 F L R U' F' D' U' B D' B F L D F U' F L D L|ねたにかちあけあ|いぬしつせねえたはにすえ|1|1
+R2 L' B' D B R F2 L' U' R' B R' D' B2 U2 D' B' U D B' U2|ひしすちあつたあ|あたきぬすちくせけく|1|1
+B2 R' U2 F' D L' B U2 L2 R' U F2 U2 L2 F' R U L2 F2 D B|はあつぬへえくて|ふちあいはしぬきてへえな|1|1
+L2 D R D' R B D F' L' F' B' U R' F R B D U F D2 L2|たちはねあしつて|けすきひちなつたはえせえ|1|1
+U' B' D R D R D B R' U R' D' R2 U L F' D' R2 U2 F D'|ひすしたあふにさ|にはせねすなふしつえひえ|1|1
+B2 U' R' U2 R2 L2 F2 D F2 U F U D2 L2 D2 B2 U' L2 U' B2 F2|しちていくたけく|あふひあいにすなえくねせけさ|1|3
+U2 D2 B2 R' F' R' D' U2 R' F2 U2 D F D2 U' F' R D' B' L' F'|へけえさぬつ|ちひあけえくなねたへせあ|0|1
+F2 R' U D' L B' U B U2 B' U R2 D' F2 L2 F' R' B U' L' U|ふにあはへひしさ|あせあいちくねけぬなえすたさ|1|3
+R2 B D U B L' B F' U D' F U F' D L' R F2 U' B D2 R|はへていねかぬに|つねにふなせへくさけひけ|1|1
+L R2 U2 L2 D' B D2 F B R L2 F2 L F' U B D2 F' B D R|はぬえつあたねあ|せいえたつしきくぬす|1|0
+U' D B2 D B2 L D' B R' B' R' D2 R B R D' B R F B D'|ねすあしへにふあ|しつちせふいぬはきへさい|1|1
+D2 R D2 U' L' R2 U2 B U F2 L' D' U' B L' R D L2 F' U2 F|しあすへふい|けひあねへふにせはえ|0|0
+D' B' D2 R' U L2 U' L' R B' R F2 L B L2 R' U D' F2 U B|へちあにすえくか|へなにねはてけつさたぬた|1|1
+U B' R B' D' U2 R' D R' U2 R L' D2 R U' L' R F B2 L2 F'|しあふいけさ|ねひえせついへくちは|1|1
+U2 R' U R' F' L D L' B' F2 U' B' R2 B2 L2 R D R F' B' R'|あしくちいはへあ|あふあいへぬくちしきせな|1|2
+F U2 B F' U' D F D' L R D2 U R F B2 R U L' F L' B|ふたえさくつ|へさぬになはけあたきせあ|0|1
+F' R U R' U2 L2 F' B D' L2 U2 R L2 B F' U2 B2 U' R L2 D2|ふあいかけねたに|くへさてあけひあいふいきちき|1|3
+U2 D' F B R B2 U B F2 L B2 R' B D' U' L2 B2 U' F' B2 D|かてせちはいくい|あひきえにてなすたしはつ|1|1
+D' U F B U D' R2 D R2 F2 U2 L' U L' B' F2 R2 D2 B' D L'|いえあせふすひて|ちすしあくたてついきさな|1|2
+B' D2 U2 L' F D F' R2 B2 L2 B R' U R D U' R2 U2 L D' F|えさちねはいたつ|へあたてさきいちはあ|1|1
+B' D B' U2 R2 F B' U' D R2 D2 R D' B2 L F B' D L' B2 R2|てえはいたひふに|しちてなねあひつえくえすふす|1|3
+D F2 B D2 L R D2 L' R' F U2 F' U B L' U R' L2 U R' L'|つぬすさたえ|ひいあふへえにはけきてつ|0|1
+U2 L' F' L' D' L' R' U F2 R' L D' F B2 U' F' B2 R2 L2 F2 L|ていえにくへくけぬけ|あいにあえたへはしせねえ|3|2
+L R' U2 R2 B D' R2 B' U' D' L2 D' U' L' F' U B2 R2 F2 D F'|かいあせくけふね|へふてけあひいえにきくき|1|1
+F R2 U L' F2 B' D' F L' R' U L2 F2 U B2 L U' F L R2 D2|ふはせかあねにさ|しはあきえふせにいすひへ|1|1
+B' F D' U B2 L R U2 R' F' L2 R' U2 F' U' L' F' U2 R' D R'|けいあちくせかあ|くあにいせひけねえすふあ|1|1
+R B' U D B' U' R' B F' R' L2 F' L2 F' L2 R' U' D' B U' F'|たくさつはち|あふえいてすしちはねぬつ|0|1
+R' U2 B L2 D2 L2 U F U2 B D F' B U' L R2 F B2 D' B' F'|かせてけいくふに|あぬえくなたきてすにしつ|1|1
+B' D2 R F2 R B2 D U2 L2 F' B U' B L F2 L' B2 U2 L D' L2|えあつひふたけて|くあちなしひすさねつ|1|1
+D B F2 D2 F2 L F R2 B F2 R B2 R F' R2 U2 B' D2 F' D B|ふたつさえひけし|なさたくしあねてすちぬに|1|1
+L F B' U2 D2 F2 D2 U2 L D L' U2 L2 B2 D B2 L' R2 D2 R' F|くさいふせかけに|すさつひいけきふにせくい|1|1
+U' L2 F D' B F' D2 U' L F' U' D' F D' R F2 B2 R L B D2|あへけていふくい|しなあはにきあえへせえたぬた|2|3
+B L' R' F2 U B F2 R D2 U2 B' U' B L2 B' R F' R U' D2 F2|さふすいたえくに|いあたはせさきけすちぬす|1|1
+F' L D' R' B L' F D2 L D2 B' U2 L2 U2 B2 R2 L B' U2 L F2|ひしちつはて|ひけはなてつへきさたちた|0|1
+D R' B2 R2 L B2 R' D' B U' B2 R' U2 B L U L R2 U2 R L|つかあぬさくはね|ぬてけはえすちいきた|2|0
+U' L' D F R' B' L' U2 L D R2 B' F D2 R2 F U2 R' U' L' F'|つてえすたくぬか|はねけたつさせへにひ|1|0
+U' L2 B2 U' R2 U' L2 R2 D' R2 D2 F2 D' F2 L F' U L F2 D L2|つえはひえせちた|はいにさいきけせねすへたぬた|2|4
+R2 D' L2 R U' F2 R2 B' L' U' B' D2 R2 F U' F' U B D' L F2|へちねけあえいあ|たてしひえあいくにねすあ|1|1
+D2 B' D L' D R' F2 B2 D2 B' D' U2 B D' R L D2 U2 B' L' U'|ひしいてたけふけ|ひてしえなすにきくあたつ|1|1
+R' B2 L' U2 B' U' F2 L' U F' L' F2 U F2 D2 F D' R2 F2 U' F2|けにしあせて|つひしさなてちすはきたき|1|1
+L U2 B' U' R2 D' U2 B F2 R D2 L B F' D' B' L D' U B' D|へあつはくしちさ|けひにいはせあねさつ|1|1
+R' B' D R' F2 L F2 R' D' U2 L B L U L D2 U2 L D R2 F2|はつぬくせえ|たつすえちけいぬはせきい|0|1
+B2 R' U' F2 U2 R' D R' U F' U2 L F' B U2 F R U' D L B'|ちはたあていくに|えにせふへけぬねつく|2|0
+R2 B' D2 U2 F' R2 L' F2 L' U2 D' F' L U D' F' D F2 U F2 L2|あすさいくにえちせえ|にいあさつきけへてねくふひは|3|3
+R2 F' B' R2 D2 B R2 D L2 F R' D L' F2 D' F' L' U' R' B2 D|たちさいねえはえ|けあへひせちきはたいさあ|1|1
+D R L' F' U F B U2 F2 R F' U D R U F L D R2 U' B|えつひはあぬたて|ふくなあきすにしえてぬつ|1|1
+L U B2 L' F' L B' U' D' R2 B' U B2 R L2 U2 R2 U' D L B2|にあさえくちかけせは|へえぬいてふなきねけちし|3|3
+F' U L R2 F' U L R2 B' F' L2 D' B2 F U' L U R2 L' D2 L2|ぬあさいたつえねすし|てあいちあえひしくきへえ|3|2
+B2 D2 F2 D2 U2 R' L' B' D L F2 D F U' L' F R B2 F' R U'|せねぬあさえけか|ぬちあへけいきさふく|2|0
+D' B2 F2 R' F' U' B2 D' R D' F' B L2 R B R2 F' U' B R U|ひすちしにあせあ|すなさはつてちしきひ|1|0
+U L2 U B L B L2 U2 F2 U2 L2 D' F2 U2 D F2 L' R2 D U' B2|ひはぬせかあつて|ひいたえあはへしせにねあ|1|1
+B L2 R' U B2 L D' R' U2 D2 L' D2 R B F2 D2 R L2 U2 B D'|すふせてえね|ふてぬさはついねにけすな|0|1
+D B U D' R D' U B' U2 F' D F2 R2 F R2 L U R2 D' U B'|ちくけつあしせて|たさせあいきくぬなけへし|1|2
+B' L R2 B F' D' L2 D R2 D' F2 B' D R' U2 R B F D F2 D2|にあへしさくちく|あしひきたにくてえへいあ|2|1
+L' U' D F U D2 B R2 U D2 B U' B2 D' U R' L' F' R2 F' L|しひてたけに|しつさきへひいせちはふい|0|1
+R2 U' D2 R' F2 L2 B' F2 R' L U' L' D' U' L2 R B2 R2 L D U2|あたひぬいけえい|すえいあねたつくちはけてぬけ|1|3
+U2 L R' B U R2 L' U2 R2 L D2 B2 L' D U L R2 D L2 R U2|あぬさいすたかに|せねたなはあさけひへ|2|0
+U R2 B' R' D' R2 U R B' U B R L' F B2 L2 D2 B2 D F' B2|ぬさねいえけへし|ついせへぬはえいきしにき|1|2
+R' U F R U' D B2 F2 U F D2 L B2 F' L F L B' U' R U2|たぬにくてす|けぬあせについさくへきい|0|2
+F' U2 F U D L2 U' F' L2 D B2 U' R B2 D F' U' R' U2 R2 B'|ねすたさぬえ|くしあねすせさふあいなちぬに|0|3
+R F2 D' L2 B2 F' L2 U' B' F2 D U2 R D' R2 D' B L' U' F R|ねあふいてえへし|ねへたちせあついひいえしくえ|2|3
+D' U' R2 D L2 B' U L2 R2 F R L F' B' D' R' U B2 D U' L|すさいひたかぬに|たえせすいつはねしぬ|1|0
+U' F2 U F' L' F2 U' R D' R' D' U' F2 U' F2 U2 R2 B2 L' B2 F2|あいしすふねたい|にへさあつきくしねせひて|1|3
+U2 B2 D' R2 L2 B' U' F B D2 R' U F2 D B L' D' B D2 U L|かてたにけくちひ|すきせふちさぬけはあ|1|0
+U F2 B' L2 R B R2 D2 B' L' U' R F' L F2 D2 R L2 F' B' U'|にはあぬしく|ぬねあけくすいちさな|0|1
+R2 U F2 D R' L2 U D R' B L R' D2 L R' D2 L2 R2 B' L R'|ねつはせてか|ふあねいひせはにえしへえ|0|1
+L' R2 U2 D' R' F B' D' U' B' D2 B2 R2 F2 U' B D' B D F2 R'|ひせにあふあ|ひしえはすあねたせいにな|1|1
+D' U2 R2 D R' D' L F' D R U2 B' D' F2 B U2 L U L' U D|えつあくはた|へせあきふあいにぬしなえはえ|0|3
+R U2 F' U2 D2 L' D U2 F' B2 R B2 L2 B2 R2 B L2 F' B2 D2 L2|へあはひふつえさ|あちへぬたけきいえくせさ|1|1
+D L2 F' L' B2 F' D2 U' F2 U' R2 D' R2 D L2 B2 U2 D2 B L2 B'|たひいぬえは|へふつなねにひさては|0|0
+D2 U' R2 D' R L' D R B2 D' L R2 U' D2 F2 D L' D' R' B2 F|かふにあへひすあ|えたすあいにひきけはせき|1|1
+B2 R2 D L' U B2 L U' F' D2 F2 R2 D' L2 U D L F' B' L F|つあふせさえしくはね|ひしあえふなへきちき|3|1
+R F U' B U L' D R2 F U L U2 B U' F2 B' U' L' R' F' D'|ぬたてくいしはに|つてえぬにくきいすふけい|1|1
+U R B F' R' L F U2 R2 D' L2 U' B' U R B' F R' D' R2 B2|せねえちさいはに|せあけすなひえたちきくさ|1|1
+F' U' L D F2 R' B' R L' B' F' U F' R2 U R' D R L2 B2 F2|すねふてえつ|すあきけせさはちぬいふあ|0|1
+L' B2 R2 B R L2 F U L R F' B' U' R F2 U F L2 B' U' B|たさくしちいけに|くにえすつたひしいてきな|1|1
+F' U' B2 F' R' L2 F2 U2 R' B2 D L R' F' B' R' D2 L B2 D' B|にえひかけへふけ|あきぬふすしつえくえ|2|2
+F2 R F L' R' U L2 D F2 D2 R2 L2 U' L' F2 L2 U' F2 B' L F'|あはちあいせかに|すひついきけせはいたちた|2|2
+F' L F2 U F L F B' L B' D' U F' R' D2 L2 F2 R' B R2 L|いえひぬあたけさ|ねさつぬなくちてはけたし|1|2
+U R U L' B' R2 U2 F L2 B' U' D B F D' F' B2 R2 D' U L'|すへいくかに|くけせねさいへたあぬ|1|0
+B R2 D' R D' L2 B U F' R' L B' F' D B' D2 B2 F' R' L2 D'|さえひけいぬ|しすあさなぬきふにくせあ|0|1
+L2 F' B' R' F2 U F L2 R B' D R' B' D R U R2 U2 D2 F2 D'|てつせえかくちひ|あしぬねちはせたつえすえ|2|2
+D B F' D B2 F L F2 B' L' D' L R' F R' L' B2 D F D' L|あけへひしつぬて|いねくふさぬちす|1|0
+B D2 L2 B U R2 L2 D B D2 R2 L' F2 U' L F D' B' L F' L'|つあへねけぬかて|いはえねせあけふにひへつ|1|1
+D2 F2 B' L' D2 B2 L U2 F' D L2 B2 L F D B' U L2 U L' F2|ねつせあさけぬけ|あしになぬさたはきす|2|0
+B2 R2 U F U' F' R2 D' U' L2 D2 B D2 R2 U R' D' F' D U2 B2|ひぬしさせす|あしていふひにはきえへえ|0|1
+F' L' R' D B' D' B' F L2 R' B2 R2 B F' U2 L' F' U B' D U2|つねえちへか|あてきふすいにくさしぬつ|1|1
+F2 R L B2 L' U2 R B' D2 F D L B U2 B' L' U2 L D' R2 L'|あはにあえちせえ|あなすねぬつえちくてたさ|2|2
+B U2 F D' U2 B2 D2 U2 R' D' U2 F2 U D B D B R' U' R B'|ふかはひつさ|ふひあはてついしすにいえねえ|0|3
+D L' R F D2 U2 L' B R2 F' R' D L U F' D' F B2 L U2 R'|ねあにてけせふす|けてへあいさいきはにふね|2|2
+R D' B F' U' R' B2 F' U' D2 R2 B' U2 F2 L' D2 R2 L F R B'|つせねけちえ|けにひえいくあへたね|0|0
+B R B U2 F L' F' U' B' U' R' D' F' D2 L2 D2 B' R2 F' R D'|いふたあしけねさ|せすはひたなさあちねけあ|1|1
+L R D U2 L2 D' R D R' L2 B' F' R L2 D2 F D R2 D' B' L2|いひふすあえせし|きたぬはしにへてつえ|1|0
+L2 U2 L2 U' D' L2 B' U L2 D' U' L R' B D2 R2 U L2 U2 B' U|ふはたにあく|すはたさけあにぬいね|0|0
+B' F' R L' B2 F L2 D L2 R' F2 U' R2 L U L' U B' D2 F2 U|せすえくふあいあ|にいしすつせくひたえ|1|0
+L F2 U' L D' B' U' L2 F U2 B2 R' L2 D' F2 U R2 D F' U B|ひえせにあぬはさ|ていあぬくすえしあたちた|1|2
+F' R D2 F2 B U B D B' L' B2 L' R2 F' R' L2 B2 F2 L D' U|あぬつはかくへひ|あふぬしはちなえさきすね|1|2
+L2 R U B' U2 B2 R F' U R L U L2 B U' F U2 F L' F' B'|いすしへふに|あぬけせにきついへくさな|1|2
+B2 L B R B R' B R' D2 L' D U F' U' F2 L2 R2 B U' B R|あけふたくいかに|はあぬなてきしたつえへえ|1|2
+B L2 F B' D2 U' L U2 F L F' L F L R' F2 R F' B2 U2 F2|ふにかひあせすて|ぬたなあすしさにねてくつ|1|1
+R2 F2 D2 R2 F' D B' D' B' R2 B' R2 F' B2 L' F' U F2 R2 L U'|しさつくねけちす|あしなせきはひえあすたへ|2|2
+F D B2 U2 L D B2 F' L' U2 B U B2 L' F2 B' R2 D' L2 R2 B'|えつふくてけへす|えあくたなへぬねけちせつ|1|1
+B2 F2 U2 B2 U B2 F2 R' U2 L' R2 F' U L' F' B' L D2 B' D' L|へひしいふあはあ|えあねくていちいけたへけ|1|2
+B' U' L R' D L' U F L2 F' B U' D R' B L R2 D' L2 F D'|えいねたはち|えてけふへちはきいぬ|0|0
+U D2 R2 U' R' D' L B D' U2 R L' F R D R B' F' L R B'|にてえせねふけし|ふねしあちなせあえぬくえ|1|2
+L R' F' U2 L' R' B F2 U' B F D' L2 R2 U R' L' D' L' D B2|つしぬすあくへて|えあけぬせすについふなきはね|1|3
+F2 L B' F2 D2 B' D L2 U2 D L2 D' U' F R' U R F U' L U2|しすさせにくふひ|すけふあはきなせえひ|1|0
+U' D2 L2 B2 R2 B R L2 U B D' L D2 R' U' D B2 U B' D F|ぬくへすえあいあ|えついへしてきたひはちね|1|1
+B2 U2 D' R L D L' U B' R2 D' L2 R' U2 R' U' D2 R B' R2 U|はひにぬあえたえ|たくてにさあいしあきぬき|1|2
+R F D F' U2 F2 L' R2 D' U' B L2 F' L F' D R B' D' U2 R'|くすあぬしへつあ|せあはなつえさきへちねけぬし|1|4
+F' U L' R2 F2 D2 B' R2 B2 F2 L2 F' D F' R' U2 B' R' D2 F' B|あねへふあえはし|せすねぬくけふについさい|2|1
+D2 F D F U2 D' B2 L' F2 U2 L' F2 B R' B' R2 F' R2 U R2 U'|えねあけぬにたて|ぬふあせなきはけへさにあ|1|1
+R' L B L F2 U D L' U B R2 U F U F U2 D' F' B2 L' F2|あにたふてえねえ|ふにねあはすぬついせいえしえ|2|3
+D2 R2 U D L2 B2 F D2 R D R' B' R D' B L' R B U' L R'|えあすひふたつて|てたぬへあいえくあけにし|1|2
+D F' D R D2 B F' R2 D2 B2 R' B2 U' L2 U' F2 R' U' D2 L2 B'|すいくてえぬたえ|ちたてけつきすさいく|1|0
+R' F B' U' R2 F' R2 B D2 R U' D' F B' U' D B D R' L B|あかひへすぬつさ|すてきたはにえあなひけつ|1|1
+U2 L' B' U2 B' U' L R U2 B R' L2 U D B' F L' D' R2 U R|ねあせぬあえすえ|たねぬはえいけせちて|2|1
+B2 R2 U2 L' R U' D2 B' F L R' U2 F L F D L' F2 R' L2 F'|ぬあしせつひはて|ねくあなふひてえへけにえ|1|1
+U B U L2 U L F L U' F R2 B' U' F2 B' D' R B L' R' D|ひぬあけえせつさ|へにあぬさねくいせふ|1|0
+U D2 L' F L R2 F B2 D2 R U L' B' R' D2 U F D' B' F' U'|たいあぬしくけひ|さくつねけいせいすふすちぬに|1|3
+L2 D2 U' F' R' D' L' B R' D L' U2 D' B2 L2 F2 L R2 U' B L'|つあえせふはくあ|ぬくにあせねしたえなへつ|1|1
+U2 L2 D L D B' L D2 B U D' F U F' D R' B' D L2 U2 F'|ぬひへあつはえさ|たせひしあちえへくねなつ|1|1
+D' F' B U' D L U2 L' F2 L B' U' D2 R' F' L U B2 R2 B' U'|かくふあいすへつ|つくいさへねけせにひふし|1|1
+B' F' U L' R' U2 F' R2 U B L2 B L' F' U2 F D F D B' F2|さいはにえたぬし|いひしてすにふさつきくね|2|1
+L D2 B2 R2 B F' U B2 D' L B2 U' R' B' U F2 L D' B2 D2 B2|いしけあへち|へはつきけふちえいぬてい|0|1
+L' B' U' D2 R2 U B2 L U' B F' R D2 U2 L2 R' F2 R' L F2 B2|せさぬけつえひし|ふへくあけついてちさぬな|1|2
+B2 D B U L2 B2 U L' R B D' U' B2 L' U2 R B' D2 U R2 D|あひすかへいふあ|つはさすいちしひきせふせ|1|1
+L2 R' F L U' B2 F' R U D2 B U2 B F2 L R' F2 L2 D2 B R2|えつせさはくぬく|あしきぬえにふてついへい|1|2
+L' B2 U' L' R F2 R B' R' L U' D' L' R' U2 F L B2 U D2 R'|あすにねちせ|ねつせえふにけくいぬへな|0|1
+F D' F2 R L' D2 B D2 F' L' D2 F2 B R2 D2 R2 L2 B' U2 D R2|はつねしさせぬせ|えつきちぬいふしせくへく|1|1
+U' B2 L' R' U L2 U2 D2 B F' R2 F2 B' D U' L' D2 U' B L U|にへあふかすねて|くたあすきしてつえひちえ|1|2
+D' F D2 F' U F2 B2 U2 R' F2 B L' D' L' B2 D2 B2 F2 D2 F' D2|にけしねせあふさ|にえしはいせへあひふきあ|1|1
+F R B' U L2 F R B2 U F' D2 U2 L R2 F2 B' U F' B2 U' B'|たぬしくていけに|あくぬしたえあいきい|1|2
+D U' B2 D' U B' R' U F' L B2 D2 L' U' B D2 F' R2 D' U F|ひちさはいしへに|たしあへてくついちきひい|1|2
+L' B' R2 F2 D2 F2 R' B R' D' U B' U' D' F' U2 D B' L F2 R2|つかあちすくせく|たきえはついすにへせぬて|1|2
+U' F2 B L F' D' B' U2 B L R2 D R U' L D' R L2 D2 U' R|つせあひちすえさ|あぬあいはたにきてけいえすさ|1|3
+L' D L' D' L2 D U R F' U B2 R L' D L D2 B D' U2 F2 U'|ふたあいすかねて|あしいすにくえたぬせねな|1|1
+L' U2 B2 D B U' B D' F2 R' D2 U2 F D2 B' D' L2 U L2 R D2|かくあいあせふた|くしぬたへにいあねせさあ|2|1
+F' D U' L2 D B2 L' B L' B' D U' L' D' L' B U D' L2 U2 R2|へねあえていつけぬは|きへふはいあえけひちてけ|3|1
+U' L' U D F2 L' F L2 B' U' D F D2 L' D B' R D L D2 B2|てぬひはいえたえ|なちひさあねせけすくふく|1|1
+B2 F' U D L2 R F U R' F2 U2 F R B U' L D2 L' B' D R|あはにたひちして|あねついせにたくなえひへけさ|1|3
+L U R U2 L F2 R' U2 F' L D2 L' R2 F' U2 F' L' D L2 R' F'|けえにねさへ|ちつはしてひふすいきえな|0|1
+B D F2 U' D F' D2 L B' D' U F2 D' R' D U2 B L F' L' F2|はにくあへかふあ|てふへえあいあくぬしにく|1|2
+U D B' R L D' U L B2 D' L' R' U2 D' B' F D' L' U2 R' D'|ぬかひたあにけあ|けへてちたさひなつきくね|1|1
+R2 B2 F2 D U2 F' B' U F L2 B F' U2 F2 R' L2 B' F' D2 B2 L2|せけあにちひかて|にあぬたせついはけへさい|1|2
+D' F2 U D2 L B2 L F B2 D2 F2 U2 F' U F2 D' L2 R F' L F|すあへていえくい|つちたえきさくけせひへは|2|2
+F2 B2 D B' L F U' R' D' F' D' R' B' R2 L B2 U F L' D F2|ちあたえさいにくはひ|けくあにあいせすきたいえぬさ|3|3
+F2 R' L2 D' L2 R2 B U L2 B' L D' U2 L2 F2 R L' F B D B2|ひあえちけにせあ|へふてけねぬにいさあはつ|1|1
+L' F B' U2 D2 L2 R' U' L F' U F' L' B L' F2 D' U2 B' F D|ちすえねつあたあ|ぬてさたしにすねくあなあ|1|1
+B2 U' D R2 D2 R D' L U2 D' B L' F U B' U' D' F2 L2 D F2|あにたあえけかくふく|ねぬてふついすさにくしは|3|1
+D' L2 B' L' D F2 R2 L2 U F' U2 B F R2 U2 L' B' L' F' B L|ひふけかていへつ|てちけえひすなくふあ|1|0
+F L' R2 F D L2 B2 U F R2 U2 R2 B U L B F2 D' L2 D F2|かたすさひいちつ|けきえあくふちはすせひへ|1|2
+D2 R' D' U R2 B D2 L U D' L R' D B' F2 D2 B2 L2 D L D'|ぬあくすたいえあ|くてぬついへけきふい|1|1
+U L' U F' B L2 D' F' L' F2 B' R F U' L' B2 D2 R2 U' D2 B2|しねぬつあはへさ|しちせなふはねあひえすさ|1|1
+B R U' D2 F' R2 U' L2 R2 U L' B' D L R' D2 R2 B R L' F2|ねつふてはえ|てぬあなふきけちへえくつ|0|1
+U R2 D B' F' U R F B R D R2 B2 R2 D L' U' F B' U' B2|あちしいさくせひ|ちくぬあねへえしていふつ|2|1
+B2 L2 U' L2 F2 U' D F D2 B2 L2 F2 R' F' U R D' R' B' U2 R|いしひあすせちて|しにあてはたついねすなえひさ|1|3
+L' R' F2 L2 U R D2 U2 R' B2 F' R' D F' U B2 F2 U2 D2 L2 R2|えせぬあねつはさ|ねへふえぬあついにくいけてけ|1|3
+B F D2 U' L' F U2 D' L B' R2 F' L2 R D2 F2 R2 D' B2 F' L2|てひぬせいしすに|きあくてなあえしふにぬえ|1|2
+B' F U' B2 F U B' F2 U R F D2 R2 U R2 L' B' R2 F L2 B'|あいぬかさくせね|へえちなぬねあくけふせは|2|1
+F B' R' B2 F2 L' B2 U F2 D' U' L2 F' L' B' F2 L D' L D2 F'|たねけあいち|てひきちふつへはしさ|0|0
+B U2 R' L' U' D' B R L' F' D' F' R L U2 R2 L2 U B2 R2 L2|ねあつぬへえすえ|えきついひちへせくけたは|1|1
+U2 L' R D2 U R2 D' L' F L2 U2 D L' B' L' B' R' L2 U2 B2 D2|ねあしふいはたあ|すてくきえなひふけあにつ|1|1
+L B U' L' U F D R D' F' L' D2 B' U D' F' B2 U' B2 U' D'|すせてぬいえねい|しねつてさくにすいぬふい|1|1
+D L2 R' D' F' B' L R2 F' L' U2 B2 R2 B R L2 U2 L' F' D R'|かへさくいふけい|ねくぬいてちあへさけたけ|1|1
+R' L2 U' L2 U B2 U' D2 B' L' U2 B2 D L2 U' R2 D L' D2 F2 L2|くちかはへあ|あすたねいせちぬさはしい|0|1
+D2 U2 R' B2 F' R2 B2 D2 R2 F B R U D2 F L2 U' R' L' U2 R2|はぬひにあへかあ|つくえちいせいきすしねたひた|1|3
+D' L F' L D' L F D2 L B2 D' B D F R2 D B2 D' B U L2|えはつさくせふく|はたせあきいつえにえけぬへけ|1|3
+U2 D' B' U R L' U2 L' B' L U' D' L2 D R' B2 F2 D R L F'|たしちすひあつあ|いにせしふあさねつくすは|1|2
+D' B D2 R2 U2 B D' U2 L' U' B' D2 B2 D' F L' B' L2 R B L|すくあかふへつて|てへふなけあきひくえにえ|1|1
+R L U2 L U F L' R2 F2 B L R' U B D R2 B' L' U' L' U2|すひへいつえぬか|てあぬねえけなへくちふく|2|1
+D' L D' B' U' F2 L2 F L F D2 B' R B2 F2 R' B D' B U' R|えにぬけてせ|てにあへあいぬなえしさきねくふく|0|5
+F2 L R' D2 L2 F2 L' B' U' R2 D2 L' D' U R' F' R2 D2 B' D2 L|あえつぬけひへあ|なてあひさねちはふけすつ|1|1
+B2 L2 F' L2 R' B' L' D2 B2 U' L' F' R B2 L' D2 F2 R B' F L2|せさはいしち|ぬはきえいたせすけに|0|0
+R L2 D2 F L F' B L2 B2 F2 U2 L2 B2 R' D L' B2 D2 R2 D' B|しねいけふあ|にいひつへはしせたえきえ|0|1
+L' F' R2 L F' B D2 L D L B U' F' R U' D2 B2 F2 D2 R2 U'|かてはたくいふに|せちねあいえはたつけへけ|1|2
+U2 R U' F2 L2 D' L U2 B2 D2 F L B' F D2 B D L2 U' F' U2|すさくふへいえつ|えはあなふあきしちてねすひす|1|3
+B L F' R D2 L2 F D2 L2 R' B' L D2 F2 B' U' R' D2 F' L' U'|てたねすつえちえ|なちぬふあえくけきえ|1|1
+B2 L F L' D' B U2 B2 U' F' B U2 R' L2 F U R D2 F' B2 R|ひえたさいちはに|たなきひけにえはあすせつ|1|1
+U2 F' R2 B2 L2 D2 R L B2 U2 L' U' D2 R U' F' U2 L B L' D'|ふすあにひしせさ|なてけひはちきえあふへあ|1|1
+L' R D' R2 B2 R B L' B L B' F2 R' D R' L' B' D2 B U2 R|あぬすせくい|なきけてはすえにひふ|0|0
+F D B2 R' D' F' U B2 L R2 B' R' L2 B F R2 B R2 B2 D' B'|あせにくあえはか|ぬはにしあせすきたいさつ|2|1
+U B' L' R2 U B' R U B2 F2 L2 F' L' U' F' L U F' R U R2|つあちくえは|ねてたすけえはぬあにいつ|0|1
+D2 L B2 U2 D2 R D U' L F L' F' U L U2 B F' D2 R2 U' L|しつひふすて|てにいえしくきつへぬ|0|0
+U' L2 D F2 L2 F2 U' R' F2 L' B2 F D' B' L' U2 L F L2 B' R2|あはふしつくたて|えきすなてしふあちくひは|1|1
+L2 U' B D F U2 L U2 R2 F2 R2 B' L2 D' B' U' F D2 F B2 L|くけつてえぬたし|けはちえへつせひいふねな|1|1
+D U' F U R D' B' L R2 F B2 D2 L B F2 U' L B' D R U2|ぬにすさえへくし|あぬふいへさきにつくはけてけ|1|3
+U' D R2 U2 R' F' D' R U F R F' L' D2 F' B U' D' R2 B2 L'|ちあすつかくせく|いしきへにつさくはたひふ|1|2
+F' D' B U' L2 R2 B' L F2 D R B2 L2 F B U2 R B L' B F2|ぬかいせあは|くえつなたぬてきけちすき|0|1
+B2 D2 U' R B R2 D F' R D' F R L' D U' B2 R2 U2 L B' F2|ぬへあにあえくえ|さあくついねふてぬしなすちす|2|3
+D2 L' F2 B D2 L2 B' U2 B2 D2 R2 B U2 D L2 U B' L U' R2 U'|へねふあていすい|たへにせくあけきえいひつ|2|1
+R2 F D' R2 L' B' F U' R F2 U' F2 U L' R' D2 F D L' R2 B2|ちつえあはねせさ|てあさにしなふすくき|1|0
+L F' L R D B2 R' B R' L' F R' D' R U2 B2 F U' D2 B2 F'|ちはえくあにへて|さつねはてなけぬちたへし|1|1
+U' R' U D R D' R2 L D F' D F' U B' R L U2 F' R F2 D|ふひさかいへはい|きはあぬなけたへえてにえ|1|1
+F' B' R L2 F' B2 U' R2 D' B' D' U2 R F L' U' B U2 B' D U'|えつすあくちへさ|ねちいふひへつえけくては|1|1
+B2 F' U' R2 U2 F R' U2 L2 D2 F2 R' U L2 D U' R2 L' F' B2 D2|はえねさふいせい|あせいねふけいえへえくぬちく|1|3
+F R2 U' D R' L U' F' R2 D2 B R' U F' U2 L U D2 B2 U2 D'|かいひあへて|はえにすいせふぬしあきつ|1|1
+U2 F2 L2 U2 D L2 F B' L' U2 B2 R' F2 U2 R2 F' B' L2 B2 U2 R|けくちあいへえさ|にせしふひへあさあいなきはね|1|3
+U D' R' L B' R' L' F' B2 U D2 F' U' D' L' U' F D' R' U2 R'|くせあいけふかに|いあにえはきあけひしすせふす|1|3
+B2 U L' R' U L B D2 L B F' R' U2 R2 F2 D' F' L R2 F2 L'|あふたいあくすく|けへにはねせえたなひ|2|0
+L2 U2 D2 R' D2 R D2 B R F' B U' L' D F2 U' L2 F' B2 L B2|かあいたぬすくて|ねはちひすたなしあせえつ|1|1
+R2 D B2 L F2 U2 F2 B2 D R D B F2 R' B D2 F2 R L2 B' D2|しへつねちは|いきてけすぬたちえい|0|1
+R2 B' D2 B D2 B F R2 B' R2 D' B2 D2 R' D2 F D2 B' U R U'|ひぬかあけへいあ|にはたさぬきしすなて|1|0
+F B2 U2 R2 F D2 U' L2 F2 U L' D F2 D L' U' B2 F2 R' U' L|しぬせけいあくあ|ちなひはふてあさつきすき|1|2
+B U2 L2 B' F' D' L B2 L2 R' F' D' U B' R2 D2 U B' U B R2|ひすへいかち|えたあてけはになあきねすひす|0|3
+F' U' R2 F2 U2 D R' F' D2 L' D L F D' U' R' D B D2 U F'|さくちいたすえに|ぬたしきいてあはさすちす|1|1
+R2 D F2 U D R B' U2 B' L B' F2 L2 D2 R' U L' F' B2 U2 R2|にせくさふえはか|せへけぬきはついたさにい|1|1
+R' L' F2 L2 B2 U B F L2 R D' F2 U L R D2 L' B F D B2|けかたいにくぬひ|ちついしねてへたさひ|2|0
+L' F2 D2 F' B' D2 B F2 D2 F B L F B' L' U2 F2 U2 F' R2 U'|つひあふたえすし|えすぬふあきくいにな|1|1
+L' F' U B F2 L F2 L' B2 U' L R' U F' D2 L R' D2 U L R'|はぬあしつせひあ|すつしぬねせいにふさくな|1|1
+L R' D' B2 L F' B2 U2 R2 B' D' L' D B2 R2 U' F B2 L B L|せねぬさはいしつ|いあふしえにせへきはひつ|1|1
+B2 F U' R' U2 B' F' D' R' D' B2 U B L2 F B D R2 D' B2 U2|つけふねあせかて|さあぬねなちつくたてしく|1|2
+B2 L B2 F' U L' D F B R2 D L U' F2 D U' F D L2 U R|かにねあせけちは|ふつくいへいえひきせしえ|1|2
+R F D2 B F2 R2 B2 D2 B R2 L' B2 R' B' F' R' D' R' U2 F' U2|たさにはねえちか|せはあさねたしいへひにな|1|1
+B L2 B2 U2 L2 F2 U' F' D2 B' L2 D F' D U2 F U' F B2 D U|けせいあふくして|きあてえひけへいちふはい|1|1
+D B2 D F2 B' D' F R2 B2 L2 R2 B R2 F R2 U2 R D L R' B'|ふへていひえはえ|えはちしすついたてきひね|1|1
+R B R' B2 U' L' B R2 F B' U' B2 U' F' R B2 D' U R2 L2 U2|すちしあさいつくせく|へちぬきさしなあたつ|3|1
+U F' U L' B U L F' D L F' U D L D' L2 D2 L2 B R' B|せけあくちいしつ|さねはたあなしすへせてちひに|1|3
+B2 U2 L2 D' L2 D' L2 R F R' L B D2 U' F' U2 L' U' D' R' L'|しぬいねけさ|たねあぬえてはへなにけつ|0|1
+U2 R2 D R L' F' U2 B' D2 R2 D2 F2 R L B2 U' F2 L2 B2 F' R|すえちねへあつさ|あへちてえきひなくけふく|1|1
+D2 F D2 L' R2 D' F L U' R F U2 R U' L2 R2 F2 U R U2 D2|けかぬひあへつて|しはひせいたえあへにねつ|1|1
+F' L' R' F U L D L' D F D2 R' U2 F U B F' D R2 B2 F2|ねかさいちたはつ|あにいきはぬすえせしふつ|1|1
+F' L' R F' D2 R2 B' F2 L2 U' F U2 B2 F U' D R B L2 D' R'|いちへえあけくあ|へあたえひてついはねいけにし|1|3
+L B F R2 L2 D2 U F' R L D2 U' B2 U2 L' F2 U2 R' L' U2 F'|しあくすふいへさ|にせしなへねくえあたぬた|1|1
+U B F2 R U' B U' R B' U L2 D' L' B2 U2 D F L' F2 B' U|ねてはしたいふつ|てきはにえつぬふすいけい|1|1
+D B' R D2 F' U2 R2 D' R' L U F2 D' R' U2 D2 B2 F' U' R' D|あつえくはせぬく|てくひえふあいちいけすけ|1|2
+F L B' D' R' D2 B2 U' R U L' F' U2 F L2 F L2 R' U F' D'|たひけさちつ|しくふえつにへいなきひき|0|2
+D' L B' F' D' R F2 B' U2 D L2 R2 D U2 F2 L' B2 L' B2 R2 F'|あせつさえぬかくはね|ついふさへねてくけひにけ|3|1
+L R2 U2 R' F D2 U' B' R F D U B U2 B' U2 L' U' B' F L'|へひあはふにえて|えあきたけぬいすくせにあ|1|1
+U B' L2 D' B D' L' U D R2 U' F2 R F2 R2 L B D2 F R2 F|ふさたいくはしに|あふはしぬちきいえすせい|1|1
+F' D2 L' B2 L' B' U2 B2 F U2 R L2 D' F' D B' L D2 L B' L'|せてえいすひちつ|さふすあしいせねぬにはあ|1|1
+D' R2 B2 D2 B' U' F2 D U2 L2 D' R2 D2 B D2 U L2 B' U' L R2|けあねにしせちへ|けちぬつえいてくすねたい|1|1
+R D R F B D' L2 R F B' L' R2 U D F' L' B2 U2 F L2 U'|にあちひえすせし|はにあけさへぬいねい|1|1
+U R2 F' D F2 D' U B F2 L2 F2 U' R' D' U2 R2 L B D2 B' L2|かせすくあにちさ|ちひふあけなねはすてさつ|1|1
+U' L2 F L2 B2 L B' U R2 U2 L' R2 D' B F R F' U2 F2 R' L2|いへすちくい|たねあけなへひくてえちあ|1|1
+U F' U2 L D R L2 D B R' L' U2 R2 F B' L D2 F R2 D L2|いふつえしくたく|ちへふいぬせしつえねはさ|3|1
+R2 F D B' F2 D R2 L' B2 F U2 D' R' B2 F2 R2 B' U2 F2 D' F2|ちてしいひへけに|てえあたちしすねいはひい|1|1
+D2 F' R U F2 B D2 F R2 U R U2 F B2 U' L2 R2 D2 B2 L' B2|くふさしいせすつ|せちえすくひなふしつ|1|0
+U D R F' D R' B' U D L' U' R2 F D' R2 F2 D B R B R'|にすせてねえちし|すつさなたねぬにくせしく|1|1
+B2 D F' U B F2 R2 L D2 R L D2 R' U2 L2 F' D U L R' B'|さはかせぬいねい|けせはあついねえいたちた|1|3
+D U R2 B F2 U' F2 B' L2 R' D' F2 L' U2 F' L' U' D B D2 U'|ちにてひすえへし|ついちふさきはけ|1|0
+D2 R D' R U D' B' F R' B R L2 D2 U F' L' F L2 F2 R F|ていぬねしすたに|てけひすえふなきはつ|1|0
+D2 L R2 B' R' B L U R D B2 D B2 D B2 U B2 R D' U2 F'|へえちひあつ|なたくさへちてひしあねあ|0|1
+F D2 F' U R' D2 R' L' D2 L F2 L2 U' D' L B U' D' R' B U'|しひけせあつふさ|ねなえくてつけひふにすし|1|1
+D2 B F' D2 F2 R' L2 F D F2 L R2 B2 D2 R2 L B R L' B L'|へいちはえひ|てさつたくいちひけきへき|0|1
+F2 U' R F' R' B' R' F U F B U2 F' R' U B U' L R D2 F|けたひあえいぬい|あにふぬへくえせなし|1|0
+B R2 U' L F2 D B R2 D F2 L' R2 B R B' U F2 B2 L F' L'|いあすぬたねえあ|けきいてつへにぬえふくえ|1|1
+U R U2 L' F' L2 F' B' L' F R2 F' L2 D' R' L F' B L' U2 R'|あけふえつへひて|くえいきたあすぬけせにせ|1|1
+F' R F D2 R2 L2 U' B' L' U2 R2 U2 F2 U2 B2 R2 F2 R2 D U2 R|あぬたいひて|あすくふひにいねえけせい|1|1
+U' B' F2 R' U' D R L2 U F' B L2 B2 U' F2 B' R2 L D2 L U'|せあけいぬひえさ|ひちあせへえいはたし|1|0
+D2 L' F2 L B2 U2 D' F D2 R' F' R2 B2 L2 D2 U2 L2 R2 U2 R' F'|くあいしすぬせあ|えちしぬたへてついくきな|1|1
+U' R2 L2 F2 B' D' F' U2 D' R L B U L' D B R2 F B' R' U'|つかすへねち|へあぬいつえはえきふねけしせちせ|0|5
+R U2 R' B2 U2 B' R U B2 F U2 R B2 R F2 R F R U' R U|にたあくすしちさ|はすしなあきさあせにひて|1|2
+F' R2 U R F D F' R D2 B' L2 B2 U' L2 U' L2 R D2 B2 F2 R|あいちえすひたい|せひはつねいすしたえちな|1|1
+U2 R B2 D' R' D' L U' B2 R F' B2 L2 B' R2 D R' F' L2 F' U|させいちえねはえ|あひしいさはちたてき|1|0
+D' U' L' D' B2 L2 D' F' L' B R D2 L' D2 B2 U2 D' F' B U' D2|かひてすぬた|いひせはきへさふなけちけ|0|2
+U L2 U2 R D2 L U' L' F2 D' R U' R2 B' R2 L D' R2 D2 U F2|したはにあねふさ|あいきにせあえはえすへたぬた|1|4
+D R' B' F2 U' F2 R U' L D' L' U2 F2 U' D R' B' U' B2 D U'|あくぬすへつ|ちねへせしなさくぬつ|0|0
+B2 U2 L D2 U R' F2 B' U2 B2 R' L' B L F2 B2 L U B' R D2|さいへぬねすしい|えすきにしいくぬふい|1|1
+L2 R2 U2 F' D' U2 R U' B U2 F' L2 R2 F R' D' L' R D B2 L2|さいたかけくふひ|してあえすくぬたいきにあ|1|1
+D2 F' U2 F2 L' F2 R' F2 L U L U' B D' B L2 U R2 B U D|すつくあてえちえ|えつきけぬすいになせふせ|2|2
+D L2 U2 L2 D U F' B2 R2 D2 U' L' F2 U F L F' R2 D2 U R|ひあちへあいすつ|あけいへてちきひつえはえ|2|2
+B2 D R' D' R D' R F' D' U R2 F B2 U2 D2 R D2 F' U' B' L2|たくしちあはいさ|せつきくぬなすちしえふえ|1|1
+U R B2 R2 F2 R D L2 D2 L B D' F2 L' D U' B' U2 D2 B2 R|あいへちすえ|あえちせはいぬけなきねすたす|0|3
+B2 U' B' R' B U2 D2 R' B D R' F2 U' R F2 U' L2 R F' L2 F|にてはふへね|にふきはしいせつへえぬさ|0|1
+B2 D' B' D L' U R2 B D2 U2 F2 B2 D B' F D L2 R2 B R2 D|ぬせひいはに|えひになあせふきへは|1|0
+U2 R U' B2 L' U2 F B U' R U2 D2 B' R L F R' F' U' B' U|ぬあつくてえしけたす|しあはてひいえきちふすえ|3|1
+D L B2 U2 B2 F2 R B' U F' U' L2 F2 B U R2 L U R' L' D'|ていへえちねすし|さきなぬあけてはあすちへ|1|2
+B L' F2 R F' D' R D' R' F2 U' L2 D L' R' B2 D' R2 F U F|けしあちいね|ちはなつけふきえすてひさ|0|1
+R D' R' F U F2 L2 D' U2 R' D R' B2 R2 U2 F2 L2 D2 R2 L' D2|あえけさいぬつくせね|へきちせふいあはさけぬし|3|1
+F2 L D2 R' D' R2 L' B' D2 U2 R2 D' U L B2 L' U' B R' F2 L2|はつえさせくぬく|さつけぬくいきてへちたき|1|1
+B L2 F D2 B D2 L R' B' L2 R' F R2 B R2 L' U' D' B2 D' B'|あえすふねいせに|ちけくひへたあいえせねつ|1|1
+D2 L' B' R' L2 D2 B' L U2 B R2 D' L D B F' L2 U2 D L' B'|いはくたてぬ|すえいてきたくなけにひけ|0|2
+B D U2 L B' L2 B2 F R B2 L2 U2 L2 F2 B' U2 B' D' L D2 U2|さいふひしせすい|さぬあせなあきけふはへね|1|2
+B' F' L' U2 L2 U2 F' U' B2 F2 L U F2 B' L F2 R2 B' R' U' D2|ちたあにひすして|へあてにふいえひさきねくけく|1|3
+U' F B U2 F R2 U2 F2 R F2 U2 D' R L2 F R' L' B' F' R' B|あふへいねはえい|せあきさぬたなすしはちつ|1|1
+R B U2 D B2 U2 F D R' D2 R' F' L D2 U2 F U' D R L2 D|けしにへあねふて|あふせきあいぬさはしへい|1|2
+L' B R D L U2 F2 R F2 B' U2 F' B R2 L' D' R2 B' R2 D2 L2|かふはくへく|あぬけえくへいてねちたあ|1|1
+U' L F2 R U L' F' B' U2 B R F R' L2 F2 U B F' D2 B L|いえくけあへふあ|にへてねつさはいひふけい|1|1
+R B' R' B' F' R' D F2 R2 D' B F D2 U2 R' U2 B U2 B R F2|たいくすあしちさ|あてふすけになはぬさ|1|0
+U' L F' D' U' L R' U' F' U L U B U2 B' L' D U R2 U2 F'|つぬはしくへ|ぬへふせけついにえねくい|0|1
+B D' U2 R' B2 U F U2 L2 F' R' D' F2 U2 L2 F L' R' U R' L|あねいけふしたて|えしあにきてくすいひふな|1|1
+U2 D L' U F B U F2 U2 L D' R2 B2 R2 B F' R U2 R' U' D|ふえあつけせねさ|はねしていぬあちつえすさ|1|2
+R' U2 L F' L' D2 U' R' U R B D2 L B L2 U' L D2 R' U2 B2|いさかたねけふす|なにあぬてねさくへたけく|1|1
+D2 U L2 F' D B F' R2 U' D R' D' F' B2 U2 R2 U2 R B' F L'|しぬあすたね|つけぬさくたちなきてすき|0|1
+F R2 L2 B' U2 R L' D2 U' B2 L D F2 D2 F2 L2 R' D' U2 R F2|ちあたけいえくて|へけいぬたつくきさせにて|1|1
+U R2 L B' F D2 F2 U2 R L' F B' L D2 F R2 D2 F L' F U|はへくにちあかさ|くあへいせしにねいたひた|1|2
+R L2 D' B R2 L D L2 F' R2 F' U F B L' R D F' R F L2|てぬはねいしたに|てはあたえあいになきねけぬし|1|4
+D L2 D2 R U2 D2 B2 D L D2 R F2 U L D F2 U F2 R U2 R2|すしあぬつくせさ|ひせへはにふねいあし|1|0
+L B U' D R B2 U2 F2 B' U R U' L' F2 B2 R2 L2 U R2 D F2|さにたくふえ|きけえへちひいあはせたつ|0|1
+U F' L2 F L D2 B F L R2 F' D' L' D U' L B2 U' F' D2 L'|ねかつちあへすあ|ふにさしくいへせいきひね|1|2
+D U' F2 L2 B' R' L D2 B' U B L2 D' R L2 U' R2 U2 D R2 L2|つへしくはあふさ|にひあふへせはけついきい|1|2
+B' R F2 L' R2 D2 R2 B L B F' L2 F' U' R' U2 F2 L F R2 L2|あかにたねけふさ|はえつねいふすせにひけい|1|1
+D' U2 B' R' L' B' U' R2 B' L2 D2 F' R L2 U' B2 L2 B L2 U L2|あいあえせちかくけね|せしあたなねつえちはえすひす|3|3
+B2 L D B R2 D B2 L' B2 R2 B D' B' D U R2 F2 D2 L2 F R'|かけひふさいせい|ねあちはなつえしへふえせぬて|1|3
+B U' L B' D2 U' B' R' F' U' D' B R2 U D R2 L' D2 U' L2 F|あかひつちせけさ|あてついしなえふちすぬきはえ|1|3
+B2 D U B2 U F' D2 B L' F2 L2 U' L2 D F U2 F2 U' F B2 D'|あいてえくふかけせけ|すしつたねえさくひちては|3|2
+D R L D2 B2 R' F2 U' D2 L' F2 B2 L2 D2 B L D' B' D2 U B'|くあいふえへはて|きさくぬふつなてけすちし|1|1
+U L2 B L2 D' U2 B U F' R' B' F' U L2 R F L F2 U' R' U|くちつかあせすて|つけくすにぬてたえいきい|1|1
+F2 B2 R L2 U2 L U2 R2 B2 R U2 D F2 D B F L2 U2 B2 U2 L|ぬあけにてえかくへね|ふすせあさはいちきひけね|3|1
+D B' U2 F' U2 D B2 L U2 R2 U B D U F R L U D F' L|はあへいかくふね|へせつきたさひしにな|1|0
+B' R' F2 L' D' U L' D' F2 D' U R L2 D' F' D U2 F D2 F L|にあへねえぬはし|なあせえぬくねけちへふけ|1|1
+B2 L B' F U F L U L' U L F2 L R B D2 B U' B' L U'|あちつえせねすし|せちひねふへけくあいえあ|1|1
+U R2 L2 F' U B2 D' F' U2 F2 B L' B' L2 U' D' F' U2 L' B D'|あひいちすたしあ|つすさねいてぬにくけふけ|1|1
+F R2 D F2 B' U' R' F D2 F' D2 U' F' U D' B D' R2 D2 B2 F|たすていひかぬい|あえちたいてきはすぬけあ|1|1
+F' R2 D2 F2 U2 F2 R2 D2 F R B2 F2 L F2 U' D L2 U' L2 U2 D|えふたさねいけに|いひへしはあふねにあ|1|1
+L' B F L' D2 B D' B R D L' U2 B D2 R2 B D2 R D2 R' L2|いすくにえぬたし|ぬふさしはなてきちね|2|1
+R' U2 D' R2 B' U2 B2 L2 F2 D2 B2 F2 L2 R2 D F' L' R2 B F' R2|ちかけたにあひて|ひついへえくけねたえ|1|1
+D B R L' B2 R' D U L R' F' R L2 D' R' L2 F' R' L F' R'|ぬねさはいしへい|しへえはつねたにひいせい|1|1
+B2 D B2 L2 B' R2 D F2 B2 L2 F L R' F D' L2 B U' R' B' R2|せはふねいし|しひせいあたはえすあ|0|1
+U R F' B2 L2 D B' D2 F R D2 L R U L' B' U2 R B' L2 R2|はひたあちいかさ|ねしつひたいへえいくせは|1|2
+R' B F2 R' D2 L R F2 L B' L2 F D2 B' F2 D' R2 D' R F B|あいくつえたぬし|あふせきえちいはすしぬあ|2|1
+D' L D' L' U' L' R' F U' R2 L2 U' B' U2 L R2 D2 L D U' F|ふかくすせあいあ|ひいすけあにねふさてはあ|1|1
+B D' L' B L' B L2 F2 R2 L2 D' R' U' B2 F' R B' R2 B2 R B|させかにひち|きせすなしあふえにはひつ|0|1
+D2 U2 R D U' F2 B' U' L2 U' D L2 R2 U' L2 D2 B2 D' R D' L|ちえすねせあにあ|けあせいちくさあきすたね|1|2
+D F' R F2 L2 U' F2 B2 L2 F' B' D L' D F' L U' B L' F' R|かひあにけせふけ|すにえふせつけなくきぬね|1|1
+L R2 U' L R B' R2 L' D2 U2 R' D U' L2 F2 L B' U B2 D' U'|にけせさちえねし|てすえねはあひいちけたけ|1|1
+B' D2 B2 F R2 U R2 U2 L2 R2 F L U' R U' F2 D2 L2 D B' L2|にあぬたすねかて|ねあふさぬいせけくに|1|0
+B2 L2 B2 R' D2 U F D L2 R B2 U' B L' D' U2 B R' B F2 R2|えひせちあつけて|あきさくせにたけつすぬす|1|2
+D B F2 R' F2 L' F' U L' R B' R U B2 R L2 F R' U2 L R|あにさえかくせちすく|へあなたぬえねあくちはけせし|3|3
+L' B2 L U' F' R' D2 R F R2 F' R' F2 U' F D2 R2 B' R F2 L'|あせにけふえ|えてたねすはけつなに|0|0
+L U' B2 D B2 R B' D' F R' F B U' R2 L F2 D2 R' D2 L2 U'|すてふねにえ|けにあくきすなつ|0|1
+D2 L2 D U2 B' F' L2 B' D F U' F2 B' L' F2 B U L' B2 U' D|ふさかたいねけに|ふしえあなくつきすきせぬにせ|1|3
+B2 F' L' B' D2 R' F' R' L' U2 F2 U B' U' R' L' U' R2 B' L' B'|ねあちへかいけて|はたへついえぬねえけちけ|1|2
+D' B2 R2 B2 L' D' U F2 U2 L D2 R2 L U' B2 D' F2 R2 F2 B2 L2|へふかねすあつあ|にふあしねへえはせあ|1|1
+F2 U B' U' B2 R D L B2 L B U2 R' B' F L B2 D2 R' B' U2|せしけくいあふさ|しねえへぬたくなつに|1|0
+F2 L B L' B' L2 D' F L' D R2 L2 F U' L2 B R2 F D' F' U2|くにさへえすぬし|くけいあえへきたぬにせえ|1|1
+B2 D2 R U' F' U' L D2 L D' R2 U2 R' D2 R' D2 U' L' F' U D'|ぬあいかてくひけたは|たはしあいねへちぬち|3|1
+B F U' D L U D B L2 D2 U2 F' B' L' F2 U D' F' U B2 D'|へけあねえに|ぬさきあたちてはなすしつ|0|1
+B L R B2 L' F' R2 D2 U' B2 F2 U F' L F U' B' R F' B D|ていへぬしくすい|さあちけあいきいくふぬてすく|1|3
+U' F' U2 B2 D R2 U2 D R' U2 D2 F2 R D' B' U D L' D' L2 U2|さたちくいしはい|あきひちてなあえすたさくしは|1|3
+F' L D L' U' D2 B2 L2 B F2 D2 B2 D2 B R2 D2 F D' F U' B'|あすぬにさえへえ|あさせなつきふぬねくにしすく|2|3
+R' D R2 L2 F U R B D U2 R L F' B2 U2 D2 F' B' R2 U' L|ねたちつしす|あさきへなふくひせにけは|0|1
+U2 D F R2 F' D2 R L' D R B' F2 R2 D' B2 D2 L B2 U L2 F|はつふねしへ|ひふにせあはきしすさいあ|0|1
+F' R B' F' L R' U L U L B' U2 R' F' B' U2 L R U' L2 R'|ぬくかすつあへあ|ぬせくへいさきちふけ|1|0
+L2 D L R B2 R D' L2 F2 D2 F U F B2 R2 L U F' L R B|ひえせにふあすさ|ぬあいさふてちしはすきあ|1|1
+U D2 R2 U' D' L R B' D U R F2 U2 F2 D F2 B L' R2 F R'|えあせひいふけさ|あいひはえけちすふてねえ|1|1
+L R B' R' F' U2 F U L B' U' F B R' L F2 U2 R L' F' R'|あぬしいひへすつ|してなふあにねはえぬ|1|0
+U2 B' L B2 F' R' L' F' D B' U' B2 R' U L2 D2 L2 B' U B R2|しあにはひふたて|なぬえくねつすたにけせし|1|1
+D' U R D F2 L F B' U2 L2 R' B2 U2 L2 R B2 L F2 R' B2 U|ぬさにえけくへね|たくけちあてへなぬえきあ|1|1
+F R' D' R2 F' B D L2 D L2 D2 F' U2 F' U R L2 U' R B2 R|いさえすくせぬか|たすはあひせなつえけえきにね|1|3
+F B R' D2 U' F L2 D2 U' L2 U2 L R' B2 D' L' U L' U' R2 F'|つてふけかく|さぬちせしあへねふな|0|0
+U B L' U D' R F' R B' L' R' B L' U2 L B' R' F' D2 B L2|へねえあふつはあ|ちねてさへけたいひあくつ|1|1
+B' D U F' U2 D L2 R' B' F D F U L2 R' B F' D R D' L'|あかくせさいぬに|つなさきけすたはぬにせき|2|1
+R' L U' F D F' R' F' L2 U B2 D R L2 U2 B' F D U' L R2|あひせえぬいすつ|あせたいひちねけはえすえ|1|1
+D B R' D2 L R' F2 L' F U L B' L2 B2 F R L U2 F B' D|ちすひえいて|はあすつきふねけぬせにし|0|3
+D2 L2 D2 L' U' F' R' L2 F B' R U D2 B2 U' B' R' L' D L2 D'|くけかいへあちあ|ちあひふてえくへついきな|1|2
+B L2 R2 D2 F' L' F' R' U2 R U D' F' U D F2 B2 L D L' D2|せてすいくふえつ|しくてねふちえあいへひつ|1|1
+L2 R' U D' L2 R2 U2 B D U2 F' L B2 U2 R' D F' L B' L' D|てしにぬくはたく|ちあひていたしえねはすさ|1|1
+R' L' U2 L' U' B' F2 U R U2 F2 B' D B U' R F2 R2 B2 R' L|せいねさえはふし|ぬすちきあしせいくたさつ|1|1
+D' B L2 B2 U' D2 F L2 U' B2 F R B' U D2 B U D2 F U R'|ちけへさいしねい|すあけたにいぬいえはせさ|1|2
+L' U' D L D' U L' F' R2 L2 B F U2 B' F' R L2 D2 U' B2 U2|けあせいかふねに|あけえちぬきへふせさ|1|1
+B2 U2 L B2 L2 R' F' U2 D2 L2 U L' D2 B2 R F' L' B R' U L|せしあひさいにけぬけ|あさしすふねいてぬくちく|3|1
+D B' F' U' R2 B' U2 D' R D' R2 L D' R L2 U2 R2 U2 B2 D2 F'|あふいけくたして|ちせくきすけあふいさひな|1|1
+R' F B' R L D2 U' F2 R' F' D R D2 F2 R2 D' L2 R F' U F2|にへねあてえしけぬけ|さふちしつなてひすき|3|0
+F L' B' D L F' R' D B' D L2 F' L' D2 R F' L2 B2 U' R2 F'|いぬねはたあえさ|あちいくせたえきへけひね|1|1
+L B F U F2 R B' R2 U' D2 R' L' D B' U' L U D2 F2 L D|しくにさちけたす|はついにねひすしなえてえ|1|2
+D' B2 U2 F2 L' R2 B F' R' F' R F U' L2 D2 U F' D U2 R D|くしいたあけふす|あへふてちはあいぬいえねしえ|1|3
+D' B R' B L' B D2 U2 R2 D B2 D' L2 D2 B R2 D L U2 R F2|あけいぬせて|あたいちへぬきせはな|1|1
+L B R' L' U F2 D2 B2 R2 B2 F R2 U' F B L2 U L2 R' F2 L|あたえていふにくけく|ひてつきいしにたすえくえ|3|1
+B' L2 F' U2 B' L' U B2 D' B2 R B2 F R2 B2 R' L2 B' F' U' F2|いしねあへすぬさ|けつくいてえふちいきねすぬす|1|3
+D2 R2 D R' D' L2 U2 B R' U L' B L' F' L' U2 L2 U2 L2 B D2|あひあいつえすせぬか|にあぬさはへついてしきな|3|2
+R' U D2 B D R2 D F2 L' F L2 R2 U' D L' R F R U' L' U|あふひつけへしさ|あえなすてねくふくけちけ|1|2
+D2 F2 D' F' R D' L2 B2 L B2 F L D B' R' D' F2 L R U2 D|へひあしいけふつ|くけあいせぬへたさにきい|1|1
+R' L2 B2 L' B R2 F' L2 B R2 F2 L B2 L' U' B L2 R B2 R B|えたてすねいぬつ|しあすなぬつえはふえきちてね|1|3
+F' U' B' L' F2 R2 L B F2 U D2 F' R D U' F2 D F' U' D' F'|ひはあにえせちせ|はあぬきふへけあいえてい|1|2
+F' D' B' U B R' L D B' R D2 L' U2 D2 L U F B' D R L'|さちせつえねすし|しくつさちてねいたぬすい|1|1
+L' B' L2 F' L U' L' B' F D U L D B L2 R' B2 U' B' D' F'|くあすへかにふて|けたひねへにあなせくえつ|1|1
+L' F2 R' F L' R D B2 D2 F' D2 U2 R' D B2 F2 R' F U2 L' B2|さかせちいくすつ|すせちつはしぬさいた|1|0
+D R' F2 R' F2 B2 R F U' F2 U2 L' U2 B D L U2 F U2 D2 F'|えあふつねせけさ|さへしちきいくぬたつ|1|0
+L D2 B2 R L' B2 U F' D2 U' F2 B' D2 B F2 L2 B U2 B' F R|ひふへかさは|さあてへひくちしふあ|0|1
+F R D2 B D L U2 D2 F2 B' U2 B' U R B2 U' B2 F' D F2 D2|ふあせねにしはて|さぬすふくつせいなけにし|1|2
+D2 B2 F' D' R2 L' U2 D F B2 D U' R L2 F2 D' F R2 B' D B2|ちひていせかすい|ふはひねあけてあいすなえにえ|1|3
+R D L2 U L' R' B' L' D' F' B2 D' R' B' R2 D2 F' B2 D' R D'|いしさはくちたく|さねくちいすふてなけぬけ|1|2
+R2 U2 L2 D L' F2 D2 R' D2 B2 F U R2 L' U' F2 B' R2 L' B2 F|たあえすちね|あふさせいはしあきちぬき|0|2
+R' F2 B2 D' R' L2 F2 D' B2 F' U2 L' R2 F' B2 U' F' L B2 U L'|ちにねあてけせす|くさあひふにきなせしへあ|2|1
+R' B F' U' B L' F' R2 F2 D2 U' B R2 B R2 D U' F R F L'|してふいたくすひ|ぬねさあくへなふせしにあ|1|1
+U L U R' F B2 U B U2 R2 D B R B D2 F2 B U D2 F U2|すえふあいたひに|ねていあえひたはえけちけ|1|2
+R B2 L2 R B' R' D L F' R' L D2 F' L2 F' U D2 F2 R' D2 F|あかはつあくねせぬた|へせあねけたひにはさなあ|3|1
+U' B L F R2 L D2 L' D' F' B' U R B2 U B2 R U L B2 D|えせちねいあけあ|あてすなぬふはさしねちつ|1|1
+F2 R D2 L B D B' L2 B' D L' R2 F' B' D2 L B2 F D2 F U'|はつあしたふねあ|くへいしたえぬちつきてね|1|1
+R' U' D' R U2 B' L' B' D2 B' U2 R2 D' F D2 B' D' R2 U L B2|すくあかいへちて|しきくふてへあいちさひい|1|1
+R2 U R' B2 U' L2 D R' F' B' L' F B D' L2 B2 L U' F' L' R'|くあはさ|あすひしついにきふさはな|1|2
+U' F2 L F L' U R2 D' U' R2 D R2 U2 L' F B2 R' D' F L2 D'|はつへくてか|あきぬけたついえてへなくちく|0|3
+D' R' F' R2 F B' R B F' U B F' U' B2 R F B' D B' L' U2|ひせあぬつえけし|さしねたつてぬにはい|1|0
+U2 R L2 D2 F' B L F' R F' R' F' L2 D' B' F2 U2 R U2 D' R|あへしにぬくけさ|てくいあねしへあえふちさ|1|2
+U B2 D' F2 R2 B F' D2 F' D2 R' U2 L2 U2 R F R2 D' L' F' R'|つけちえねあせさ|あしいてひたちさへねはつ|1|1
+F' R2 L D F' B' D2 U2 R' L' B2 L B' R2 B2 U' F' R' D' R' F2|けあしにふくたて|なさへつはたしぬせね|1|0
+B F' D' F R2 U' R2 L U F2 R B2 R' D' B U2 F U2 L B F2|くへぬてはいえに|てひあたえねちけついくい|1|2
+L' F D' L D2 L' D' F U D B2 U L2 B' L U2 B2 L U' L2 U2|さかくはちいへに|けたあすちくさせねいひい|1|1
+L R B2 U' D2 L2 R D U R U' F2 L F2 U L2 B2 L2 B2 L B|ひふていかたけつ|せについすぬいえはえきふしね|1|3
+L2 F' L2 U2 F2 U2 L R2 B2 U R' D B2 D2 F2 L R B' L U2 D'|はへいくしつ|へせいさいきねくふはけにひけ|1|4
+D' U' L2 U B' D' B D' R' L2 U' L2 R B2 D L2 U2 F2 R' L B|すぬあしへい|せあにぬあいねたけいえへはえ|0|3
+D U' F2 U' R B L2 R2 D2 L2 U2 R' L' F2 B R' L' F L2 R D2|ふてへひつか|にふくてけぬへきあな|0|0
+R' D2 F2 L2 B2 R L2 U D R L2 F2 B2 R' D2 R U' B2 R U B2|はあたふしいねい|せえひあいふにしねはへあ|1|1
+D2 U2 R2 F U L2 U' F' B' R2 U' L' U F2 U' D2 L' F D2 F' U2|せすぬえさい|さつにくぬてたへけい|0|0
+R' F' U' B' U R2 B2 L' B' F' R2 F2 U' D B' F2 D' U2 R2 F' U'|はねちあつあ|ちしきくあすいていえたえ|1|2
+U R' D' R2 D' R2 B' D U' F B U2 L D U F D2 R F' R' D2|あつえたかけちす|ていたねぬしにくいえすさ|2|2
+L2 F2 R L' B D' F U' L' D' L D' B L2 D' R2 B' D L D' F2|はかあちさいせい|はついねぬにへしたてえな|2|1
+U2 R B' R' U' L' U L2 U B2 R' U D2 F R L' B2 L2 D U2 R'|へさしくひけぬす|さすぬくあたなちけきせつ|2|1
+L F2 R' F L2 R D F' L' R B' L D' F U R' L F' L' F2 D'|ねへにはしち|なはひたてあにさけねへあ|0|1
+U2 R' L U L F' B2 D2 F2 R F U D2 F' R B L2 F2 R' B U|ねたあすあいえに|さあついせしいきくふへにひき|2|3
+R B' F R' F' R' L D' U2 R2 D L R F2 R2 D2 B' U F' R2 F2|すあへしねつぬて|あへいふさはてけなきぬね|1|2
+U F2 U' B2 F2 U' L2 B L' D' R D2 L' D B2 R' B2 R2 B' D B2|くちあつえけせさ|ていねさつぬすくたし|1|0
+R2 B' F R' B' R2 U2 D B D L' D' B2 L D' L' D F2 D' F R|はくつへさえふえ|あすふひけはさにいせねあ|1|1
+D' U' L2 B2 L F' U F' D L D U F2 L R2 D2 R2 B F2 D U|しくあいたちけに|てしはさすきふぬちい|1|0
+L2 F R' D' U' B2 U' F D L B' D2 B U R2 D2 F R' L' F2 B2|はいしひふに|なせえけにあぬくふねへつ|1|1
+B' R' L2 U B R2 D B' R2 F2 U2 L' B U F D R2 D F' L' U2|はくへあつぬえあ|てけすいあひきえはにふつ|1|1
+B D' U2 B F R U' B2 R' F' D R2 B' D L2 U L' B' L2 R' U'|ちせあかひいすつ|はたちぬなけあてさきすき|1|1
+D2 R2 D' L2 D2 F R' L2 F2 B2 L' R D2 B' L2 U' R' F D U' R|あひけかつせちた|はあせなえすたしねちぬえ|1|1
+D2 R' B' D2 L2 D L2 D' B L D U2 B' L2 R F' U' B2 R F L|ねえはせふさ|てあにねふくぬいしすさな|0|1
+R' U R' U' D2 F2 R U D' L' U2 L2 D2 R2 L' U2 F2 U' L2 B' D'|ぬくさいかせけつ|あえはたてちしへいきひあ|1|1
+D2 L F R' L2 B U2 D R' B D' R F' L2 U' L F' D U' B2 F'|すにえねあちせさ|あせたぬいえくしつすちへ|1|2
+F2 B D' F2 B L B' F' U' R2 U' R' D2 U' B' U F R' B2 F U'|はたいねふい|ふぬにせねあしくさいへな|1|1
+F2 U' R F2 R D B2 R2 B F R' D L R2 D' U' F' D F' D B|ぬすあいねし|くへたえあきなあけひせし|0|2
+L2 D2 U2 L2 F U' R2 L U2 F R' F' R' L F' U R2 D' L U2 B2|さぬしつくす|ぬせいえあねつくすくけふにし|0|3
+B F2 U' D2 L R D2 L D B2 D L2 D F' D' B F2 L2 U D B'|すあさいえねぬに|ひえせけあちきすいはたな|2|1
+R U F L' F2 D' B2 R D' F2 D' U' R B2 U D' B' F2 D2 F2 L'|あくいけちえたい|ねちへいさあひけせふはあ|1|1
+U2 D2 L2 R' B2 L U2 D2 R2 B F2 L D R U' D2 F L' B L2 D2|すいあせねふかあ|えきせくふあしいちひすつ|1|1
+U' L2 B' U L2 B2 U' D' R' U R F U B' L R' D B2 D F2 U|にあえひせけふあ|ちたあせきすさいつくはけぬし|1|3
+B' F' D' L' R2 B2 L' D' L B2 L D' B' F2 D B' D2 U B F' R|けくあせえぬ|へいひふけはあちあきせね|0|2
+U B U' D2 B' L' D2 B2 U' L' B2 R' U' F D F' D2 U F U2 B2|かつくぬあせはて|はあちへなぬふさつきねけせけ|1|3
+F' B' R' F2 D' F U2 D' R F2 R D U R' D2 R U' L F' L' R2|いあはふさえしくへひ|ちひえしせふはへいあねつ|3|1
+D' U2 L U R U2 B D R D L' B2 U B' D' B' L2 R2 B D2 R'|へあていちえいくねけす|あすねにえひせあいくなけしたふ|4|4
+L' F U2 L D F' D L2 F' B U' L U D2 R D F2 U' D L2 F2|つくあえへさけふけ|あしあいぬなえちえきてねくへは|2|5
+L U' B' F' U D F R' F' L B D F' L' F U' R' D' R2 F2 L|せちあいしねにけは|さへたてつひなきねくはけしちに|2|4
+F L' B2 D2 B' L2 B2 F2 U L2 D2 F L' F2 R L2 D R' L D L2|あせにはてえふねえ|つたいはねひいえけちえすへせて|2|4
+B2 U2 L' U D2 R' U B' D R' F2 R' B U L R' F' B' L' D U|にあちへねあえけし|ねつさしちいなくはすへたふぬひ|2|5
+B' F2 U' F' L' R B' L2 R2 F' R' F D' F2 D' B U' L B2 U2 L|はふえてにくねせた|ちあなひはつえたさきせしねすへ|2|4
+F2 R' U' L2 F' B2 U2 D' B L' B2 R' D R2 L U2 B L R F R2|にさへえけえくぬひ|えてあぬけいたあきくきすへちに|2|4
+F2 R2 L D' U R D F2 L2 D' B L U' D' L2 F U2 R' L' U R'|さいにえはひかせへちふ|ぬたけはあねにえすあいてい|4|2
+L U R2 D' L2 F' B2 U' R2 U2 L R U2 R' B' U F' D2 R' U R2|すえひちつあてせへ|ふきえくつしいへいせてちにぬひ|2|4
+U' R' B' U2 L2 D' U2 R' D' R D' B D2 R L2 D' R' F' R D' B2|あくせあいすつえかちふ|しえきひあへくなせつたにふ|4|2
+R2 B' L2 D2 L' F' L F D' U' L2 R' B U L R' F' B D' R F|ぬあかけいへさくひ|つはいきさいけへちけせぬてたふ|2|4
+F' D L' B R' U' R F D F2 B' D' R' U L' B' D B2 F U B|あひいかへけはちふ|たしくすあひきちえいつせて|2|2
+R' F2 D F2 B2 R2 D' L U F2 R D2 R' L' U F' R' L' D' U F|えぬあにくたくけは|にねいけせひふあつえすはえ|2|2
+F' L F' R U2 B' U L B2 F' L' R2 F' B2 R B2 U L F2 L' D'|けひつしあちへ|あたなにねあえけさくてくすひす|0|4
+F2 D2 L' U2 D2 B2 D B2 D' R' F' L' F U' F L R2 U' F' L2 F|てねたえはいつちぬ|くふねいせにあさあけぬすし|2|2
+B U2 R D2 F' R2 D L U B' L2 B2 D B' U L U' B D2 U F|いねてかけへけちぬ|ちなきあせすあえたひくしさ|2|2
+R2 U' L U L D U' B2 U' B2 F D B' L2 F D2 F R' B F D2|たあつさえねしけすちふ|くねちてつさしぬふすな|4|0
+U R L F R D2 R F' U R F U2 F' D B L D' F2 R U2 L'|ぬかくあいはつせへ|えつけふくいへねてなちひち|2|2
+L' U L2 F D2 F2 R2 B L F2 R U' L F U R F2 R L D R|かくあぬへていけに|えなくてへしつきひにねたふ|2|2
+D' U2 R' B R U R F' R U F2 D' F D L2 F2 B2 L R2 D' R'|ぬさいえしくせけく|さはひせへあしあいちたねい|2|2
+L' F' U D2 B' F R' U L' U' R' D2 L2 D' R2 U' D' B L2 D2 B'|あたひぬしつあけは|ぬねてへくあふけいさなちに|2|2
+U D R2 D2 L D2 L2 F D B' D2 L' F D2 R2 U L2 R U2 F2 R'|いちはあせさえくえ|さちけくぬあついてすふねい|2|2
+B F2 L F2 D2 L U B D F R2 F2 R D R2 U2 R' L' U2 F' B|さしいぬたいくすひ|すしはちひなてつねえさたふ|2|2
+B' L D B2 D' L2 B D2 R' F' R2 B' U' B2 R' B U2 L' D L2 D2|くはへいしあてちぬ|はさねけあたなてへぬつちに|2|2
+F2 D2 U R U' F L' F R2 F R' B F2 U2 R' F D B2 R2 U R2|せねえいけさぬ|さぬいしあきせふつくへには|0|2
+U' F L2 R2 B' D' B2 L' D' B' U2 B2 D2 B U' F' R' D L2 F2 B'|あつふかてくたけく|つなくけひさすねちせた|2|0
+R L2 U' D L' R' F L2 F D2 R2 F' L' B2 F2 D B2 R B2 U' B|たあけかいひさちふ|さなせきあふしすあくぬにく|2|2
+R L U' B' F R U2 R L2 D R' F' D R2 L' F2 L' D2 R' F' L2|ひへえつちあてけす|にあいつえぬねせふくさ|2|2
+U2 R2 B F2 D2 L2 F2 U D' B2 R2 L' B2 L2 U F' R U' B' L2 D2|せつかさふけね|きたになへつてえはぬさけし|0|2
+B D2 R2 U' R' U' F2 R U L F L2 D' F U2 L2 F' B D R L'|てへしはいねにちふ|てあたくなあえにひへしきさ|2|2
+B2 R F2 L2 B F D' U' F' B2 D2 R D' B2 F2 D2 F2 U2 L' F R|しへてひいふす|はなつふきえさすてぬすちに|0|3
+L' U2 R D' L' D' F B2 R' U B' F2 L2 F R2 B2 L2 D U' R2 D'|はにくあちてえせえ|ひてくつにいなえすさきふね|2|3
+L2 D R2 F B' R2 D2 L' D2 R' D' F2 R2 F2 U' R F R' B F' R|さへかにはくねちぬ|さあてはぬふきにしあいすい|2|2
+F2 D R' B' L B' F2 L' U L D L' R' F B2 D B2 U B U' L'|あねぬすえあいせい|にすさいあけねてくぬくたふ|2|2
+D2 B U' F2 U2 B U L' B2 F2 U F2 R2 U' R2 D R' L' D2 L R2|くにけへちかさ|にせはあしへきなたさつぬひ|0|2
+R2 U F U' L B D2 L' F' U2 D R2 B' U' R L2 B2 D2 U F2 B|ふにけせてしね|たはちきなさあてつけすひし|0|2
+U2 R2 D' U2 R2 F R U L U F2 L' U' F U2 L R2 F' L' F2 B'|つてぬへえはしくひ|ねつはにたすひいえしなせて|2|2
+F B U' L D' R' U' R' B F2 L F2 B U' B F2 D L' F' B U2|しさへいつけはちぬ|あなきてはひへさけあたちた|3|2
+L2 B2 F' R2 F U2 B2 R B2 F U2 F R2 D R D2 R U R2 D R'|にかひあふせさけは|いしねはすえひちたつせ|2|0
+B2 R D L2 U2 D2 B' U' R' B F' U2 L F2 B' L2 F2 U2 F' L' B2|たにあはさえひふし|けきせなあへえふちぬあ|2|1
+F2 D2 B2 U' L2 D' R B2 F R2 U2 L B2 D B2 L' U' D2 R2 U' F2|かあたくぬつあ|にへせつくさいひたいきけね|1|2
+R U B' R L' B' R' D2 L B D2 R' F B' D2 B2 F2 D F2 B2 R2|ひしすあぬいつせへ|てきしついぬにいえはすふさ|2|2
+R2 B' L2 B L R' U' B' D R F' R F R U R D U2 L' U' F2|せすえちいあさくひ|いにえあへふせはしねつ|2|1
+D' F' D2 L' B2 F2 R2 D2 R U2 L2 F' D' R' L U F2 U' B L' F'|ちさくいけつえへか|ひねつえいしすせにくいたふ|2|2
+F' B' D' B2 D2 U' B2 D2 B' R L' F2 L' U2 F2 U2 R2 F2 B R' U'|ふつひはあしあ|ひえきへあちあいなくせけは|1|3
+R2 U2 F' L' D2 F' D L' B' U' L2 D2 R' U F2 L' R' D2 B2 R U|すへひてかふい|さつしてふちひはねいへ|0|0
+R' F U2 R L2 U B F' D R' D' U' R' D2 U L2 B2 U' D L2 U|てつえひぬけしせた|ぬきさにたあてくすなあけし|2|2
+B F' D F2 R L2 U2 F' U' L2 U2 D2 B' F2 U2 R L2 D2 R' U2 R2|せしすぬさねつ|ふえはぬにしあせなねす|0|0
+U2 F' B' U F' R B2 U R F D' F2 R2 U D' B' D' U B L' U'|ちあはかあいつくひせへ|けねつすたぬさせはいに|4|0
+L R D R2 B2 U' R B' D U' R' B U B F2 U' R2 D L' B D|ねへちいえけは|しなあにせえねぬへはさたふ|1|2
+L' D U2 L D L2 U B2 F2 D2 F2 L2 D R2 F2 R D2 F2 R' U2 B|かねはぬいたあ|につたけきはいてさすなぬひ|0|2
+D R' F D R B2 U L' F B' R2 U L2 D' R' U2 L B' R' D R|てぬへひいしけ|ねすいあぬてさふにはつ|0|1
+D2 F' D' R D' R B' U2 L B2 R B L' B D' B U' F L2 R' U|くつすしたちふ|はすあえひついねてけにたな|1|2
+F2 B2 U F' D' B' F U' F2 D2 R2 B D2 F' L2 F2 L F' D R D|ぬにえさくへね|つえひすにきしいはたな|1|1
+D2 B2 R F B' R L' B L D' B U2 R' F L' U2 D2 R' D2 U2 B2|かはさひへふに|くちけすねさぬせたあつ|0|1
+U R U B2 U R' F2 D' U2 F R2 U L2 D' L' B2 L2 U2 R U B|せてかいすいくぬひ|えねちへしふいはあぬて|2|0
+U' F R' B2 R' B' F' L U2 F2 L' D2 F D L' B' L2 U' R' U' D2|いくはてえたしちふ|にくあいねなえけせたへひえ|2|2
+L U2 B F' U D2 R F2 B D' U2 R U' R2 D' R2 L' F' R U B|にへあけえふかくひ|なはけつえきにてすぬた|2|0
+B' F' U B R F' L2 R' D2 U' R' B D' B' U2 L' U L2 U' D R'|くしすつちへあ|けなたさせねすにひあつくは|0|2
+L F2 R' D U B2 D' R' U' D F' U' D' F U R' F B U L U'|あへちかくていけに|にけなあへきひくあえたせえ|2|2
+R B U2 R2 F U2 F B2 L' U' B F L F L' R D2 R2 U2 F2 L'|ふはにひてたえ|さねあへいにはふけぬひ|0|1
+U2 F B R' B' L2 U' L U2 B L' B2 U2 R D' B' L U' L R F2|にくあかちてけたけ|なつしくぬえてねすたへ|2|1
+F2 D' F R B2 L2 F' R U B F' U R B R2 F' D' L2 F' L F2|てえくふつへす|なへけてあたはえぬつきちね|0|2
+R U' L2 U B2 F2 U2 R' L' F2 R' D R F' R2 L2 D' U' B2 F2 R2|あたけいねぬてえし|いはぬちあへふつえせねしさ|2|2
+L' F2 R' U2 L' U R' D2 L' U R U L' U L B2 L' R2 F R U2|あせしすふていひい|へなねふしせぬあちくつ|2|1
+L B' L F2 L2 B U' D' F2 B R' D2 L B' D B D2 L2 R U D|くさふいはへつえし|きぬえへあはあいたちな|2|2
+D2 L' R2 B2 F2 L' F2 U L' R F D2 U B F D R2 D R U2 F'|あちはたつかてくね|けさあいひねふせへいくにく|2|2
+D2 U R B2 R2 D' B2 U D' R2 B2 L2 B2 D2 F2 R2 F2 U B F' U|しぬてすねいにせへ|ちしぬふはへてあなきあ|2|1
+D' R L' B2 R L2 U B2 R U2 B' F L U2 L' R2 D' L D' F2 U2|ひたふあつはてえか|えあへけきいたにつくてひく|2|2
+R' U2 B2 R2 B2 F2 D R' U' D F2 L' B L' R2 B2 F' D' B D' F|つてふえねすた|ふへねはちさぬいけせい|0|1
+F R' D' L' B L2 U' D F D B2 D L' R F' U L D2 L' U2 D'|しにはねせあてちふ|あさすいちはきせけひた|2|0
+F D' F2 D L D' B2 F2 U R' D2 B F R U2 R' B2 R2 L' D B2|にたねあえすかちふ|けにてついふへくさひき|2|0
+U2 B D' B' F D2 B' L' D2 F L2 R' B D F' R' F D' R' L F'|さねつすしたふ|いけはあたえひきてにえすへ|0|2
+B L' B' D' U' B U' R B L F B D' U B' R2 D2 L2 F R2 D|へあにてえねはぬし|ぬへねけつにくえふいて|2|0
+B2 L' B L' U' R' F B' R' U2 L2 B2 U B2 F2 U' L2 B' F2 U' L'|さたけしちひに|ちなえきくふひけへてね|0|1
+R L B' R' U2 B D' F' B R B D R' U2 L2 F2 R2 F2 D' F' B|てえぬひしけすせへ|ひたすつねえはてちけな|3|0
+U R' U' F B' R' D2 F2 B L' B U2 F2 L' U' R2 F U' L F' B2|ちへてはねかい|ちえすあきけひふいつくせは|0|2
+L R2 F' L2 D2 U2 L' D B D' U' R2 B2 D R2 L' U' L2 B F' D|はえあふたねあ|ふてあすあいにぬはしえきい|1|2
+U2 F B L' B L U F2 L F' L F2 U B2 L2 U' D2 L' D' U' B|ねえにぬへすさ|しさちひあねあくすてく|0|2
+D2 B U F R2 D' R2 U2 B' L U2 F B' R2 U2 D' L2 U' R2 U2 D|さにひえかけぬせす|にねつせすたひしなくは|2|1
+U' L D' U L2 F' B' L2 B' D' L2 U2 B' L D2 B' D R' F2 B D|あいえいくせけぬね|てふひくさちつへけきね|2|1
+F2 U' L2 F U R' L' F L R' D' R' U2 D' L F' R2 L' D2 L' U2|しけさせちくひ|さいくへあせちふしひあきね|1|2
+F B' L U F' L R F' U2 B U' B R D' R L2 U' L' U' F' L'|ちあいけせいえひし|せさくひあふきついしへちい|2|2
+R' U2 L2 R D' R' D' L' F2 R' F' D2 L' F B L2 U' R2 L' F D|はしあにたてくぬひ|せなぬはあさけふちねあすへ|2|2
+L' D B L D F U2 D' B' L' D2 B F2 D2 U' B D' L2 D R' U2|ふひつあかすへ|あねへてなふあえにさくしはぬひ|0|4
+D' F R L' U2 B2 F2 R' B' D' R' D' F B2 L' F2 L2 R F B L|せにちねえはか|へちくてねあなたぬしあ|1|1
+F B2 L' D R' B' L' U L2 U' R' D2 U' B D R2 U D2 R2 L F'|にねさかへはふ|なあひえちはえきねけてしすふす|0|4
+D' F R2 B' D' L2 U' D2 L' U' B' R' L2 U' B' L2 F2 L2 B R' U2|かくけあていふたい|にえせいへくいけふひし|2|2
+F R2 D' R' L2 U R' L' B2 R L F2 B D' F' D' L2 D B L' D2|てにかへぬくひけは|いけてえちはひねつふへ|2|0
+D2 R' L F' U' L2 R' D' R' B D L' D' U2 R2 F R' U D2 L2 U'|ねにふしてけた|ふさすねはつけいにひい|0|1
+U' R' U' F' R2 L' F2 D' U2 B' L R B2 F' R L' F' R' L' F2 D2|あひかぬけていへつ|ふしなすあひてあえくにきえ|2|2
+D' L2 D2 B' D' R L' B' L' F L2 D' U R' B' F' D2 R' L U2 D2|さぬへかいくいけす|たなすにさつぬくしせは|2|1
+U' D2 F' D' L2 R B' L2 F' U' R2 L F B' D2 U' B' F' U B' L2|あひちたすていかい|さあすくけふいきせひねちに|2|2
+U' B' U' D F' U' D2 R L2 F' L2 U' R' B' L' F2 D2 L R' U2 L'|くかすさいふつせへ|あなぬさにふくすきてきけし|2|2
+L' R' B' U2 D2 B F U2 B2 D' F' R2 L2 B' U2 B2 U' R D' B' R'|ちすあにしてくたね|あにてへけえたはねついひな|2|2
+U D F R U' L R2 U' D' L2 U2 D L2 B2 U' F R' U L F2 D|つあちせけねし|けあへいはひふにえなきせね|0|2
+L' R' U B D2 R' F D2 R2 B2 L' F' U R' L B' D U' L' R B|いくあしふせさけす|なしあちてぬねへふはつ|2|1
+F' R L' D2 B L F2 L2 R' B L F U F B R' L2 D' R2 U F2|ふへはさしひい|つしいねちへいえてえたぬふ|0|3
+B U F B2 R2 B2 U F2 U L' R2 F B U2 D' R' L' F' U F U|ひいちあてえかけはせへ|くあへえたてぬきけにき|4|1
+R2 F2 L' D F2 B2 R2 B U' B2 L' U B' L R B L B' L2 D L2|にあたすぬえか|あいぬせさちいきしはへたき|1|2
+F' R D2 R B' F2 U F2 D B' L D U' R2 F D2 F2 B' U L' R'|えにたふねはて|にはえねいてしすひたあ|0|0
+R B' F D B' U2 B R' U' F2 R2 D' L' D U F' U2 R2 L2 F D'|すにひえてふへ|ひなくきせしつえにえすたす|0|2
+B R F2 D F' R B' R L' U2 D' B F2 D' U B2 R' D R2 B2 D|しねあはぬていへに|けあねぬていちたはいえすさ|2|2
+U2 B' R B L2 D' U' B' F D' R2 L D R2 U B2 U' R' F D2 L'|つふたさすくえ|くすあさついてふけちなきねぬひ|0|4
+L' B' F' U F D2 U2 L' B U' F' U2 B' F' U R2 U2 F2 R' L' D|ひしさふせけは|はせぬけねえふへつ|1|0
+U' F2 D2 B2 R2 U B2 L2 F' D' R2 U' B' D2 R' B R B2 U2 F R'|たかねつちはあ|しあちいはすねさたつせぬて|0|2
+D2 F2 U' F' L R' U' R B2 F2 R2 B' U2 F' D2 B D U' R L B2|せえすふあねていつ|ちはさたせへひあしなあ|2|1
+B' U' D2 L' D2 F' R' U' B2 D2 B D' R L2 B' U2 B F D R2 D2|たしちてひにす|ぬあえきあいにてふなくへはけし|0|4
+R U L U' L B2 U' F2 R' D2 B' D2 F U' L B2 L' U2 D2 B2 F'|さすしいねたつ|あくしていちさすねたつ|1|1
+F2 U' R2 D U B' F L2 R' U' B R' U' D F2 B2 U' R2 U' F' B'|にてへくちけし|さいはあひへしにて|0|0
+R2 D L' R2 U' F2 U L' R U D' L B F L U' R2 B2 F2 D2 L2|せしさつすちぬ|あさはきちあいてひけたへい|1|2
+D2 B U L' D2 B2 L2 D' F B2 R' B2 R D F2 B2 R2 U L D R2|たあしふすねて|へあはえけなたぬねあせちて|1|2
+D F2 L' R' D' F B2 U' L R B' R2 D2 U F B D F' L' B F|せひさはし|さいあにはねせぬしつすふす|0|2
+F' U2 R' U B F' R F' U2 F2 U F2 U' B' U2 B2 F U L2 R D2|たけちつねてか|あふになはつえせすきけひえ|0|2
+B' L U B2 R' U F' L' U' B' F' D' F2 R2 L2 U' L' B2 R2 L' F|あすさいかつくちね|にひくけてへあえついな|3|2
+R F2 D' R D2 L U' D' F2 B' L U2 D2 B R' F R2 L2 F B2 R'|かあくにたぬて|しあねちいたすひせくな|1|1
+D' L' D2 B2 F2 L U2 F' D2 L2 B' F D F' B' R' U2 L F2 D' B'|けくつたあしあ|にぬえいあけはふてきす|1|0
+D2 L U' B' R' U L' F' L F2 D' R2 U2 D' F2 D' U' F L2 D B|してはへちにね|くぬあいつえたけきさすせすちに|0|4
+F2 U L2 U F R2 D F B2 R' D2 F2 B2 L2 F2 L2 U L B R' F|いくぬたすかい|つへねひちえさくせたくけし|1|3
+R' L' D2 L F2 R2 F R D' F2 B' R L2 D2 R2 L F D' B' F2 R|ひつへぬえすあ|にふひすくけあねあえさせて|0|3
+R2 F' L' U2 L2 U2 D2 L' D' F L2 R2 B R D F U B2 L R' U|ちてえいすひにせた|たあしきすにはいてさい|2|1
+R' U' F R' D' B L2 D2 B' U' F' L' R' F U' L2 D2 L2 U2 R F'|かぬにすへあく|えくなあぬてしたつきちすき|0|2
+U D' F' D B' R2 F' U R B D' R' U' L F D U2 B2 D' B2 L'|ひさへはつぬし|さきぬなたあはちせしつ|0|1
+U F L R2 D U2 F L2 U' B' D2 F' B2 R' L2 F' L B2 L' U2 D|ぬしせあさいつくねけは|けたねてあなさへはにぬ|4|0
+F R B' F' U' F2 R2 U' B U2 F D U2 B' U2 D' F2 B' L' D2 B2|たつさえひかけふす|さなきすしつてたくひく|2|1
+B2 F2 U' L' F L' F' U' R U2 R2 D' L' D' R2 F2 D' F' B R B'|ひすふさせいし|ちていさきつたすはぬひ|0|1
+F' B D' R F U D R F2 L U L D' B U F2 D2 B2 U2 D' R2|へつかひぬあは|ふちえあねてはしいすへぬひ|0|2
+L' B' L' D' B2 F L' D U' L U' D F2 R U2 F2 L2 R2 U D' R'|さいかぬへはにくひ|さてあふちいきしへくはぬひ|2|2
+L' D B L' R' B' R2 D L' R' D L F2 B' D2 B R2 L U' R D|あいひちいえしけはせへ|さはちいすけあてたきつ|4|1
+L' U' D2 F2 B R F2 L2 R2 F U2 F2 B2 L R F' D2 R' B D' U2|つねかせけぬは|しぬちつくいたえせえきへね|1|2
+U2 D' L F2 U' B U2 D2 B2 F2 D' F D' F' L2 U R' D' L2 R2 B2|へねえさつふす|きふすにいはつてけぬし|0|1
+D' L' F2 L R' B2 U2 D' R2 U2 B F' R2 B2 U B' R2 U' B R U|あいへにえねぬはえ|しぬあちねあいへてはたさい|2|2
+B D2 B2 U2 F' L2 B U2 B' F D F L' D U2 L2 R' D' L D2 F'|あちくていかたはに|しくつねいてえすふちへぬひ|2|2
+F2 D2 U' B' D F R2 B' R2 F' L2 D' R F2 U2 L2 B' R U D' B'|せはふあつひて|つさふちせしきはすひね|1|1
+D U' B F D B D U R B2 D F2 D F2 U2 B L D' F' D B'|ぬえせくいてす|てけえぬにはあなすたふ|0|1
+D2 F R' B' D' F2 D' F D R2 U2 L' D L2 F' D U2 B' D' R' B'|つあねしふすさせた|なせにきしはへぬさ|2|0
+D2 L2 R' B2 U2 L' F2 L2 D' B2 D' B2 R B D2 L U' B R2 D' L'|すたあひにしあ|しなちはてあふつえすぬきさ|1|2
+R U' F2 L' F2 R2 B' D' U' B' D2 R U2 F L R2 F' R2 U2 F L|くえあいけてせふた|ちしくねへひえていつふ|2|0
+B D R2 B L' R' D2 L2 D' U2 F2 B R D2 U' L2 D U F2 B2 D2|ねふあへていえすい|あくしさきすせふにぬき|2|1
+U' F2 B' R2 F L2 F D' L F B R F D' R' F' U B D2 R' L'|たひあはしていふい|あさくなすにひけせふあ|2|1
+U2 F' U' D2 L2 R U' D R2 U' D L D F U2 B L' R U' D' R2|しはねつせぬさ|きせあたけいつえちくぬへさ|0|2
+R D2 R B2 U2 F L2 U B' F L2 U' B R D2 B' F U2 R B2 D'|あひぬけかていたに|くなけせふあつきへきちぬち|2|3
+F U' L F' U R D' B D' L2 B2 D2 U' L' D2 B' F2 R2 L D U'|にふあえはえくへく|ひてにえあいへはねたつけし|2|2
+U R2 L2 U2 F' D' U' B' L' U' F L2 F R U2 F2 L' U' F2 B2 L|くふあたはつてえか|つくふすぬえきになして|2|0
+L' U D R2 B2 L2 D2 L' F R2 U' D' B D2 U2 L' U D F' B' L2|かたひにあはあ|しえつすにくひふきてき|1|1
+D U' L' U2 D L2 R D B U2 F R2 L U L' R2 D L2 F L' B|いけせかいくね|はたえいねあすせしちつ|2|1
+D' B2 R' L B' D' B' F R2 F' L2 R' F' B2 D2 B' U L2 R B2 D2|けつてねへしふ|けきすくぬなあえさせてたふちに|0|4
+R' D F U R F' R F2 D2 R2 U L2 R' B' R B' U' F2 U' D' F2|いすせあふくひ|しさてちいひふいきくきすへ|1|3
+F' D L B' D' B' D' B2 R2 B' F2 R F' U' F' D2 L B R2 F2 B|しにすあぬねて|てきふちなえへけひあく|1|0
+D2 F2 R' B U' L2 B' R' D' L2 B' L2 B R' L' U R' B' F U2 R'|くはちしへさつ|たいさはてあへしあきねぬひ|0|3
+D B L D' B2 U2 F' U L F2 R2 D' B L2 B2 D2 F2 R' F' B L'|けにへあさえかくねちふ|すひてねさちいはあけつ|4|1
+U' B2 F' L U D2 L2 D B F' D2 R' D B L2 U R L' B' D' R2|ねさたいしすいちぬ|てくぬえあにきいすしふ|2|0
+L D2 B2 L R' F' B2 L2 B D2 B' L B U R' D' R B' F R' B2|はしいさくぬひせへ|ちきせひいへしくふえつ|2|0
+B2 U' F2 D L D L2 R F L' B2 F2 U' F2 D' B' F U' B F U|さけしちくへね|せすいさねはあにふけあ|1|1
+U' B' R2 B F U' B D2 B U' L2 U2 L2 F' R D' F' U B2 D2 F2|ねぬえけつせて|けあたくすちさぬせ|0|0
+F2 B L2 D' F' L' F2 L2 F' B L2 U' F2 B' D F' D F2 L2 R' F|さいぬへつくひけは|あちしつえはふひすさきせね|3|3
+L' F B' R' B' U' F2 B2 R2 U2 L' R' U B2 F' D' U' R2 D' B L'|たつえくてけすちぬ|あへぬたけえくついせねにな|2|2
+U2 B' L' F2 R' D F L' R D B' D' B' L U2 L D2 L R2 B2 L|ちしてくけいにせへ|ひけてねえはたあいつすにす|2|2
+L2 B' U2 R2 U2 R' U2 F L' R' F2 R F L' U2 D F2 D2 B2 D' F'|くあにけぬえあせへ|にふなさぬせけきへくは|2|1
+R2 U2 L' U' D2 R B L' R2 F' R U D2 L2 U B D B U B L'|あねちかたいは|あえふひけきになあくは|0|2
+L' D2 F' L2 B F2 U2 F' R' B2 D2 F' D' F D2 U2 L' R B' L2 F2|たあちけさいえひつ|はなすさけたせきつちぬ|2|0
+U2 F2 D2 U2 B' F' D B2 U D L2 B R2 U' R2 U' F2 L2 D2 R' U2|せあていはえひちい|てあしちひいきくへえふ|2|0
+R2 B F' U' D' R' B' U' F' D2 B' R2 U R2 L' D2 B' R2 F' D' L|けくさへかいつちふ|さなねあちすつくひふせしく|2|2
+R2 F L' B' U2 B U2 L2 R U L F U B' F U L' B U B2 L2|ていへえすふね|ふにせはしあぬいねいえへさ|0|2
+D2 B2 D L' D U R2 B2 R D' R' D' R D U2 L R' U' D2 F' R'|ねあふけいへつえし|へちきなくせけぬつえさ|2|1
+B U B F' R B U2 L' F' D' F R2 D B D B R' L2 U' R2 F|へあひにけかぬ|なてぬしすたあえくきつちに|0|2
+U B2 U2 F U' D' R D L' D F2 R2 L' D F' D2 L U' R F' D2|ふくあかさいすへい|あえくねせへちなしひつ|2|1
+B D' F D2 B D F L' D R L2 D2 R' B R L' D' F2 D R' L'|ぬたあひえはて|あえきくけてひなにあすたす|1|2
+F2 U F2 B' U R2 B2 R2 F2 L' U' L2 D B2 L2 U' D' R B2 U L'|あぬねつたけす|しちすなくたひあつえせきさ|1|2
+F' R2 L2 U B2 U2 D' L2 B D2 U2 R U' R2 L2 F2 R2 F2 U B' R|ちくへあつけえ|てなすにあけあくふひは|0|2
+F2 L' R' F D' R B2 R2 U2 B R F' U2 L D2 L' D2 B' D' L2 U'|ぬさはせいかく|ぬになくしてきへあたつ|0|1
+R' L' B R L' B R' U' L2 F B R' F U2 L2 B' L U R D' L2|たあていえにけぬけ|はけふひつえなちねすへ|3|1
+D2 R' L' B' U' D' B' F2 U F2 R2 F2 L' U2 B D U2 F2 R L D|あはちしひいへ|ひなあさにけてねたすく|0|0
+B2 L F2 R2 B R' L2 B2 R L2 D2 F L2 D2 B2 D2 F2 L R2 B' U2|ひかたさけいぬ|なふすあせしあえきちえ|0|2
+R' D' B' R2 L2 U' D2 L' D' F' U F2 B U2 L' U B D B L2 R'|あけていくふしせい|けねえいにくへふあぬあせて|2|2
+B2 F2 L D' B2 R' F2 D2 B U' L2 R D2 U' L' U2 D2 B2 L' F B|かけにあてくひせた|けあすえいたくきせぬね|3|1
+R F L D F2 B R F2 B' D B2 L2 F2 B2 D2 F B2 U2 R U2 R|つせねしふあさ|にくしふすあぬなせねあ|1|1
+R' B2 D' F2 L' U D2 F' B2 U D2 B2 D F U F B' U L2 U' D2|へえにちひ|すにたあねせなあえしさ|0|2
+B R' U2 D2 L2 D2 R2 F2 B2 L B2 U' D2 F2 U' R2 B D' F2 L' U'|ちすねへあしていに|ちひあけいはてえふすさ|2|1
+F L' D' U2 F' D2 U' B D2 B2 L B2 F2 R2 F2 U F' R' B L' F|あえへけねちて|てしくつひすきにいさなたふ|1|2
+L2 R2 B' F U' B L' B D B2 U' L R2 B' F' L' F2 U' R' B D2|ぬひいへあすし|にねさすぬなふあてくけ|0|0
+L' R' U R' D F2 D' F U' D L2 B U' F D' L' U R L U2 D2|しいせけくふて|けすてあぬふいえきいくちは|0|2
+B2 D F2 B D2 U B F L U L2 F R2 U2 F' U' F2 U' R2 L' U|ちせあくはかあいつ|えはてしにねあすな|2|0
+B' D U' L2 R2 B U2 F' B2 R2 U2 R2 D2 F2 U B' R' U2 L' R2 U2|かはぬあくへて|たひあしちえきなくつすせへ|1|2
+R F2 B2 R L2 F2 L D' B' L' U' B R2 U' B' U L U2 D' R B'|ふあくしにはあせた|しあせついねたちへえひくい|2|2
+U2 B2 R B' U' F2 B L' B U2 R2 F2 L' R D2 F D2 R2 D' L D2|いえたちすねさ|せさけちあいへぬたはき|0|0
+B D' R2 L B D' F' B' R' B' U' L U2 D B' U R' B2 L' R2 F'|にねえけてふへ|ちけさあせふついきはいすへ|0|3
+L2 B' L2 U R' L2 D' F B L2 U B2 U2 D2 L' R D U F2 L' U|つねあえせふさけは|つえなたはへきにひけね|2|1
+B D2 R2 L' U' D' R2 F' L' U F' D2 F' R D' U F R F' L' F'|ぬねてすえいにせへ|なしひえつきせにくたねすへ|2|2
+U2 D F2 B' R' D2 U L2 R2 F U R' U D F R2 L2 D' R2 U' L|えにぬたねけあ|きにあたけあいえいくへせは|0|3
+L2 U' B U F U B2 F' R D F2 R' L B U' R2 D' F2 L2 U B|あくさいすにえせか|いけにさきはたへぬ|3|0
+B R B D2 R' B2 R' F D F R' D2 B U R2 L D L' F2 U D2|へぬあひつえす|あひはせさけふしすちへ|0|2
+D' B U' B' D' L2 D R B F2 R B' D2 U R' F U2 R' B F U|ちはあにあえくたえ|あけはちぬせいえへねつたふ|2|2
+R D2 U L' D2 B F2 L' F L D2 L' U R2 B D' L D' B D L2|あえはいたねぬ|けひつさなねちふくせす|0|0
+B L2 F U B2 L2 F' L U F' R' U' B' D2 F2 L D2 R U D2 R2|すふひいせあさえし|あくいたせすさきにぬあけし|2|2
+D L U' F2 U B' R F' D' F2 R' B2 L D F' U' F' L2 F' B R|くにへふすかあ|いはえたてちあぬねつけへし|0|2
+U' B L2 U R2 U2 F' L2 D2 F U' F2 D L' U' D2 R' L B R2 F|かつちひあへあけは|にせくけぬいふあえつきすね|2|2
+D U B' F2 D R2 D F' B2 D U L2 U2 B' R' B F' D' R' D2 U|ねかはあせいふ|しあにたへあえくせさきぬき|0|3
+L U' B' L D F' R L B' L U2 R' B L' D2 L' B R' U B R|かたいけひちつ|ふつきえいけはせへにひ|1|0
+R2 U B' U' L' R2 F2 D2 L2 U L U' B' U' F U2 L F' B' D F'|にてすえふえくたね|てはあさふいにねへけしぬひ|2|2
+B' L R2 D B' F' L2 U D L B' D B' L' R F2 L' B2 L' D L|つけねせふあさえか|てつひけにへたえいきな|2|1
+R2 D B2 L' U R2 L U2 F U2 D L2 D' F L' D F D2 B2 U L'|せねさつけふけ|はあふねいにぬえへ|1|0
+B' D' F' B2 R' B F' R' D' B U2 F2 B L' B U' F2 U' L2 B2 D|ぬつへはえひし|はぬなにきけさたてへあ|1|0
+R U2 R' F' B R U' B D U L2 U' F' U B2 U R2 D2 R' U L2|えにさちくへひけは|くいつひすねしてちえた|2|0
+F U' L U' D B' U2 R' F2 B L2 B R L' B U' L2 R' B2 R2 L|せあねさえぬかけす|さにてしあくいぬなきへたき|3|2
+R2 D' F2 B' U2 L F2 U L' F L2 F B' R F' U' R2 F2 D' B2 U'|いあはへひあえちえ|くなたすひねしえちあせ|2|0
+D' F R' U R' F2 D R2 F' L2 B L2 R' B' F2 L F R D2 R U|たすふあくあいかに|ちたはあせさへぬついしねい|2|2
+F2 L' D2 R2 L' F' R U D' B2 R2 B U' F' R2 U2 R2 L D' L' D'|ちたいしねはい|ぬはねたあいけせへちあ|1|1
+B2 D2 U' F2 R2 L' F2 D' U R' U2 B' D' L R U2 F' R' L U2 D'|はぬあいせつえねし|えしきふていへくな|2|1
+B2 D B' D' F U' L R' F2 U R2 B' R2 F D2 B F' U B2 F U'|けたえさひいふ|せつなちくへねふさひけ|0|0
+U2 L2 F2 R' L F B2 L2 R U F R F2 D' F U D R' D B' R'|あつしぬてくたはね|ふえへせきはしひあちに|2|1
+B L' R D' F B2 D' B2 F' D2 U L2 U B' F' R' L2 F' L2 R2 F2|あいぬすかくいせへ|いたさひあしすせくきつ|2|1
+D' R B2 R' F' B' L' B2 R2 L F' U D R2 D2 U' L2 F' R' B2 F2|たてねはえいつ|せひえいへはちあきけつたふ|1|2
+R L' D' B2 U' F D' L U D R2 B2 F2 R F2 U2 B2 R2 U L U|ふつたあくけひ|にへきつはたけせいひえ|1|0
+F R' B F2 L2 U' R' U L2 U F' U2 B' U2 L2 B F' R D' B R|てけせいくぬね|すえていはひあふちしね|1|0
+L2 F' B2 U2 F D2 R' D2 R L2 B L' U' B2 R U B' R' B2 F' D|かけたぬねあていつ|せくあねたなえにぬつけへし|2|2
+R2 L' B L' B2 F2 U' R D2 B2 D2 L2 U' B' F' U2 B' R' D B U'|あしせふてくね|きくへつせいえふにしえ|2|1
+L B L F D' B2 L2 B' D' U' R' L' B D' B' L' B L' D' U R|けちせしさくね|ちくなふさあけぬきてねすへ|1|2
+L B' D U' B2 R L' D2 B' R U' L' B2 U2 R2 B2 F L' D L' F|はあねぬしへに|くふにあてなすえつきけひき|0|2
+L' F2 B' R D' F' U B R2 B F2 R2 B2 U R' B2 D' U L' B2 F2|へてくけつちぬ|なさひけたねつにすくは|1|1
+L R F L2 R D2 U2 F2 U2 D2 L' F U' B2 R2 D' L2 R2 B' D U'|ちいえあせてくけひ|ねなえたせしあくにへひ|2|0
+U B U' F2 B' L2 B D F' L' U' R2 L U' F' R2 F' B' L' U2 D2|あえふくさいつ|ぬたへちあてしいきえあくは|2|2
+D2 F2 L2 B' D R L2 U2 R B' U2 R2 B2 R U' D F' B2 D U2 L'|いあねかあけはせた|ねなせぬつえたくすしくちに|3|2
+F L F' L' D2 F R F B2 R2 B2 D2 R' B L2 U' R' F' R2 F2 U|しすにへさくひ|あいくたてちけさきつすひへ|1|2
+U2 R' U2 R D U2 R' F2 L F' B2 D2 L R' D B2 R' L2 U2 B' U2|てすひにえせしちふ|しひさにくあついなきてきすふへ|2|4
+U R L2 D2 F' B' R' U' D' R U2 D2 L2 B2 F R D U2 B2 D' U|せふくいさしす|あぬたけにてねくすなつ|0|1
+U D2 B' D2 B' F2 D U B' R' B' F' D' R' D' R2 L2 B' L R U2|せねすちかさつ|しぬさなへたちねあくは|0|1
+F D2 F L2 R B2 U2 L2 R2 B L' F' D B2 F2 L D2 F R2 F B'|あしせくはさいちつ|さふてけあなちひすあきはね|2|2
+R F B D2 B' D2 R2 L2 B' F' D2 R U2 B2 U' D2 B' F2 R2 D R'|けへねえあふさいつ|せあくふちえいきひへな|2|1
+U2 L' U2 R' D L B' U2 D2 L' R B F2 D2 F' B' D' F' R L D'|つさねふはえた|しにたはなさねせあひへ|0|0
+U2 D' L U2 D2 F B2 L U B U2 R F' U' F' D' R U F2 R' D'|はていせにえしくひちふ|てひすはたつしさいにき|4|0
+F B U2 B' L F' L' B2 U2 F2 B' R' D2 F2 B U' F' B' U R U|あかせつひあけぬけ|くさあちいけたへきせつ|2|1
+L R' D R' U2 R U' F2 U2 D2 R F B U2 F' D2 F2 U' D' L R2|てにけくたちふ|しくふひにねえあて|1|0
+F U' B F L' R D2 L' B' D2 B' R' D R' B' R2 L2 U F L2 F2|ふあすねしつあせた|ちあふへはいきけひてつ|2|1
+U2 F D2 U B2 L B R L2 B' F2 R D R' B2 D2 U2 F R B L'|ねえぬいけせつ|ちいへけえたひつせきね|1|1
+B2 U2 L' B2 U D F2 L2 U2 D' F2 U' B' L B' U D' R' B R' U2|はえくあていぬせに|いへはつふせねにひえさ|2|1
+R U F L' R U2 B' D2 F B U2 R2 U D2 B U2 F' B2 U' D' F2|さたけくいふつえし|くちきすふなせぬしつえ|2|0
+R2 D2 B2 R B2 F' L U2 L2 F2 B' D' F' D F U' D B' D' F R2|ねはちへにあえ|たきさなすあつくせちひけは|0|2
+B' L2 F B R' B' F2 D R2 U D R' L2 F' R U R2 L B U' B2|ちいけてかせく|はふぬつなけへてちねえ|0|0
+D R2 U F B' R F' D' L R' U F2 U' R F2 L2 D B2 L2 R2 F2|ぬあせけいてえくか|あひちたてきへいけあえくさ|2|2
+U D' B2 D' U R2 B U F D U2 L B R2 F U' F' L R2 U B2|くちすつえへあ|ちふえいねぬてすくけあ|0|0
+B F L' F2 B2 D' F L' B R B' D' U F2 L B D2 B2 F' D2 R|あふいしねつけせす|たねちぬえせなけあすあ|2|1
+R2 D' U' L F2 B2 D2 L2 U' L2 D' R2 D2 R' D' R' L' B2 L' U2 F'|けつくしさせふ|ふせあはあいひえなきちきけへけ|0|4
+R' B D2 L2 D U2 F L F R' U L2 F' R B2 D B2 U2 F2 R2 U2|くあちしさいせすに|はつへちいきぬたていえけさ|2|2
+D L U F2 U' F L2 U R2 D U R2 B' U2 D B2 D' F2 B' D2 U|たひあいしちつけは|けぬあにねてえふへいつ|2|1
+D' B L' U' B2 F L2 D F' L F' L2 F' U' R2 U L D F' D' R'|いへえあぬねてけす|なにくねふすあてけさあ|2|1
+F2 B' L2 R' F R2 D L2 R B2 R L B' F D2 U R' B F2 R2 U|けふひへしつて|けへあくなきあえぬにてふさ|0|2
+B' U B' D2 U' R2 B2 L' D2 U B F R' B' D' F' R2 D2 B' D2 U2|あぬしねにけさせへ|えぬあけきせはなへたつ|2|1
+R' L F D2 B2 L2 B D' B R D F B' D2 R' B2 F2 D' R2 B' R2|あひへいちにえけか|なあしへあえきちせさくふく|2|3
+L' B F D' U' F B' R' D F2 R2 D' L B R B2 L F' R2 L U|つあかはねへあ|すちねあせえぬくあいたけい|1|2
+F' U' F2 U' B' R' D B2 U2 D2 F2 D' U' F L2 U' F L' U2 D L2|てえいぬすつくせく|すきひふせいくけさにい|2|1
+D' U B2 F2 D R D' R2 B' R B L F U2 B2 L U B2 F D' R|にさふはねへし|きつひちすふはしいさい|0|1
+B R U2 L2 B U2 F' B2 L2 D' U' L F L2 B' F2 L D2 F L U'|くつあけしあせふせ|ちねたえあぬてあいくしすい|2|2
+U' L' D' R U2 B D U2 B' U2 D2 R2 B D L F2 B2 U2 B R F|かたぬにてねす|してあなねえくぬすにく|0|1
+L2 F' R U D L R F2 U' L' R D2 B D2 R' B' U' F' U' D R|ちつあひえすへ|ふなてちねしえはあへひ|0|0
+D2 R' D2 R U D2 B R F2 U2 B2 D B' R2 F2 D' R D U F' L'|せかあつねはさ|なくさあけきすにふへせひせ|1|2
+U2 L B2 R L' F L2 B2 F U L2 B' F2 L F' L D' B F' L B|えたつくぬあは|えしたつくすぬいなきてにき|0|2
+B D B U R2 L' D2 U B2 D' B' U2 D L F' U2 F2 B2 R F2 L'|へけあぬいさえひし|しなてにあねぬくえへつたふ|2|2
+F' L' U' L R U B2 L' R2 B2 F D2 L R U' B L2 F2 L2 D2 R|くはにさえちえせへ|すいきふさぬくちしせい|2|1
+L U F B2 R B U2 F B' L2 R' D L D2 U2 B L' R2 B F' D'|かふへあひていすい|ねにふはつてひすけいさ|2|0
+D2 U2 L F B2 R2 B L' F2 R U' B' D' B2 D L R2 F' R2 B2 R2|さふいはたえにくひ|さねあてぬへなふはけに|2|0
+U2 R U R' U L2 B' R U F2 B' L D U2 L2 U2 R F2 B2 D' L|ぬねてかけへに|にへたさくぬせねあいな|0|1
+L2 R2 U2 D F B' D2 U2 F B' L' F' D2 F2 D' B L D2 R U' B'|あふにえすへか|えあちねあいせしなくひくすふす|1|4
+R' F' D2 F2 R2 L F2 R2 U' B' L' R B2 F' D' R2 L2 D' F B' L|ちすひせしさい|けたさあくてすいにきつ|0|1
+F' R2 F' D B D' F2 U2 D' L2 D R2 B U B2 U' B' R2 D U2 R'|ねさけしちいへ|いへふえひちきくけせな|0|1
+R' L' U' R B2 R' D' R' B D' F L2 D R2 F' R F2 D B' U D|せくいてえふは|あひにせはへさいしふあ|0|1
+L2 U F B' R2 F2 U2 R' F2 L2 D F' D2 R2 U' F2 L B D2 F' L|けたあくえあいふに|ふへしてさにあねぬついはい|2|2
+B F' R L2 F D L D2 R2 U' F L2 R' U2 D' L B L B2 F R|ちたあいねにえけか|てえぬすいあふしあきはちき|2|2
+R U R' D2 F R F L2 U' F' U F L B D L2 F D2 L F2 B2|ひつせてえはぬ|けえねたにすつせくなぬ|0|0
+R B F' D2 U2 L2 R2 F' B2 U' D' B2 L2 U L' B2 U R B' R2 U2|へしひふいすに|ひたあねくちいしえへあせて|1|2
+B F2 L F2 D F L2 B F' R' F' L2 D' F' D2 F D2 B2 L B L2|あえけちひへい|くけたすねぬてあになさ|0|0
+L' R U2 D F' L' B' L R' F U R D2 U2 L' R2 B2 R' D B2 D'|すえさねたにち|はてすあふあいけぬえきにい|0|2
+L2 R F R2 U' L' R B' F2 D2 U' B' U' R2 U' D L B' L' B' R2|にしはあへふあくひ|にあくいふへさぬてけき|2|0
+B' R2 D' R' U' B F2 D U R' U' D' B D F2 U B U' L2 R' F'|くあせえふけていつ|いつけえさきてへちきたぬふ|2|3
+U2 D R' D B' D2 L2 U' R2 U' B R2 L' F' R2 B' U2 B' D R2 L|たしあちつけす|あへくしぬなせふにつえきえ|1|2
+F' D2 F2 U F' B R' F' B2 R' U2 L B F D' F' L U' D F' R|ふたえいねあさけす|あけいひくきにていえすふさ|2|2
+F' U2 B D2 L2 U R2 D' R' U2 B2 D2 B U L B D U R' D R2|ねかさぬたはに|しあいきねくせはすぬたにへ|0|3
+B' R L2 F2 U2 L2 F' L2 R U L R D2 U' R' D' U L U' R D|へしすにひあさちぬ|さつけせにきすぬくいな|2|1
+B2 D2 R U L2 F2 B L D2 F' L U' R D U' L' B2 R2 L F2 R|くさいえせちえ|つねくたけさいすせひせ|1|1
+B F2 U' L D2 B' U2 B' U2 R D2 R2 B L U2 B2 R B L2 D2 R|あくつはさえしちふ|せぬあきすになふつえけくえ|3|2
+U' D' L F R D' L B2 R2 F' D2 L' D2 B U D L2 D2 B R' L|へあかさいねふはに|はきけひあなえふてへえちに|2|2
+L' R' F R2 U' D2 R' L2 U2 R' U2 B L' F' L' D R F B2 D' L|あふえいねへつけは|ぬすあさけきついたにいくはせて|2|4
+B2 D2 B D U2 F' U2 L2 F2 R2 U2 L' R' B' L' R D U F' L2 F2|えあいせぬくいけす|なつえちきひせふけはえ|2|1
+F U2 L2 B U2 L2 R' U2 R L U R' B2 U2 D2 L' D2 R' B D' R2|けひたしいてぬ|あぬてえへきなはあけにたし|0|2
+F' R U' L' R2 F' R2 F D' U2 R2 F R' L F B2 D2 U F' L' D'|けぬせねえにあ|にしつえたせへきはぬえ|0|1
+L U L2 F' R F2 R' D2 U2 B L F' R' D' F' B' D2 U2 B2 F2 D|しせいさくはく|ふてぬいにねくあしすあえさ|1|2
+B' F' L2 B U2 B D' B' L' R' F' L' U D' B2 F U' R' D L2 R'|けにひあかせふ|えたあなしぬねはあすてにへ|0|2
+B D2 U B2 F' U2 F B2 U D L' U' F2 D R2 B2 R2 F2 U' R' F2|けいあへえあくぬね|ぬつにけいえはすねせな|2|1
+D2 F' B D' B2 D2 F B' U' F2 D U R U B U' D R2 L2 F U|たしくあていにけはちぬ|へていふあひくきつえちけえ|4|2
+B U' R' D' F2 D2 B' U2 L' B' L2 R U R' U' L2 R' U2 F2 D' R2|あへけにかちてくね|あけすぬあえふきにはえ|2|2
+U' L2 R2 F2 B' L' B' D' B2 F D' B2 U2 R L F2 D R2 F2 U2 D|かさにくはひせぬた|したてきくいさいすひすちに|2|3
+B' L R2 D L2 R2 U2 B F L' D2 R2 U2 R' U B' R' D' R' B2 D|ふせあけあいねかい|あいはてひたへつえにねしえ|2|2
+U2 L2 B2 F' L D' F' B2 R' L U2 R2 F B R L' U' R B' D U'|ねあたしけつあちぬ|ふねなてけひくえつすへちに|2|2
+F D' F R' L2 B' R' U R' D R' D' U L2 B F R2 D' F' B D2|えあへにふくねけす|ねいえぬくせたにえ|2|1
+D2 F2 R D U L B2 D2 L' F' B2 R2 B D U L' D2 B L B2 U'|いへあえしくぬすひ|しにあふすなつえぬきえくはせて|2|4
+D' F B' U' L2 D' L U' B2 D F' R' L2 F2 B D B2 F' U' B2 F|すせつあふえさくね|いぬしせあふくさへ|2|0
+L' U' L R F D2 L R2 F' L2 R' U R2 D' F B2 U2 D' R2 U2 R|ちあえいせあくけひ|いにふけえきひつへくて|2|0
+R' U2 D F2 D' L R' U2 R2 B2 L' U' F2 D' L' B2 F D F L2 B|ちていねしへい|えにつてなひはきふしね|1|1
+B' R' D' R2 B2 R' U D' F2 U2 R2 U' F2 B2 D' R U2 F L2 B R2|さいえひちけえせた|あふきへにひえいつけし|2|2
+R' D' B' R D U' F B' D' R' L D2 L' U' L D2 B2 U L' U D2|けひいちせかい|いふつせすえくねぬけさちに|1|2
+U' R B' U L D' B R B' L2 U R F' D' F' L F D' F' L2 B|すねせさしいふ|さきてふあいなくひけにすく|0|2
+D' F D B U' D' L B2 R2 B F2 R2 D' L2 U' D L2 F2 L F2 L'|さかふけねせへ|けはちふえあへなせきね|1|1
+B' U R D2 R2 F2 L' F D2 B L2 F' R F' R' U B U F2 R2 B2|くてちしいたに|つたにねけさなくせすは|1|1
+F' R' U D F D2 F B U' L2 R' B F' D F' R' F' B2 U' L' U2|けぬつあかへあ|きいてへたつえにさぬひ|1|2
+F' U' L2 U2 D2 R' F' L' F' B2 L' R B2 F2 R' B U' B' D L' F'|すいさぬかたく|くぬえちけいあすてふね|0|0
+R' D2 B L U L U2 D2 R L B R B2 D R' F' D R F' B' U|いたぬえひあて|あくにへなてつえさきたひね|1|3
+B R U L R F D F' R U2 F2 D2 R U F' L U2 D2 L' F B2|にけねたあしあちふ|ふきけてあへいぬちいえくえ|2|2
+U2 L2 B2 L' B R' F U' F' B' D' R B L2 B D L2 R' U2 D' R'|ぬひせしてけつ|しにぬすはあふてえねえ|0|1
+B2 R2 F D2 L2 F2 L2 U2 B F U R' D2 L2 R2 U L' U2 L R D2|いちせえあひてけす|ふけちてくすねなえぬさ|2|1
+U R' U B U R' F2 D2 R' B D2 F' R L F U' R D' F2 B2 R2|へねしにすちふ|ちねくひさけてあたいす|1|0
+B D' F D' R2 U' D R' U D2 B D' F R' U' R' L' D2 R U2 D'|はねさぬたえつ|すさけきなつくてたひふ|0|1
+U2 R U' D2 R F2 R2 U R2 B' F L' B F2 U D2 L' R' B U' R2|あけせいふかさくね|ねえつすひせしふに|2|0
+U F2 R2 D2 F' L2 B2 L' B2 D2 R2 B' D' L' R2 D2 B' R' D2 R2 L|いふせあすねさえか|せえきぬたあくへなにつ|2|1
+R2 L2 B U L' B' D U' L2 U' L D U L2 U F' U2 D' F' R2 L|しはふねへあていに|へはにえせあけふいきな|2|1
+D2 U F2 L U R' L B2 R2 L D2 L2 R2 F D2 B' R D F2 B D2|ねえにちへはあ|なひさてたあねへつくしちく|0|2
+D2 R U' R' D2 U F2 D2 R' L' U2 F2 U R2 U' B' F2 R F2 R2 B'|にくえあさちふ|てすなあねあえひたちくけさ|2|2
+U L D2 F' U D2 L2 R' U2 B' U2 R L2 B2 U' B2 U2 F B2 R U|ふさいしせひつけは|あさにねくたてへひけい|2|0
+D F L2 D2 L2 D F2 L R F R L2 F U' B' F' R' L2 B' R B'|いあくすあえかちふ|しねえすはせつちいふいぬひ|3|2
+R2 U' L B' D' R D' L2 R D2 B D L' D' L' B' U2 F2 R' B' R2|いひあけぬした|えへひちくきいふあけあ|0|1
+U' D R B2 U2 R2 F2 R' D' F2 R2 B' L2 R2 F2 R L' D' U L2 B'|てくへつぬすし|さひすなしあせはちねあ|0|1
+F B' U F R' F2 R2 B L2 F R U2 F R L' B' L D2 U' R F2|つあひふかたて|ねへぬなけくあえたせてちに|1|2
+B' F2 U F2 D' R2 F U' D2 F2 U2 B2 F2 L' B R' D L2 R' B F2|つせぬすさしひ|あせたはあいねえしなちひに|0|3
+R2 F2 D B' F' R2 B2 U' F B2 U2 B' L F2 D2 U2 F2 L2 F2 U R'|かてぬいねはた|すたしいはひちせつえさ|0|1
+F L D' R B R L2 D' R U2 B R2 F' B' U' R D2 U' L' B' R|あくふはへいあ|けくすたついえてぬにな|1|1
+R' U2 B2 U' R' L U F2 U' F2 R L B' L2 U' F' L2 R2 U' R2 L'|ふねてせけいにえか|にいしきあはえふぬへえせて|2|2
+L D2 L' F' L U' B2 F' D2 F' L U R2 F U B2 D' U B2 U R'|たちねすえさに|あねくけひなえつせちてたふ|0|3
+L F' U' R2 U' D' F' B2 R2 D' B' D' U' R B2 F R2 B' U' R F2|えねへにあけち|あねいてたちひえしくえ|0|1
+B' U2 B F' D U2 L F L2 B D F D' L U' B' L' U' B2 L' D|すふへえつくさ|しあえになくすきねせたひて|0|2
+L2 R' D' L2 R2 B U' D F' U2 B2 R U2 F' D R' L2 F B L2 D|あにへえちくあけは|あたきなへくえあせぬて|2|2
+R2 D U2 F' U R2 U' D' R2 U' B' L' R' D2 R' L2 U F R' U L'|いあてえはえくへひちぬ|たせなくあしちへえぬさきね|4|2
+D B' U2 B' U L' F D' F2 D F' B' U2 D' B' R2 L' F D' U' L|たくあすいぬえ|つくいえすてなきけにふひき|0|2
+B L' B L2 U' B' L B R' F' U D2 R' L U2 R U' R2 L F2 L2|いしぬくせはい|ねすくつえてなけちたけぬひ|1|2
+L' B D2 F2 R2 F2 R2 B2 R' F2 L' R D' R' U D' F L U2 F2 U2|しちあけいひあ|へあせいひえくけあきねたふ|1|3
+F' B2 R2 F B' R' D2 F2 L U L' D2 B' L2 D' R' D' F' D F' R|ひはたいちさか|けさてねいすひあふちく|0|0
+B U L D R' B2 D B' U L2 U2 L2 B' L U F2 U L2 U B' R'|さぬねけいえかせた|さたにくあしなきてへあぬひ|2|2
+U R2 L' B2 F' R2 D L D2 F' B D2 U' B R' D2 F' U2 R' U2 L|さいしねいけすちぬ|せたしへきあなちはぬあ|3|1
+B F R L F' U' F' U2 B U2 R' B2 F2 D B L' D2 R' F2 B U|えへねちえけは|たあひねへてちけえついくな|2|2
+R2 L' D2 B' F R2 B' L' U B2 U2 B2 U2 B2 L' B D' F D F' L|くにかあはちあ|へはいてあちつえぬたけきえ|1|2
+U B2 U2 D R2 U' L2 D' F' B2 R' B U L2 R' B U' L' B L' U|ぬつさえたすえくね|けはひさてあふへきいち|2|0
+R' D U' B R' B' U' B D' U F R' D2 R2 U2 F B2 U F' D B'|はぬあにたさえねし|さきふていはひけにすあ|2|0
+L' D2 L B' R U D L R2 U2 F' D U2 L U2 L B' L' R D2 R'|いあけたぬくて|きくえあひせすになつけふけ|1|2
+U' F2 R U D' R' F U B' L U' F L' F L2 D2 R' L U2 D B|あにさえしくせはくちふ|てつへちねしえいくひくたふ|4|2
+U2 B' U' R' B2 U B D' F L2 F R2 U F L2 D U2 F' B' L F|ふあかへねいつけは|あねいさひてしはあすにふす|2|2
+R' D B' R2 D F R2 B' L B' R2 U L2 F' D' U2 R' F' B R' L2|ねあていちせはしい|せけあえひついにねなくふは|2|3
+B2 F' L U D R2 F D2 U2 L2 F' U F2 D2 B' L R2 D B' F2 L2|てくしいちけに|てつすふしいなえくにぬきさ|1|2
+B' R2 D R2 D' B2 F D2 L R2 U' B' U2 R B2 R' F2 L F B' L'|ぬてたいくかい|しにきえせぬたなくすあ|1|0
+R2 B U' D B' F' L U2 R' D' B' R' B' U2 D2 R' B F R U B'|ひあしていたけふい|せひにへさつけはふきね|2|1
+F R2 L' D' F U D R' B' R' F' R U B2 L R' F' U' L U' F'|ていたけいえぬひか|へきてにくなつひたしえ|2|0
+F' U R' D' R U B R' F2 D' R F R' L B' L F2 L2 F U L2|あいはかねさせちせ|なあせさふひくすしちつ|2|1
+L2 D2 F' B2 D U L2 U' L2 U' F2 R U2 B2 U2 D2 F2 D U2 R L'|けあねちえせて|ぬたなくきすてしあちえ|1|0
+R' L2 U R2 D U' F2 D B' D2 B' R' D' L R2 U2 R' B2 U2 D' R'|せけえふつあさくね|あねあいへいくひはせふにせ|2|4
+L' U2 R2 U' F2 R' B' F2 L D U' R' U D F L' D2 R2 F L' B|あけふにえひて|にあきいくけさふぬせいすへ|1|2
+L F U F' B2 R2 L' U2 B F D' F R B2 U' L' D2 U' L F B2|いちあしすくさせた|はあねちえてけなぬすあたふ|2|2
+D' U R2 B R L U2 B2 U F2 B' R' F2 L2 D' B2 L U F2 R' U|しちせねけつさ|たあえちくてなあきへきけしぬひ|0|4
+F R2 F R2 U2 R2 B2 U D' F' U2 L R2 D2 L2 R2 D2 R2 D2 L F2|あすくしぬつへ|さたねつぬしいてちはへ|0|0
+R2 D2 R' B2 F L R U B' F D' R B' U2 D F2 U' D' R' D U2|へいぬあけねあ|ついえてしきふすなくちぬく|1|2
+L D R2 U' R' U' D' F B U2 L F L2 B' L' D B2 L' R D' F|あいかひはせい|あけちてきすいはさひあ|1|1
+D' R U' D2 R' U' F U L2 D2 B R' F2 B' R2 F' U L2 B2 U2 F|えはせあいちあ|ひねくさたへあしていな|1|1
+D' L R U' F' U2 B D2 B' U2 R' U R' B2 L2 F' B' R2 D R' D'|すふつねあかさせた|へたひつきくていになえけさ|2|2
+R2 B2 U B2 D U' R U B2 L2 B' L' R B2 D' F U B' R2 D2 L|あいさえかくすひせちへ|てえへつなひけはふきねちに|4|2
+U2 L' U2 R' D U F D F U2 R2 D' B D2 R L F' B U2 D2 B2|にせぬえくすあ|ちえせつくひきたしいなすへ|0|2
+F2 D L U' L2 R2 D B' U' F' R D2 F2 L F2 R B R' U' D2 R2|えさたつくぬけ|ふはきあいひてしにさへ|0|0
+R' B2 R' B F' R' F' L F B2 U F R' D L2 U2 D R' B U' R'|つしふたさけは|にさたなへつねくしぬせ|1|0
+R B L2 F2 D2 B2 L' F' U' L R2 U2 L' R D' R2 D' R' U2 D B'|いあちたしくひ|えはせすちふきしあいつ|1|1
+R2 D' U L D2 U F' U F2 D2 F' L' F' D F D2 R2 D' L' U B'|てちねいけかせ|はふきすちてぬあいさつ|0|1
+B D2 B2 L' F2 D L F' L' R2 F2 L D' R L' U' R L F B2 R'|あひちさいかはたい|きさへぬけたはちせいな|2|1
+D2 F2 U2 R2 F' U' F' R' F R U2 F R' F L U' B' R D2 U' B'|ぬあたにえすさくひ|にひきなすあくけふてえ|2|0
+R L B2 F' R D' L2 F2 L U' L2 U2 L F U' D R' F2 L' U L'|あしへていひつけはちぬ|ねあせひいたえしはへつ|4|1
+U2 R' B' U R' D' B' L2 F B2 D2 U' B2 F' L U D2 F' R B2 R2|たあちひあいすしい|あねすけはえひせたなつ|2|1
+L B2 R' L D L U F' L B' R' B' U' B' L' F' R F2 U' B' R|てしいひつけふたす|なしせつはきたすひ|2|0
+U2 R' B2 R' U2 D' B2 L D B D' F' U B L F B D F B L'|いすたあかぬさ|くつぬさにけねへいふなせて|1|2
+L U' D' R L' D F2 B L D R U' F2 R2 D2 B F' U F D' F'|ふひあしさいたすい|つしいさねくせぬたくすにす|2|2
+U2 D' B2 L F' D' U L' F2 R' U2 L B2 D2 R B' D U2 R2 F D'|つしあせすぬさくね|ひいねくすしえちあふせ|2|0
+D2 R D' B F' U2 D2 F' U B' F' L' F' R' B2 D F D B' U' B|たちさけつねか|ちけえつひすなくたせて|0|1
+F2 L2 R2 D L2 R2 B' U2 F' U B' L2 U R2 U' D2 B2 D2 R L2 D'|せちねにえあてけは|さぬたくなしあてあきすちき|2|2
+L' B' U' B' L' R2 D' R U' L' D2 B F' U B2 U2 F' B L' F2 B2|えあていたけつくひちぬ|なさたせへねくあひちに|4|1
+B' U R' D' F L U D2 F' U2 L' U F R' D2 R F R U' F2 U'|ねせあぬさいはえつ|すひふせけにあきいさな|2|1
+L2 B' D' B' U' L2 B2 R2 L B' U2 B F2 D R' F U2 R2 U' R2 D2|けちさにえたしくね|きひてつにたなすさけは|2|0
+D' F2 D2 R D2 F2 U2 B2 U F D U' L' F2 R2 B' F' R' B U2 R2|いけえあせひてちぬ|なにせきしえへあたくは|2|1
+R D2 R' B2 D2 L' R U L D2 U2 R' L' B2 F R D' B U2 L2 D|あけいさえねかせへちふ|えあついちひしねたはへてい|4|2
+D F' R D' L U2 D2 R' F2 R' D U2 F B2 D B2 R' F2 U' F2 L'|てはふひい|ねあくけふてぬついへさにい|0|2
+L U L2 B R' L2 F' U' F D B2 F U2 B2 R L' D F' R U' R2|てすえくにたぬ|きさせけあぬくへあいたちい|0|2
+R2 F U' L2 R' B2 U' D' F2 U' L2 F' B2 D U' L F2 L2 R U' L|いはあかへくひ|しあたつえぬくせさきにすね|1|3
+R' B' R2 F L' R2 D' R2 D2 R2 U' D R D2 R' B R2 U2 D' F2 L2|せてしちつくけ|ちねあくあいすしふぬえてい|0|2
+F' D F2 L2 B' D' R D2 B2 R2 U' R' L' B2 F' L2 D' L' D L2 D|にはえくたぬえ|きせあにいへさふけあくひく|1|2
+D' B2 F' D' B R L D L' B2 D' L' F2 L' R2 U R B2 D' U2 L'|くかせあいはいちふ|ひあいちふすえてしくなきね|2|2
+R2 D2 R' F2 B U R2 F2 U F2 B D2 L2 D L2 R U' L' F R' B2|あはいてえひか|あはきせさたひすい|2|0
+R L F' U L2 U2 F B' U' B' R' B D' R2 U R2 F' L' U2 B' R2|はふせさにひか|きちくあてすあいなけふぬけ|0|3
+R2 D U' L' R' D2 U' R' F R' L D' R D' F2 U D B2 F2 L' R2|ぬあしけせあいひに|ぬなあはしねふにえてあ|2|1
+U D' F' D' L2 F2 R2 D' F' B2 R U F B2 D2 F2 U2 L R2 U F2|あいへふいけす|てちいふいえひすしえきはき|2|3
+B L2 D L' R2 D' L B' D' L2 D' U' R2 B U' D2 L2 F R' L U'|にあへあえひしけはちふ|へきくつにひけいたいえてさ|4|2
+B L' B2 F2 R2 D2 U2 R' U' R F2 U2 L' F2 L' U R' U L2 B2 R'|つふかてへくね|ぬくねあせあいえちいすたす|1|3
+U' F2 L2 B' D B2 L F L' B2 F R U2 L R F2 B2 U2 L' F L'|さつけひえぬへ|ぬにあしくさせなすふあきね|0|2
+L B L' R B R' L2 B2 L F' D2 L R U' B' R' F' L U2 D B|ねへにぬあしてけす|なせちしあへつえくぬさきねたふ|2|4
+L' B2 R D2 F L U2 B L2 F2 L D2 B' U2 R B F D L2 R' D|さすへいねかに|すきさなせはにあひしふ|1|0
+U2 F' U B F2 U2 B D B U L' F' D' R' U2 L2 U B2 L U B|あすていへかひぬに|ぬくふきあすついけにせえい|2|2
+F' D' R U D L' R B U' D' F2 L' F2 U L2 F' D B2 U' D B|つてけえへえくぬね|せへにぬきいたくえつけ|2|0
+U2 F L B L R' U D B' R2 U2 R' L2 U2 D' R L2 F' D R2 F2|ぬあへくしはて|ちなすくせたしひきえあ|1|0
+R' D2 F' D2 R2 F2 R' L2 U' L' F D' R B2 F' U2 B' D' F2 U' L'|すせひさかちふ|ねてあえたぬしあいにすくい|1|2
+R F' R D' B U' B' R2 B D' F U' L2 R2 B2 R' L U D' B L'|はねあにえてせふた|てへたついさくぬきなけにけ|2|2
+F' B' L2 B' F2 L2 F' U2 B2 U D F D2 R D2 R D2 B' U2 D F2|ぬひあすていへしつ|えいてねあひすにしたつ|2|1
+B' L B D2 U2 B2 D2 B' L' B' U2 F' L' U R2 B2 R L U F2 L|せあえぬあいすくつ|へねはぬあにふいさせあけし|2|2
+R F U' L' U2 L' U R' U2 B' R2 U' L' D' F2 B L B L2 F2 U|ぬにえけせさね|ぬくねせいへしあえふえ|0|1
+D' B' F R2 D F' U' D2 R F U' R B D R' F2 L2 F' D' F R'|あにへすえくえ|ねいせえけはあふすにつ|1|1
+F U' B2 F U L' F L' D F' U' L2 U2 D2 F' D2 R U B' L2 B|していへぬねに|さはにふへきあいてけつ|1|1
+D R' F B2 R2 D2 F U' B' R' L B2 L B U' R D L2 F2 D2 L2|いせちくさえかけす|ふいけえはきつにせ|2|0
+R' F2 R B' D2 L' D2 U L2 D' F' B U B' F L2 D U2 L D' B|くつへあすさえぬか|えいふけちせいきはきすひす|2|3
+D' R L D' B L2 D R2 D2 F' B2 L B F R U' D L2 D U2 F|ぬせいあはかさくね|けてつはさちいひふ|2|0
+U D R2 D R2 U2 B' F2 L2 F D U R B' R2 U D' F' L R B'|せくぬかあけあいに|ひしにねなふあすつえはてさ|2|2
+L' F2 D' L2 F2 D2 B2 F L2 U' R B R2 L' F' R2 F D L R2 F2|へさかちいくいけす|てつすぬけきいふえくは|2|1
+R F' B' L' D2 R U' F R B2 U2 D2 B L2 R2 B D' L D' R' D'|あけくあいしぬたい|くたえてけきさすひちへ|2|2
+L' F2 R D' L R' U' D' B2 F2 L R U B' F2 L' U2 B D2 F' D|ちはひあにたえ|につけくふせねへえなぬ|0|0
+B2 L U R B D2 U L2 R' B F' D2 R B2 R U L' D U2 B2 L2|しつふひせあけ|けへなえにはつせふねひ|0|0
+R2 F D F' U2 D2 B L2 U' B' D L' U L' B2 F2 D F D' R F'|あつかくぬせくけは|くねてふちあへけいひさ|2|0
+D2 L2 U' B' F2 D2 B' U2 L2 R' F' B2 R2 D' B' D' U F' L R U|さひはいぬかにせた|ふちていさひはあけねつ|2|1
+L U2 D F2 D2 L' F2 D' U' B' F2 D' F2 U2 R D' L' F2 B U' F|はあふにひあえたか|ちいへぬはせあさきしつたふ|2|2
+R L2 B' R' L B' R' F2 L B' D2 L2 U D F2 B' D' B' U2 D' B|けあせかひふつ|へつにいひえなきせふくけき|0|2
+L R U B' U L2 F2 B2 L2 R' F' D2 B2 R2 B D R' U2 F R B|えひさへつぬは|なしはえへてぬちふきあ|0|0
+B R L' F B D2 L' B' R2 B' U2 D2 R F' L' U F2 U' D2 R2 F2|くあいせぬけえ|になふせすねしさあはひ|0|0
+D2 L' D L2 D U B2 L' D B U2 F2 U D L' F' D2 U' R' B2 R2|くふしあすせさ|すてあいえしねたはちひ|1|0
+F U' L2 F U2 B2 F L' U2 D R L2 U' B' L F L D U' L B2|けくあかへていふい|しにあていすねえふくあ|2|1
+U D' L2 F L R2 D2 B L' B F' D' F2 D2 L' U' D F U' R2 B|あいはえへぬえくひ|つぬへちくていたねいえけさ|2|2
+F2 D2 U2 F L2 U L2 F2 D2 B' L R' B2 F U' L R B2 R L' U2|あへいけちひさえし|きてえちしふあぬはなあすへ|2|2
+L D' U F' R2 B' D' R2 D B2 D R' B L' F2 U2 L' B U2 R' F|にあふえてくすせく|ねちへくふえひせしなつ|2|0
+R' D U2 R' U2 L D' B' L B2 R L2 U B' U B' U D2 F' B2 D'|ふはあたえあいくい|ぬたなあすせにさしくつ|2|1
+R' D2 F U2 L F U2 R' F' L U D' F' D2 B' L2 D2 F2 D F2 U'|くしいあはへぬ|あひちはえへたてついきしい|0|2
+U2 B F D2 F' R B' F' R' D2 U L' B D2 B F2 U R B2 R U'|ねいたかぬすあ|えふはぬいしあきへねせにて|0|2
+B L' D2 F' L B2 D' B2 F2 R' U2 B' D' B U' R B2 F2 R2 U' B|ふかあねつあけせは|せねつすひえなにたしは|2|0
+U D' B2 U' D2 L' B' R2 F2 U D2 R2 D U2 L2 F L2 B2 U2 R' U2|あかいけせさくちひ|あいたさくせなきにひへけき|2|2
+F D2 R' B2 U2 L2 R' U' L B' U2 D F2 L' F2 R' B2 U L' B L'|ひかすせつさふ|あなけへふつえちせひねくさ|0|2
+L U' D L2 F' B2 L R F2 U' F2 B' D' U2 F' D' R2 D' L' U R'|させしねにはち|つへはせさにたけしぬひ|0|2
+F' R D2 F D B L2 U2 F' D' F' L2 D R2 F2 R2 B L2 U B L'|あたひいさえふはえ|ひふつえてなにすきけく|2|0
+R L' F L2 D R U' L' R' F2 D' B' R' U D' R' U D B F R|さふねえたけす|きつさたちせはけぬへい|1|0
+L2 U R L F2 B U2 B D' L' D2 B' U' L2 R' F' D U2 L' U2 B2|ぬあいせくえつけす|くきひせつたいえいけにすし|2|2
+R2 B' D' F' L2 F2 R L B F2 U B D F B' U2 F D' L F2 L|したすあいねさちふ|きふえてなけはつひちす|2|0
+R D2 F' L' B' F' R B U F L2 R2 B2 U2 R2 D F B U L D|あすていせふひえい|あはきにさしすひたてあいな|2|2
+L' F' B2 L2 U R2 B' D2 U2 B D' L' R2 D2 R2 U' L2 B R2 U L|ぬはあひにかた|たくさなしてきつすぬへ|0|1
+B2 F' L D2 F D F' B' L D R' F L' R' U' L' F' D2 R2 D' F|ねけぬあへしさいに|えつにたすくてきけひし|2|1
+U F L' D2 B U R' U2 F2 L' D2 U' F R2 B F2 U2 B' U' B2 L'|あへすていえちひに|きけさあにていすはひい|2|1
+F' L2 U B R' B2 L2 U L' F' R F2 U' B U2 L2 U' L R U2 B2|ていへはしにくぬひ|すいあひにさつきけふてくき|2|2
+R L' F' D F' B R2 L2 B2 U' L' B L2 D L' U' D R D2 R2 D'|ふあへかつはね|しひあくてついへきいえふえちに|0|4
+F' D' U2 B2 F D' B2 L' B R L2 U' F B2 U2 D' B U2 D2 B U|にはあくえへし|くけにあすあいきたいせぬせ|1|3
+D' F' U F2 U' L2 F2 L B2 R2 L' B' U' R2 U2 D' L' R' F' L2 U'|あえたけさ|くふさいあへしきにぬきせて|1|2
+R' L D' U2 F' L U2 B F2 R2 U' F2 B2 R D' F2 B L' B' U2 L'|あぬつはへかてくひ|ふねつちしてすさくぬい|2|0
+R' B' F2 U B2 L' R2 B' F' D2 L' B' R L F U2 D2 R F2 B2 R|しはひにあたふ|せちたすあさはつきひね|0|2
+U F L' F2 U F2 D2 L2 F2 U F2 D L2 U2 D' F2 D2 U F U R|かいちねあたて|なつえてひはねすふにえけし|1|2
+B' U2 R' B2 D2 U2 R D L2 U' L R' F R' F2 D2 R F' B2 L D|ふねあえへすさ|けぬたつさはいにすねな|1|1
+D2 L2 R B R D' L2 R2 U' B2 U' R' B' D L' U' R' D2 F L D'|てけいぬしせに|さたいにひけなきへせき|1|2
+F2 L2 D' B' L' U' R' U2 F D' L D' L' B L F2 R F B2 U2 L|あにひへけふて|ちていあけきへあえたさぬひ|1|3
+D2 R' B U2 B2 U F2 R F U L' B' F2 R' D F2 U R2 F2 U' D|かつたあねはあ|けきひあついせなえすちえくたく|1|4
+R2 L2 B2 U' F B' R F U2 F R2 D L' F B2 L R' B2 U D2 B'|あいへすねてえふか|へひいにえたきしくあせ|2|0
+F D' L F R' L2 F B' R2 U2 L2 B2 F R L' B' U2 R' U2 F2 U'|けあねつちえしせへ|いくきえひへふあちしせ|2|0
+F L' B' R B2 R2 B' L F' U2 B' U2 D F' U D L' D2 B2 U F|すねあえたちえ|きしあなちひあすたせす|1|2
+B' D B D2 F D R B' F2 R2 U L2 R2 F2 D2 B F2 U2 D' B' U2|たくあえしけすちぬ|さつたせねくけひく|3|1
+F2 U' F' R U2 D F' B' L' R U B U' L B U2 B' U F D2 L'|さえつくけねせぬせ|ちへえいたねはひしあつ|2|1
+R' D L2 B' L' D R2 F L' U2 D' F2 U F2 U' R' U2 R' D2 F D2|たふあしすつてくね|へしあいねさくせぬふい|2|1
+F2 B D' B D' R B' D' F2 R' D2 U L2 B D U R2 B2 L D L|くてへかふはつ|はたひあなにしすえきあ|0|1
+U' B U B2 D' R' B U2 L B D' F D2 L' F2 R D F L2 F B2|てねいけにえへちえ|すてくあねえちついぬたしい|2|2
+R2 F2 D2 B' F' D' L2 R' B R2 L F' L R' D' B2 D B2 R' B2 F|せちひあにけあえか|なてねさにたけくひへく|2|1
+F2 R' L' F2 B2 R' F2 U2 L2 R' F' L2 D' R F' R L U2 L' R' D'|さへいふけしひ|さすたねせしぬはにいな|0|1
+L2 F2 D' B D R L F2 R' U B R L2 D' L' U2 R L F2 D R|あにふたえくねけす|にはいあしあえぬねふえ|2|2
+D2 R' L' U R' U F2 B L U2 B F2 U2 L' U' L' F2 U R' U L|かぬあたつあくすね|いけてすくひちえあふね|2|0
+L R2 F2 U2 L D2 U L' R F' B L D2 U' B F2 U D2 R B L2|はあかせひふさ|はあちひあいさねふなすせへ|1|3
+F2 R2 L2 B2 D B R2 F B' D' L2 U2 F2 D' B2 D U2 B' D R' U'|せくあぬにすさ|ふあけさいくてへちいきぬね|1|2
+D2 F L B' D2 U B R F2 B U R2 D B2 R2 D' B U2 B2 R' B|つかはへね|くいせぬちつえへしきさ|0|1
+R' B2 L2 F' L2 D2 L F2 D R2 D L' D' F2 R B2 R' L2 D2 F' U|ひしあちたつて|しぬなはすあたきつえさせて|1|3
+L U2 L' B L D2 F2 R' F D L' D' U F2 R' B F' D2 L2 D' U|つてしせけくふ|つきふえせいへはけぬし|0|1
+B2 D2 F U' F U' D' L' R2 U' B2 L U F' R2 B U' R U' D2 L'|けあへしぬさいひい|しはえふあぬてへきにい|2|0
+L' D' F2 U2 F' L D2 F2 L R' D2 R2 D L' F' D' L U F U' L|すせぬさいひか|つたけさなくきてすちに|0|1
+R2 F' D' F2 D' F' D' B' D U' B2 D B D B F R' D2 F2 D' L2|つてえたひしけふけ|すなたにえてきしくぬあ|2|0
+D U2 R F R B D2 B D L D2 U R' B R2 F2 L U2 L' F' B|てつちけくえせ|けなはへあてふちひきさ|0|0
+F B' D2 F2 L2 B L2 U' B' R' U2 R2 L2 D L2 R' B2 R' L' D2 F'|あひちさいかけせい|さきたへくせぬあにけあ|2|1
+B R L F' U B2 F' L' U F B D' L R2 D2 R' L2 D R2 D2 B|えぬてけせひい|あちたきしさせついくひすな|0|2
+F U' D L B D' U L' B2 F' R2 U R2 B2 L' U L B2 L R F2|あにへひえけか|しえたひせすねにあくつ|1|1
+F2 U2 F U2 F' R D' L2 R F' L2 R D B2 F2 U' D2 L' R' B2 U2|はくつえぬせた|あなつえぬねせちたくへけさ|1|2
+R' U B F2 L' D' R' F2 D' F' R D' F U R2 D2 L2 F2 R B R'|あたすかねにてちぬ|つはなねふしえへてひち|2|0
+B2 F2 D2 F' U F D R2 L F L2 R B D2 F' R2 L D B' L2 U|あかくけぬへく|あぬくえねいちけふつすせへ|1|2
+U2 F' B2 R' B' F L' U' D2 B F2 R U' L2 B' U2 L2 B' L' U2 L|あいけちえせかくね|あひふくついけえにいすてへ|2|3
+U' F2 D' U' R D R F' L B D2 F R U' R' U' R' U R' U' F|けぬてせにえしくひ|きあはにさふへぬしせついな|2|2
+R' U' F D' R' D F D' R2 U B D' R F D U F B R' B2 L'|ぬにあしてけすせへ|ふにあけせさくひきへつ|3|1
+R' L2 B F D2 R L' D L U F' L2 F U D' R' B2 R F U L'|かせぬあにひあけす|ちすあせなえふぬけくさ|2|1
+D' L B D' L2 D' L2 D2 F' L2 B' D2 U F' L2 B2 F U R2 L B|あせにねふしさけは|ひしあねてへふなちはつ|2|1
+F R' B' R' F L2 U2 L' R F2 R2 F2 R F2 B R2 L2 U L D2 R2|つけさねえせえ|すなけたあせきくさつちひち|1|2
+B2 U2 D L B2 R2 F' B' R' F' D2 R2 D' B L2 B2 R' L U' F L'|すふせねあつさ|すせにえしたきぬあはあ|1|1
+B R2 L2 B2 L D' L2 U2 L2 B' R' L2 D U2 B R B D' R B L|ねえすいちへつ|あはふいすぬきてえつけにし|1|2
+F' L' U D L' F' B D B' R2 L' B' D' L' U' F D' U R U2 F'|はえてひいちいせた|つしちいへいえてたねぬはえ|2|2
+R2 U2 R2 B' R' L2 U2 D2 B2 F2 R2 B2 U2 L2 R' U2 D R' U B' U2|あちひはせいてえし|きあいふへはさせぬちせ|2|1
+U D' R2 L U2 B2 U2 R B2 D' L D' R L' F' B2 U L' R' D B|かてへいねすにちふ|ひせはすきつふいけさなちに|2|2
+B' U R2 L B F R L F D2 F2 U' L2 R2 D' F B' R2 B' D B|けぬひたあつあ|にしあねへひいさせふつくは|1|2
+F2 B L' B2 U' R2 L' D R' U' D' R B2 F2 R2 L2 F' B U' F' B2|ねはいえてへぬ|にてぬさたあいすつ|0|1
+F L U' D2 F D' R2 B L B F2 R' F2 B2 D2 U R D' L F' D|あにふてえたはねし|ねさぬへけちくつせたな|2|0
+R L' F D2 F U B F U B L' U2 B L' D' B L2 R D2 L B|あしあいちひたはい|けひなさはねちせたつへ|2|0
+F' D2 L2 B2 L B L' F2 R U F' B R' L2 B' U L' F' B L R2|すかふさいくつせへ|しなあてはにねすひふつえさ|2|2
+F2 L' D B L2 U' R' L2 D2 F' B D2 B L2 B2 U' F R U B' U2|ひたいふいえかけす|さふしせなきあくひへつちに|3|2
+R' L' D2 U B' U D F2 B' R' B R U' F' R' D U2 L B' F U2|ひすあたえさいぬつ|すしあぬてくいえちなきたね|2|2
+F2 U2 R2 B' U D R D' L U' F' L2 U' D2 L D' R' D L B' L2|へいかぬひては|ちぬなふあねくえしさすせす|0|2
+L F U' B2 D2 R D U L2 U2 F' U' R L' D2 L2 D U2 F' L2 R|あいえひすせち|いひすさあきあくせにしふく|0|2
+B F L F' U F D' B D B L D' L' B2 R D2 R' L U' L D|しさくたねけすちふ|てつひなねたくへえにけ|3|0
+U' R D' U2 R2 F' R U2 F2 B2 D' F' B2 U' B2 R' F2 L' R B' R|ぬはあへくていえい|くふひちしさいすねせあ|2|0
+R' U L D2 L D' F2 U2 D2 B2 L' U2 F2 B' L' B L' B2 R2 B L2|あねはしいあせぬた|ひけちせふはあいすきあ|2|1
+L2 F2 D' R' B D' R2 B2 U B L B' R' F2 L B2 U' D' B' R' L'|へていくしすにちふ|いきはへつふさけちひけせて|2|2
+D U2 R U R2 D U R' B U2 D' L2 U2 L F2 B' D' R2 L F' R2|いけくぬえてへ|ひなへてあくさふきちき|0|1
+R2 B2 U F' B2 D L U' D' B U D' R' U' B' L U R' D2 U' B|あひけせしつち|きあたしひせいへあえにはえ|0|2
+U F' B' U' B' R B' R2 B U' L2 D R' F R U L F D L R'|つひへちふ|けいふえねひてくにすく|1|1
+B2 R2 D2 L' U' F' U F' B' R2 U2 F R D F2 U' B2 R2 U' B R|すへひしにあふ|すさなてくあきたしねちひに|0|2
+U R2 B' F' D B U' B' U' D' F' B U' R' B2 R' D' U R2 L2 U'|あいさえぬへひけえ|ねしせいえあはひふちあ|2|1
+L2 R' D2 B' U2 D F2 R B2 F2 U' F' U' F D' R' B2 L2 U' L2 D2|すてふねたしつ|ねふつちさけいすせひなくは|0|2
+U' F B2 R2 D B' F U L' R F2 D' R B' F U' D' L2 D2 U' L2|すあふつひせあえか|たあてぬねなけちさあくへは|2|2
+U' R' L2 B R' L2 B F2 L' U L' F2 B' D R2 D' B2 L F' D2 U2|あふへはねえていに|はあぬふえてあいねにいすへ|2|3
+D F D' F B' R2 L' F' U' F2 L' R B D F2 B U' D L2 U2 F2|あかぬにへけく|はしいさちきせぬへたね|0|1
+L' F2 D F' U' B' R' B U D F R' B F' R' L B' D2 R F' R|しへふあはさいくつ|あなはにあえへてえけしたふ|2|4
+B' R' F2 L' R2 U' D' B' R' D' L R' B' D L' F' B U2 B2 F' U|にあぬけたてえねし|ぬけてつたえちへいきい|2|1
+U R2 F D' F2 D2 F D U L' U2 B' U L R U L F' U D F|えせさいすひつ|ねあすぬはふけあいにてえな|1|2
+R' D R L' U2 D2 R2 U B2 U' B2 D F B R2 B R U2 F2 U' R|あぬせすて|くけつひいふえてちすなきね|1|2
+D2 L' U D' F B R2 B D' B' U R2 F U' F U' D2 F' U' D L|さふつかへはく|くあぬしあえせふさきにへき|0|3
+B2 F R2 L U R2 F L' B U2 R2 D2 B' U L' U2 F' B' L' U2 R|ねあつせあえはちか|てえにねあすしふくひつ|2|1
+B2 D U' F2 R' F2 D' R2 D F' D' U L B' D R2 U L F L2 D|えつくせはふく|えくぬあすいねたちつけせけ|1|2
+L' B2 R2 L2 B D L' R D2 F R F R' U R2 U F' R D2 R U|ふてつえたはひ|あくきひすてたえけいあ|0|1
+D R F B2 R2 L2 B' F U2 L2 U B' F' R2 B2 R F R' F' B U2|ねえたふつあて|ふねへいあしくてひちは|1|1
+R' D L' F R2 B' U2 B' F L2 B D B D2 L' R F' U2 B2 U' R|ていすひえぬえせた|けねいさつすくちてふひ|2|0
+R2 B2 U B' D2 B U' F2 U' D B U2 L2 D2 U F2 L2 R2 F2 B R2|ひぬへつかさす|あえひてふへけいはちい|0|1
+F' D' L2 F' R B2 L' B2 F2 R2 D R2 U2 L2 U' R B D' F B U|せにはてしふく|くひしたあえあいちなきへき|0|3
+U' R' D2 U2 F R' B R' B2 L2 F U' R B2 U' R2 L2 B2 F R' F|つふへくしすあ|えくちなへあねしせぬてたふ|0|2
+F2 R' L2 F R L F L' F2 R2 B' F2 D' F2 D2 B F' L' D R2 F|すせえあつくひ|ちあへたぬせけきあえさ|1|2
+D2 L F L B2 D U F2 U L' R F2 D' F B2 L2 R2 D' U B2 L'|ていえねたけか|ねていさたあはつけひへにし|1|2
+R U' L2 U L2 D' B2 F2 R B2 F2 L' R' B2 L2 U' R' B F' R' U|えつたねあはてちふ|くねせけなつえたぬへち|2|0
+L F2 U' B' L2 U B' L B2 D2 U2 B2 L2 R B' L2 U2 L' U2 F' L'|たくかあにてけふは|すはてなにたつえひきえ|2|1
+R U' L' B U R F2 B' L' D R B2 R' D2 F L' R2 F B R' L'|たてしねつすふ|なすてくちしあふひきつえさ|0|2
+U2 F' R B R' U F U L R U' D' B' U R2 U F B2 U2 D R|けつちあへしさくね|にはてねつしひたえいな|2|1
+R2 F' D2 F R L2 B' R2 B' L R' B2 F2 L2 B2 F2 U2 F B' U2 R2|あちしすたていねい|なあにふはぬしさあきてへき|2|2
+U B' F' D F' U B2 L D R' U B D' R' B2 L2 R2 D R D F'|ぬねあけしつさせた|あしいえふせひはいきにへき|2|2
+D' L B' R' B2 R F' R2 F2 D2 R2 U' B' R F L2 F' R2 F2 B' R|いけかひぬてへ|なへにさしくぬたねてあ|0|0
+L2 U' D L2 D R U D' L2 U B' R' B R2 D U2 L B2 L2 F' U2|いねせふけえあ|にあしたてすひいさいきくき|0|2
+L2 U F2 R L B2 R D' R U2 R F U' D2 F2 R D2 B' L2 U2 F2|てにくちはたひ|せあついしきふへなえちひえ|1|3
+U' R U' D2 F' R2 U' R2 D U' B2 U D' L' B' D L U' L2 U2 R'|はあつえふへさくね|たしねてになへえくひあ|2|0
+F B L' F2 B2 R' F2 L' R' U B F' R L F' U2 D R B D L|くすたさいかつちふ|なあさふあきねくはけてけちぬに|2|5
+D2 B2 L' R' U2 L2 F' L F B U2 F2 U R2 D2 F R2 D' R B' D2|えすへねぬあていに|あひしたはいえきせにね|2|1
+B' R D2 B' R F2 L B' R2 B' R' F2 B U F D2 B R D2 F2 R2|ひあけかいてせちへ|ぬしくなせふあえすにへ|2|1
+D' L2 U2 F' B L2 B U2 D B2 D' L F B' L B2 D F U B D|ちかくつけさせ|きけすあてにいえあくたぬく|0|2
+L' F L D R' U' F2 L' B2 D2 R2 B F' R D' U' L' U2 D2 R F|あふはかへあいねい|たけきすくちせえひつい|2|0
+U2 R B' F2 R2 U2 D2 R2 D' B' U' D2 L2 F2 R2 D' R2 D L2 R' F'|ぬえへくはてい|すはけねちてえあひついふい|0|2
+D U F D' L2 F' R' F D L F R L D L' U' D2 L R' B2 D2|いぬはひさえし|ねあひはすてついさふな|1|2
+F D U B' L2 U2 R2 F B2 L R2 B D' R' F' L2 D2 U' F2 U' B|いしへくあはぬ|たへあいてけきなえちぬくえ|0|2
+U B' R' D U B2 F' R2 L' D' B' D2 F D' U L U2 L D' U2 F2|いあせえすねさ|ひねけあくさにたせいあ|1|1
+R B2 U' F2 B' D R B' L2 F L F' U' D' F L2 D R2 U R' D2|くすあぬしへていに|くふあねへさあいにしせひい|2|2
+L' F' B' D L R U' R2 F' L' D' U2 R2 D' L2 F' L' R' U' L' D'|つすたさちえかくひ|ふあなにえへぬしはてえきね|2|2
+D' R B' U2 R' B2 U' D B' U' F2 U D B' R2 F U2 F2 L' F2 L2|へあかひつすて|へきてあくにさぬいつけたし|1|2
+F' L' R B' F' L U' D R U' L B2 R' L' F2 D U' R F R2 L2|さふねいかせけ|なあせにはさぬふねへあ|0|1
+D F2 U2 D2 B U' B D R' L' F2 D' B2 R2 U B D' F L B L|あふていかへいくねけす|つたすきいえなくはけひてしちに|4|4
+D R2 U L2 U' D' F2 D2 B R L2 D' R L2 F' R2 L2 B' R2 L U2|ねいはせつ|つたいせはへきちさぬひ|1|1
+R' U D L U2 L D' F U2 L U' F2 B L2 U' L' F L2 F2 R' D'|かてせくはいつ|さにてすはたなきけあつぬひ|1|2
+R B2 L R' D2 R B' L' F' L' B' F2 U2 L2 B2 L B' L2 R2 B U|ねえあせけつさちぬ|へてくえねなちけひあつ|2|1
+D2 U2 F R' L2 F' R U2 L' B2 D2 U F' B2 U R F' L F' B2 D'|てけへいひいえぬか|あしくさいせぬへねふなちに|2|2
+D' U R2 L2 F' R' D2 R' L D F2 D L2 B U' F' D2 R U2 F2 R'|させけちにしく|あについすなえけえきふきくひは|0|5
+D2 B' F L2 R U' L2 B' U2 R' L B' U R2 B' F2 D2 B' R' U2 D'|てたすにえくかちぬ|へてはねぬちえいけたあ|2|0
+R F D' B' R2 B' U2 B2 D2 R2 D' B D2 L' B D B2 L' U2 D' L|ねあすにてせた|ねなたひつへちえてはし|2|0
+R2 U2 B2 D' L' F2 U' R D' B R' F' L2 B2 D U2 F' U F' B2 L'|はしいふてひた|すはきたせあなさぬしつ|0|1
+L' F2 R2 U L' U' F' B2 R2 D2 F2 L' F2 U' R' B2 L2 F' R U2 R'|ふへくにてしけ|さにけたぬあなきてへつ|0|1
+B' L2 U2 L F' L D2 R2 L2 D' L' D' R D2 U' R' D U L' D L'|たくしはちさい|なさちねふぬてつくへはけし|0|2
+F2 L D' B' U B' L2 D' L' B' F' L2 B' L2 U R' B2 D2 B' F2 D2|えいひてけちは|えねけにはぬふあていな|1|1
+R' F' R' B2 D F2 B D' B' D B' R B' R F' D2 U2 R' D' F D|あにすひちたし|さたいひきへくあて|0|0
+B R2 L F' D2 U F2 L' R' F' B R B' U' D B U' D F' B2 R'|ふつけくあたさえし|はしすにつせいきたひね|2|1
+L D2 U2 R L' F2 L U2 F2 U B U' F2 B' R2 F' U' L U' D2 L'|あしすちにへあ|ちきくえふせあしなぬあ|1|1
+D' L2 D2 R2 F D2 U' B' R U' R L U R D2 B D2 U L' U' F|にけねあかあせぬた|つなさたねくすちぬしせ|2|0
+B F R2 U2 F' U B' U D2 F2 B2 D' L' F2 U B' D L2 R F R2|ふあしくあいつけすせへ|けすえあちきいつくせは|4|2
+B D2 L R U B2 D R2 D F' B2 U L2 B' L2 U2 L2 R2 F2 B' D'|はあひたていつえし|せさあぬねにいへくいけたけ|3|2
+U2 B F D2 U' L' U' B' F2 L2 D2 F2 U' B L F2 L B F2 U' B|えたふさひにけ|さたけあすにぬせねはあ|0|1
+R U2 B F U' F U F D2 R B' D U2 L2 B' L2 R D2 B R F|ちはあいしせつくね|ちいすつてえぬけえきたくね|2|2
+F2 R' F' D' F2 R B L' B' L2 D F R' D2 U2 L D' R' D' F2 B|ふけてしいくひせた|あけきはえすあいひせな|2|2
+D L R' B2 L2 F' R L' F B D U2 B L2 U2 F D2 L U R' U'|あかせつくふあけす|てえちしきふつすくいぬ|2|0
+D L B2 R L' D' L R U' B' U2 L' R F2 D L B' U B2 R' D'|へあしさいねつ|へせあひいくさなきふきちに|2|3
+B2 L' B' F L F' L2 U2 L' B2 L' B2 R2 D2 F B2 U2 D' R' B2 D'|かねあぬつてけへす|あはたひきけいすつえてちさ|2|2
+R2 F D' B2 U' R2 B' F D L B' D' F B2 R2 L' B L2 U2 R' U2|すしせぬあにさくね|はせあえたちねひいへあ|2|1
+U2 B' L2 B2 D L U R D2 R2 D2 U' R' L U2 F' U' F2 U' R B'|にふせあしひさけす|ひさなしきつにくて|2|0
+L D' L' D' U' L2 F2 U' B2 L U D2 R D2 U' B D' F U2 L2 B2|かけせふあくね|ねてにさふひいへけはな|1|1
+U D L U D R' D2 B L B2 D' R' U' L U' R D2 U' R D F2|あたすえさいふひつ|あいねてえたくさけひちすけ|2|2
+F2 R2 B R' D' U B R' B D' L2 U' L F' U' F D2 F2 R U2 L|しにくすぬせさ|たしあへねせにあいえぬくい|0|2
+R2 B2 U2 F2 D2 F R D' L R B F2 L D2 F' B R' D U R2 U'|てにへはえちか|ねふいけぬせちへあさは|1|0
+U D F2 R' L2 U' B' D2 F2 D B' F' U2 F U' D2 L B2 D2 L' F|すかあいつせへちふ|すくなてあちえきぬきけふし|3|2
+U2 B' L D R B' R' B2 R F' R F' L R' D2 L' R F D2 U2 F2|えくせけあいふ|ぬへつせくねしふにさな|0|0
+D' U' B R B' F' U' F' R L B2 F D' B2 D R2 D U B R2 B|いあぬはあくひせへ|ふしてあいひにくいえねへさ|3|2
+B2 F2 D L U2 R' F B' R2 B' F' R F' L2 U' B D2 B L' U' F'|ふあつえせあくけね|しすいちくあひねあえふせさ|2|2
+B2 U R D2 R U' L' D' R' L2 B R D L' D' F2 R' F2 U' B L2|たえあけひふつ|えあせけたへひなきくに|0|0
+R2 U' D B' U2 R D L2 U2 R' L' U2 F2 R2 U' F' R D' U' B2 D'|つたふすさくし|たさつすはにひしいせな|0|1
+U2 F R' L2 F L' B' U2 D2 R L2 U' D' L' B2 D' B F' L' F' U|さいねぬはえに|にぬしくてへえたねあつ|1|1
+D' L2 R D' B' L' R2 B' D2 F2 U' D2 R2 B F L R U' R' B' D|にあたちくけあえか|しいあくせすねにえたさぬひ|2|2
+B' D R2 L F2 L2 F' B2 U2 B F D2 L2 D' B2 D' L' F B' U' D|あくにしちてけへけ|ひいせさつきへにしたき|2|1
+U2 R2 U2 F2 R F2 D2 B R U F' U L2 B2 D' R' U2 B2 D2 B U2|つすねたてえしちぬ|きすあしはついちたひさせな|2|2
+U' F2 R2 U R2 D' U2 L' R' D U R' U2 L F2 U2 F D2 B' R D'|ねえせぬあいにけは|きさはあいたてしあすにひへ|2|2
+B D' L2 U R2 B' R' L B2 U' R' L F2 R' D' B2 F R' D2 L R|へはあしいてくちひ|ぬあちはてねなさけふしすへ|2|2
+B' R2 F L U' R' F2 L' R' U L' U R' D F R' B' U' R' U2 F2|たつねあさえけちか|なあへあえせたねくえけちし|2|3
+R2 U2 B R2 L2 D B2 F' R2 D' R' B R2 D2 R L2 D2 U' F' D L|えちいあひたあけは|ひふはあなちねせしえさ|2|1
+F2 R' D2 F2 D B F2 U D' R2 U' L B' R' U F U L' F L2 F'|かちはてたいにくひ|なてけにねくふすつえぬ|2|0
+U' R' B F' L' R' D L2 F' D U' L' F2 D2 L2 U' L' R' D U R|けいひえへあてちふ|ついくたにぬへえしてさきね|2|2
+L' U L2 R' D2 F R2 U2 R2 L' U2 D2 B' U D L D2 B' D2 F2 R'|へにちくひけす|きすひふしさてあいはつちに|2|2
+D R2 L D' U' F2 B2 L R' B U' F2 D' R' U F R' U2 R2 D' U|くちかてけせた|さすちせつはねひしいた|1|0
+R B' F' R D2 F' R L2 D2 L2 U B2 F2 R' B R2 L' F2 D' U F'|たぬくては|ついふてはへしひさなきにき|0|2
+L' U' D B' D F2 U' B' L2 B2 L2 F' L R2 U D2 R2 U2 D R' B'|にけかたひぬあ|したさへひくせついねち|0|0
+U' F2 L' U L2 F2 R2 L' B U B R' F D F B D' B2 R' F2 D|つあへふけあえひか|ぬすくさなけふきてちね|2|1
+D F D F' B2 R U B' R' U2 R' F B' L' F R2 F' B L2 F' L|あたてえひけかちふ|へいてあはにたぬつえきしえ|3|2
+L2 U R2 U F' R' B2 U2 F2 L2 U2 D2 L' D2 B2 U2 B2 U R' B2 L2|しけあつちあくせく|せふえいきあしちへひあくは|2|2
+U R D' L2 U' D L B2 L U D2 R B2 L2 B2 D B' R F' B2 D2|あけくかたぬていに|あねたいてえけへちくさぬひ|2|2
+U' F2 D' F' B U D' R F L' R' U F2 L2 D2 L2 R B' R L2 U|しねあいにせたちふ|せねけふさすつちはひな|3|0
+B U F R D2 R L U' D R B L' F2 U2 D2 R L2 F2 D2 U2 R|えにひへすあち|あけたきいひせくさへなちに|0|2
+D F2 B' L' F D F2 R' D2 L' R B' F R U D' B' R' L' D2 U'|くちけしいへあ|はつひにえすいふてきなけし|0|2
+R U2 R2 F2 L' B' L R' B' U B U R' U R2 L B R2 D2 L' F|あしへはくぬく|へくあちぬなけあえきてたさ|1|2
+F B' U L' R B F2 D' F' L B' L U' F2 R2 U' B2 F' L2 U2 R|しあひぬすあいへに|ぬてあくけふさねすいに|2|0
+F2 U B' R B' F2 D2 L' R D' F R' B R2 D' U2 B U2 R D' L'|てちくせすいにえか|きえけへいあちくぬふつ|2|1
+F2 R D B2 F R' F L2 F2 R2 F2 L2 B2 U F B2 L' B U2 R' U|ちけせねいかさ|くすしせひたさあきちね|0|1
+F D2 B' U2 F2 R D U B L B U2 F' D2 U2 F' D2 U L2 B' D'|せいぬくさはか|たひはけねあさせあいすにい|0|2
+U L U' F2 L B2 L' F2 B U2 R' L D2 R U D2 B2 F L U' R2|ちてにへひはえ|しねつふすえなちくせてぬひ|0|2
+R2 U' B F' D' R2 B2 D U2 F2 R B' L2 F' U F2 D2 B2 F2 L F|しけふさたねい|へふせさあねぬしいつくにく|0|2
+F B R U' L F' B' L' D U' R2 D2 B' D' R L B2 D' F R2 F'|ねちへけさいにえし|いくさぬへせたあちきつけし|2|2
+U2 D2 R L' B' R2 F2 B2 D' U' B2 F' U L' U' R' D2 U' B2 R' F|あねいけちつえたえ|くぬたしあにいえなきへせき|2|2
+B D' B L F' L2 U' L R' D U' B2 U D2 F L' U R2 F R' F'|はへひいふかつ|てあぬすけきいふちえな|1|1
+B' U2 L2 F' D2 U' R F L' U B2 F R' F2 U L B2 D' B F2 D2|すふせつてくひ|ひえへいてあけたにきあくは|1|2
+L D2 U' F' D B' D' B R' U2 R' D F U2 F2 D F2 D' U B L2|あねふたはしさいに|にくあなぬふせねさへけ|2|0
+U2 L2 D' U' L' U2 F R' B' D F2 B2 L2 B' D R B' R2 F' B2 U|にせちえはあく|きけいぬえあちへふくはせて|0|2
+B2 U2 L' B2 F D2 R U' R2 U2 D2 R' U2 F R D B' R' D' R2 B2|さえねはちたし|あねくぬにてけいえへあたふ|1|2
+L F2 U' R2 B2 U D2 F' B2 L F2 R' B2 F R' L' D2 R' L U' D|すへあいふえにくね|あいにしへくさたひあきてき|2|2
+D' L2 D' L2 D2 B L2 R U' D' R2 D L' F2 R' U' B2 U2 D B' F'|ちくさいせしつけは|してえにくたすいひねい|2|1
+F' L2 B U2 B2 L' B2 U B' U F' B' L2 B R U L2 U D2 B2 U'|あけちくえせていに|きあついぬたにいえせさくすしは|2|4
+D2 U2 L' R' B2 U R2 U' L2 U' R2 U' L2 R2 U F B2 L2 D R B|あにたふしすてくね|なへしあねちえくたてつ|2|1
+L B R2 U2 F2 L D F L' F2 U' D' F D B' D' U2 R B' L2 B|ふはあひにえかせへ|ぬねえいへふつはちけしせて|2|2
+R2 F2 D2 B D2 L2 D2 B' D' F L D U L F R D B' R L2 D2|させけふいひか|てしへねくぬたにあえな|0|0
+L D U' F D F' D2 U2 L' D2 U' F' B' U B F' U' L' U' D B2|ねたあけつしあ|ひせはあさいふへちきなけし|1|2
+U' R2 F2 L' F2 D2 L2 D' F' U' R' L2 D F2 B2 U F' B' D' L' F|すしたふいあさくひ|ちあけてなへえたはあきひね|2|2
+B' U' R' L2 D R' U L D2 U' L' R' B2 D2 F' D2 F' B' R' D2 B'|すにくへえぬさ|にてくねぬなえけすふけ|0|1
+F' U2 F2 U' L2 D2 R F2 L' B' F R U L' B2 D R L U' B D'|あくすいてえしちぬ|ぬへくけにきつていふなえさ|3|2
+U F' U' B' D2 R2 L D L2 R U2 B2 U' R U R' B' L B' R2 L'|しくふせはてい|すあなぬしふあえきせはちえ|0|2
+D R2 B2 F2 U2 F' U L U2 B2 L U' L2 R2 D2 R' L D' B L' D2|にふしすねへて|さちたねはけあてついなすへ|0|3
+R2 F L' B' R' D2 B2 F U2 B L R' D2 L2 F2 L' D' B' F' U' L2|さたしいつくけふく|えすふてなつねぬにくはけし|2|2
+U B2 U' F2 D2 B' D' F D2 U F2 U' F' B L2 B' R B2 R2 L' B|ぬひいあしてけへす|なあねしさたくせひにせ|2|1
+B2 U2 D R L2 B' D F2 R2 B' F2 U2 D L' B L2 D' F B' L' R'|しつけちあへさくひ|せついねたさぬけなくはすへちに|2|4
+B' L2 F' U2 B F2 U2 B' D2 R' U L F' L2 U D' R' F R' L' D'|さはいひふいえへし|ちあえくていすけつたふ|2|2
+L2 D' U2 B L' D' L2 U D' F' U2 R' D' B U' B' D' F B U D'|あけしせひぬていに|つたいえはすぬてにしね|2|0
+U B' L F2 D2 R D U L U F2 U2 B' U R2 F' B' R2 F' L2 B2|えあへいぬくにけす|あしせいすさひつきはき|2|2
+B2 U L' D L2 U R L2 B2 D U2 F2 D2 F R2 F L2 F' R' D L2|つしひてけぬすせへ|あはついひえすけなきてたきちに|2|4
+U' D' L' U' F' D' B2 U' L' D2 R2 L D2 U2 L2 B F2 R U2 R2 D2|いひぬえたけは|さくきへせいひあふけち|1|0
+L U F2 U2 F U2 R D R' F U2 R F2 R' B U R L U2 F2 D2|かちくけさいに|あすふきついえけちぬなせて|1|3
+F2 U F L2 D2 F D' F D' L F' B2 L2 U' D' F R2 D' L2 F B2|たてちいえすひ|あてちすけきはさぬなふ|0|0
+B R F2 U2 D2 F L R D' R2 L' U' F' L U2 L' B L2 D F L|あたはていかつちふ|なふすあけえつきにはせぬき|3|2
+R' U2 F2 B2 D' R F' U2 D2 R' U F2 L2 U2 D F' D' F2 R F R2|えくあせつちて|いふくせすけちきあさぬ|1|0
+L U F2 R D2 F U' L D2 F' R L D' U' L' F B' L D' U L2|てぬつくけえしせへ|つぬいえへくけねたちた|2|1
+R2 B D B2 U2 F R2 B' L R U' D2 L2 R B D2 B' R' D2 L R'|ぬくすしさつへ|ひくついなえしてえきすねたにた|0|4
+F R2 L' B' R L2 B2 D B' L2 D R2 D' F' L2 B2 L' R' D' F2 R'|すあたつてえしくひちふ|けてへえきはつひいたい|4|1
+R F' L2 R U L' B F L F' U2 R' U' F D' B R' U R' B' L|さふかつねけせ|はけあさせついぬなきすきたちた|0|4
+L' B2 F2 U2 R' L B' L2 B' R U' R2 B2 R D' F' R' L' F R' F'|はていひつえふへし|せえちあけついへいきはひね|2|3
+F2 B' L R' F' D2 B L U' B' F R' L2 D2 L' B2 R' B' L2 R U|ひさぬいつせへ|けあひはさなきへつちに|2|2
+R2 B' R2 D' B' F' R2 F2 R D2 F U' F' U B F2 U' D2 B2 F2 R2|あいちへしけは|くねあしぬえふへてあいちい|1|2
+F2 L R D R' D' R' B2 L' F2 R' U' B' U F' D2 R' L2 F2 U2 B2|ちあへけねにさえし|しなあたつえひてにねくへさ|2|2
+L F L U L2 B' F' R' U' L' U D' R D' F2 L' D2 L' R2 F' R|てえいふにくはたく|せくあしいえふすぬさきにき|2|2
+F2 L2 R U L F B U' D2 L D F U' D2 L D' R D' F' U2 D2|かあいくふすねせた|ねあけぬいてたさへにつくは|2|2
+D' R D2 R L' F D2 B' D B' L2 R' D R' F2 R D U L2 F2 B'|したぬひすあさ|すにあさなあきけふせひくね|1|2
+D2 R' U L' D U2 R U' R' D B R' L' B L2 F U R' U' B' F2|ねいちいえすか|ぬあいけへたくいえてにねさ|2|2
+L2 B2 D2 L' B' L' F2 U' F' D2 L2 U' L U' R2 U2 R' L2 B2 D' L|ひいへちけてえ|さねいけなくはすひすせにてたふ|0|5
+F U' B D' R F' L2 D' L2 D' R' B U2 L U' R D' F' L2 R' B|いねあぬしせあけす|なあふにすてひねあえはけえ|2|2
+R D' F2 R2 D' B R' F' R D2 U2 L D' F2 B' D F' R2 F B2 U2|あせねちはかていつ|なさはあてけしすひたす|2|2
+L R B2 L' R2 D2 F2 R2 F L2 F' U' F B' R' F' U R' F D F|あはくぬいあえたし|ねけたせついひはさにす|2|0
+R2 F D2 R U R L2 U R F R2 L2 U R' F2 R L2 B2 D B R'|つすしあせねぬ|けへちきなあさはあせぬたせ|0|2
+F' D U L R B' D' B2 D' F L' R2 F' D' B L2 R2 F D2 B2 U|つてえぬえくへけね|つえふぬいきしくなすにてす|2|2
+U R2 B' R B L D2 F' L D U' R U L' U2 B2 F D2 R' U F2|せあさいえちにくねけす|せになきあすたけえぬさ|4|1
+L2 F2 U2 D B R U' R D2 L2 D' U2 L' D' F U2 L' D2 F B U'|けいせにえねか|ぬふきはえついすちせけ|2|0
+B2 L U R2 L U' D F B R L B F2 D2 R2 U D F L' B' U2|しぬあつひせてけは|ひきくいすせさちたけつ|2|0
+U D2 F L R' D F R2 B' F2 D' F D2 L2 F2 L' D2 L D2 F' L|けぬえつあねへ|けたへなはにきあさせてぬひ|0|2
+F D' U' L' U D2 R U' D' R2 U2 F' D2 L2 F' U2 D2 B2 F U L|けたかねぬさに|なへひねえてあにふけあ|0|1
+F2 B' D U2 L2 B' D' B F' L' D' U L2 F2 R2 L B' F U' B F|にえてふすへひ|ぬけふさつていにくすなきね|0|2
+D' L2 B2 R' U D2 R L' D2 U2 F2 U B F R U2 R B' U' D2 R|ぬしてたいひにけす|なきふせすはあえちさけぬし|2|2
+F2 B2 R2 B R2 F' B D2 R' F' U R2 B2 L2 U B2 D' B2 U' B F|つかあふけさくたく|さぬなせにしきあすふへ|2|1
+B' L B2 R B2 U R' B D R2 F2 B2 R L D2 L' D2 F L' B' L2|くぬあせた|あちきはいさひすなけせふけ|1|2
+F' D B2 D2 R L' B D' L' R F2 U R' B U' F2 D R' D L' R|つあはたさえかくねちぬ|ひついすさしくちたてなきね|4|2
+B2 F' D' B2 R' U' B2 L' B F R' U' L R F D B2 R F D2 B2|えふつあはさくたく|えあぬへきてくふいつけにけ|2|2
+B U2 B F D U2 F2 D2 L' U B' F' R' D R2 U R2 B L2 R D2|あへしくすにてちふ|てふはへひさけあちいなきね|2|2
+U' B L F2 D B' F2 D B2 U' B U L U' B' R F' U B2 L' R'|にちたしあひあ|ねくちへあえしぬついたてな|1|2
+U R' D' L' U F U D2 B2 U2 B' F2 R2 L U' F U2 F2 B' R2 L'|にあねえあけへちけ|すちたさついぬけてねいくは|2|2
+L D' B' L D B2 F L2 B L' U F' D L B' F2 D2 B2 U2 B' L|せくあけにちふ|きぬくいなけにせすふし|1|2
+U' L' B' R B L' U' L' B2 D' F D B' F2 D2 R' B2 L' R B' F'|せにふかけあて|あたてへはけえいちきな|1|1
+B' L' R' B R B' F D U' F' B2 U2 R2 F' U R F' B R F2 L|かひふいあけて|てあふひくいさきへにい|1|1
+L F2 L' U' L2 F' L B R' L' F2 L2 R D U' L U' D' F R' F'|つしふひすあさ|ぬてねはすあけえいちい|1|1
+B L' B R' B' D' R D B2 R B2 L D2 F D F' R U B2 D' F'|へさいぬけえく|きいふぬすせあえしちは|0|0
+D F2 D' L' B' D L R F B' L' U' R' U F2 B L' F2 B' L' U2|たひかにあすふ|えにけはたひあせきいあすへ|0|2
+D2 U2 B2 U2 B U2 F L2 B R' L D' R' B2 L2 D' F' D' U' R' U|にかあぬたてくはひ|ふぬちくあけねすさいな|2|1
+B' F U' B' D2 R2 B2 U' F2 U2 L' D2 L B L D2 B' F2 L2 U' F2|くあいせはかあちふ|せあくいけひちへさたい|2|1
+B L2 B R D' F2 D' B' R' F B' D L' D' F2 D L B' D B2 D'|はかあにちせひ|ぬねいくあふちへえけあ|0|1
+D U2 B' L2 D B2 R2 B2 R F L' B2 D B D2 L2 B' D' F D2 R2|つへふすあかさくひ|たえへあついねくてちしひい|2|2
+R D2 R2 U L R U' R' L D' F2 R L2 D U2 F L2 B2 U2 L U|ねあせけかにあちふ|てぬけあはにあきねすへ|2|3
+F U' L B L' D2 L R' F2 U' L2 R2 F B' D R' L F2 B' L' D2|あひいすせてえぬか|ひくたにしすあさねてあ|2|1
+L U' B' D2 F' L2 U R2 B' F' D' U2 B2 U D B2 R' D B2 U2 L'|にへすあえくえちぬ|にくぬねすあさついけなたふ|2|3
+D' R B L' R' U R' D2 U F U' F' U D R2 F' B' D U F U'|はねへふあかさいつ|すけちなあねさひせくふ|2|0
+D' R' L D2 F2 R' F' R' B' F U2 B' D B L2 D2 L F' L D L2|あふひいにえたすか|にあしあいふぬてはなえきさ|2|3
+B F R2 L' B2 L' F' B' L' B2 L' F2 L' D L' D U R L' F R'|ひちにすかあせ|つすせえいにいきたけきくは|0|3
+R' U' D R2 L' B' F' D R' L F U B2 U' B2 R' L2 U R2 F2 D'|ひちつはてえしせへ|はなあてふぬさへけきねちに|2|2
+F U' D2 R F U2 B' L' B L' D F L' D' F2 B' U2 D' F' L D'|ちしくいさせた|ちしきへせいたあひはあえさ|1|2
+B L2 D2 U' B2 F' L2 D U' F2 U F' B' R L D F L' U L' D2|にくふえへすて|ふちきさはつせいけひなすへ|0|2
+U L U' F D F2 D R' L D B' F U' F' B2 U2 L' B' R F B2|あいせひえふしけす|あたいすひあえしさきねくせにく|2|4
+L2 R2 D F2 R2 U2 B' F U' R' L' F R' F U2 B L D2 R F2 D|しあたつてくねけはちふ|ひにあしはふあえせきえすへ|4|3
+R' F' L2 B2 L2 D' F R D B2 F U D' L2 B2 D2 L2 U2 L' D F2|いせえあさくふけく|ひしなあにさきてくつすたす|2|2
+U B2 L' D2 U R D2 L' B2 L D2 L2 D L D U B F R L' B|ふさはつくかた|けぬいつえくせにきすねたふ|0|2
+R2 B' D2 R' U2 B U2 B R' F' R' L2 D F' U D R U B2 D U'|くあえふへいてけは|つせなえねふひはえけにへし|2|2
+L2 U B L U2 L D2 L U R2 B F' R L2 B2 U2 B R' D2 L' R|ちいくけえあて|いたひつにせえくへさきけね|1|2`.split("\n").map(l=>{const [s,c,e,cb,eb]=l.split("|");return {s,c,e,cb:+cb,eb:+eb,par:c.length%2}});
 const BASEW = DATA.pairs, BASEC = DATA.conf, BASEA = DATA.algs, POS = DATA.pos;
 const PAIRS = Object.keys(BASEW);
 const app = document.getElementById('app');
@@ -7137,7 +8547,7 @@ let eaOver = {}, EA = {...BASEEA};
 let wOver = {}, aOver = {}, stats = {memo:{}, alg:{}}, days = [], log = [], LTR = 'あ', rep = {},
     seenToday = {d:'', memo:[], alg:[], ealg:[]},
     SEL = {memo:{n:10, src:'all', fmt:'one'}, alg:{n:10, src:'all'}, ealg:{n:10, src:'all'}},
-    trials = [], etrials = [], erep = {}, hist = [], TSET = {pairs:0, split:false, mode:0, emode:0, ebk:-1, cbk:-1};
+    trials = [], etrials = [], ftrials = [], fmiss = [], erep = {}, hist = [], TSET = {pairs:0, split:false, mode:0, emode:0, ebk:-1, cbk:-1};
 const saveSel = (n, src) => { SEL[MODE] = {...SEL[MODE], n, src}; put('bld:sel', SEL) };
 const LETTERS = [...'あいえかくけさしすせたちつてにぬねはひふへ'];
 let TH = {memo:1000, alg:4000, ealg:4500}, MODE = 'memo', S = null, T = null, VIEW = 'main';
@@ -7164,7 +8574,7 @@ const BACKEND = (() => {
 })();
 const get = async k => JSON.parse((await BACKEND.get(k)).value);
 const put = (k,v) => { try{ BACKEND.set(k, JSON.stringify(v)) }catch(e){} };
-const KEYS = ['bld:stats2','bld:days','bld:th2','bld:log','bld:ltr','bld:words','bld:algs','bld:conf','bld:rep','bld:seen','bld:sel','bld:trials','bld:tset','bld:ealgs','bld:etrials','bld:erep','bld:gist','bld:base','bld:tm','bld:hist'];
+const KEYS = ['bld:stats2','bld:days','bld:th2','bld:log','bld:ltr','bld:words','bld:algs','bld:conf','bld:rep','bld:seen','bld:sel','bld:trials','bld:tset','bld:ealgs','bld:etrials','bld:erep','bld:gist','bld:base','bld:tm','bld:hist','bld:ftrials','bld:fmiss'];
 let STORE_OK = true;
 async function probe(){
   if(!BACKEND){ STORE_OK = false; return }
@@ -7182,7 +8592,7 @@ async function load(){
                  ['bld:trials', v=>trials=v], ['bld:tset', v=>TSET={...TSET,...v}],
                  ['bld:ealgs', v=>eaOver=v], ['bld:etrials', v=>etrials=v], ['bld:erep', v=>erep=v],
                  ['bld:gist', v=>GIST={...GIST,...v}], ['bld:base', v=>BASE=v], ['bld:tm', v=>tmRestore(v)],
-                 ['bld:hist', v=>hist=v]];
+                 ['bld:hist', v=>hist=v], ['bld:ftrials', v=>ftrials=v], ['bld:fmiss', v=>fmiss=v]];
   if(BACKEND) for(const [k,f] of tries){ try{ const v = await get(k); if(v) f(v) }catch(e){} }
   await probe();
   Object.assign(W, wOver); Object.assign(A, aOver); Object.assign(EA, eaOver);
@@ -7245,6 +8655,13 @@ const logQ = (mode, pair, k, ms) =>
   pushHist([Date.now(), mode==='memo'?0:mode==='alg'?1:2, pair, k, Math.round(ms||0)]);
 const logT = (kind, ok, n, ms, par) =>
   pushHist([Date.now(), kind==='trial'?3:4, '', ok?0:2, ms==null?-1:Math.round(ms), n, par||0]);
+const FMISSMAX = 20;
+function mixMiss(a, b){
+  const seen = new Set(a.map(x=>x.s));
+  const out = a.concat((b||[]).filter(x=>!seen.has(x.s)));
+  out.sort((x,y)=>x.t-y.t);
+  return out.slice(-FMISSMAX);
+}
 function mergeHist(a, b){
   const key = r => r.join('\u0001');
   const seen = new Set(a.map(key));
@@ -7278,8 +8695,10 @@ const PS = () => isE() ? EPOS : POS;
 const tabs = () => `<div class="grp">
   <button class="gb ${VIEW==='main'&&!EDGE()?'on':''}" data-g="c">コーナー</button>
   <button class="gb ${VIEW==='main'&&EDGE()?'on':''}" data-g="e">エッジ</button>
+  <button class="gb ${VIEW==='full'?'on':''}" data-g="f">フル</button>
   <button class="gb ${VIEW==='timer'?'on':''}" data-g="t">タイマー</button></div>
-  <div class="tabs">${VIEW==='timer' ? '<span class="tab on">練習タイマー</span>' : (EDGE()
+  <div class="tabs">${VIEW==='timer' ? '<span class="tab on">練習タイマー</span>'
+    : VIEW==='full' ? '<span class="tab on">実地（フル）</span>' : (EDGE()
     ? [['ealg','手順'],['etrial','実地']]
     : [['memo','変換'],['alg','手順'],['trial','実地']])
     .map(([v,l])=>`<button class="tab ${MODE===v?'on':''}" data-m="${v}">${l}</button>`).join('')}
@@ -7297,7 +8716,8 @@ const bindTabs = () => {
   app.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>goMode(b.dataset.m));
   app.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{
     const g=b.dataset.g;
-    if(g==='t') timerScreen(); else goMode(g==='e'?'ealg':'memo');
+    if(g==='t') timerScreen(); else if(g==='f') ftrialHome();
+    else goMode(g==='e'?'ealg':'memo');
   });
 };
 
@@ -7418,7 +8838,7 @@ function trialResult(){
       <button class="chip" id="fadd">追加</button></div>
     <div id="flist"></div>
     <button class="gh" id="tlk">レターペアを調べる</button>
-    <div class="scr" style="margin-top:14px;font-size:12px">${T.scr}</div>`;
+    <div class="scr" style="margin-top:14px">${T.scr}</div>`;
   const fin = ok => {
     if(T.commit) T.commit();
     trials.push({at:today(), ms:T.ms, split:T.split, ok, memo:T.memo, n:np, par:T.par||0});
@@ -7582,6 +9002,231 @@ function chainDone(){
   qs('again').onclick = ()=>chainStart(S.q.length, SEL.memo.src);
   keys({Space: press('again')});
   syncPush();
+}
+
+/* ---------- フル実地（コーナー＋エッジ） ---------- */
+function ftrialHome(){
+  VIEW='full'; keys(null); paint();
+  const ok = ftrials.filter(t=>t.ok), recent = ftrials.slice(-30);
+  const timed = ftrials.filter(t=>t.ms!=null), rOk = recent.filter(t=>t.ok && t.ms!=null);
+  const avg = a => a.length ? a.reduce((s,t)=>s+t.ms,0)/a.length : 0;
+  const bestA = timed.filter(t=>t.ok).map(t=>t.ms);
+  const best = bestA.length ? Math.min(...bestA) : 0;
+  const mx = Math.max(1, ...recent.filter(t=>t.ms!=null).map(t=>t.ms));
+  app.innerHTML = tabs() + `
+    <div class="tst">
+      <div><div class="big">${ftrials.length}</div><div class="sub">試行</div></div>
+      <div><div class="big">${pct(ok.length, ftrials.length)}<small style="font-size:13px">%</small></div><div class="sub">成功</div></div>
+      <div><div class="big">${rOk.length?ms(avg(rOk)):'—'}</div><div class="sub">直近平均</div></div>
+      <div><div class="big">${best?ms(best):'—'}</div><div class="sub">最速</div></div></div>
+    ${recent.length ? `<div class="strip">${recent.map(t=>
+      `<div class="bar ${t.ok?'':'k2'}" style="height:${t.ms==null?6:Math.max(6,t.ms/mx*50)}px;${
+        t.ms==null?'opacity:.4':''}"></div>`).join('')}</div>` : ''}
+    <div class="cfg">
+      <div class="fld"><div class="lab">パリティ</div><div class="row" id="fpar"></div></div>
+      <div class="fld"><div class="lab">計測</div><div class="row" id="fsp"></div></div>
+    </div>
+    <button class="go" id="fstart">スクランブルを出す<span class="kbd">Space</span></button>
+    ${fmiss.length ? `<button class="gh" id="fmb">失敗したスクランブル（${fmiss.length}件）</button>` : ''}
+    ${ftrials.length ? `<button class="gh" id="fhist">記録を見る（${ftrials.length}件）</button>` : ''}
+    <div class="note">コーナーとエッジの両方が崩れます。ひねり・フリップのみのケースは含みません。<br>
+      緑前・白上で崩し、y してから分析してください。</div>`;
+  const rO=[[-1,'混ぜる'],[0,'なし'],[1,'あり']], sO=[[0,'通し'],[1,'記憶と実行を分ける'],[2,'計測しない']];
+  const draw = () => {
+    qs('fpar').innerHTML = rO.map(([v,l])=>`<button class="chip ${(TSET.fpar??-1)===v?'on':''}" data-fr="${v}">${l}</button>`).join('');
+    qs('fsp').innerHTML = sO.map(([v,l])=>`<button class="chip ${(TSET.fmode|0)===v?'on':''}" data-fs="${v}">${l}</button>`).join('');
+    app.querySelectorAll('[data-fr]').forEach(b=>b.onclick=()=>{TSET.fpar=+b.dataset.fr;put('bld:tset',TSET);draw()});
+    app.querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>{TSET.fmode=+b.dataset.fs;put('bld:tset',TSET);draw()});
+  };
+  draw(); bindTabs();
+  qs('fstart').onclick = fScramble;
+  if(fmiss.length) qs('fmb').onclick = fMiss;
+  if(ftrials.length) qs('fhist').onclick = fHist;
+  keys({Space: press('fstart')});
+}
+function fScramble(){
+  const want = TSET.fpar ?? -1;
+  let pool = want<0 ? FSCRAMBLES : FSCRAMBLES.filter(x=>x.par===want);
+  if(!pool.length) pool = FSCRAMBLES;
+  const pick = pool[Math.floor(Math.random()*pool.length)];
+  T = {scr:pick.s, cm:pick.c, em:pick.e, par:pick.par, full:true};
+  app.innerHTML = `
+    <div class="top"><div class="ttl">フル　コーナー${Math.ceil(pick.c.length/2)}／エッジ${
+      Math.ceil(pick.e.length/2)}ペア${pick.par?'　パリティ有り':''}</div>
+      <div class="cnt" id="quit">やめる</div></div>
+    <div class="scr">${pick.s}</div>
+    <button class="go" id="go">${TSET.fmode===2?'解き終えた':`崩し終えた（${TAP}で計測開始）`}<span class="kbd">Space</span></button>
+    <div class="note">緑前・白上で崩し、y してから開始してください。</div>`;
+  qs('quit').onclick = ftrialHome;
+  qs('go').onclick = TSET.fmode===2
+    ? () => { T.ms = null; T.split = null; fResult() }
+    : fRun;
+  keys({Space: press('go')});
+}
+function fRun(){
+  const t0 = performance.now(); T.split = null;
+  app.innerHTML = `
+    <div class="top"><div class="ttl">計測中</div><div class="cnt" id="quit">やめる</div></div>
+    <div class="card" id="tcard" style="min-height:230px">
+      <div class="now" id="tnow" style="font-size:44px">0.00</div>
+      <div class="hint" id="thint">${TSET.fmode===1?`記憶できたら${TAP}`:`揃ったら${TAP}`}</div></div>`;
+  const nowEl = qs('tnow');
+  const tick = setInterval(()=>{ nowEl.textContent = ms(performance.now()-t0) }, 31);
+  keys({Space: press('tcard')});
+  qs('quit').onclick = ()=>{ clearInterval(tick); keys(null); ftrialHome() };
+  qs('tcard').onclick = () => {
+    if(TSET.fmode===1 && T.split===null){
+      T.split = performance.now()-t0;
+      qs('thint').textContent = `記憶 ${ms(T.split)}　揃ったら${TAP}`;
+      return;
+    }
+    clearInterval(tick); T.ms = performance.now()-t0; fResult();
+  };
+}
+function fResult(){
+  const nc = Math.ceil(T.cm.length/2), ne = Math.ceil(T.em.length/2);
+  app.innerHTML = `
+    <div class="top"><div class="ttl">結果</div><div class="cnt" id="quit">閉じる</div></div>
+    ${T.ms!=null?`<div class="clock"><div class="now">${ms(T.ms)}</div>
+      <div class="prog">${T.split!=null?`記憶 ${ms(T.split)} ／ 実行 ${ms(T.ms-T.split)}`:''}</div></div>`:''}
+    <div class="note">コーナー${nc}／エッジ${ne}ペア${T.par?'＋パリティ':''}${T.ms==null?'　（計測なし）':''}</div>
+    <div class="lab" style="margin-top:16px">コーナー（${TAP}で ◯ → ✕ → 対象外）</div>
+    <div id="dlistC"></div>
+    <div class="fl2" style="margin-top:8px"><input id="fpC" placeholder="コーナーのペアを追加" autocapitalize="off">
+      <button class="chip" id="faddC">追加</button></div>
+    <div id="flistC"></div>
+    <div class="lab" style="margin-top:16px">エッジ</div>
+    <div id="dlistE"></div>
+    <div class="fl2" style="margin-top:8px"><input id="fpE" placeholder="エッジのペアを追加" autocapitalize="off">
+      <button class="chip" id="faddE">追加</button></div>
+    <div id="flistE"></div>
+    <div class="note" style="margin-top:6px">ブレークインの選び方で変わるので、違っていたら「対象外」にして足してください。</div>
+    <div class="marks two" id="tmarks" style="margin-top:14px">
+      <button class="mk ok" id="tok">成功<span class="kbd">Space</span></button>
+      <button class="mk ng" id="tng">ミス<span class="kbd">Space</span></button></div>
+    <div class="scr" style="margin-top:14px">${T.scr}</div>`;
+  const fin = ok => {
+    if(T.commitC) T.commitC();
+    if(T.commitE) T.commitE();
+    ftrials.push({at:today(), ms:T.ms, split:T.split, ok, nc, ne, par:T.par});
+    ftrials = ftrials.slice(-400); put('bld:ftrials', ftrials);
+    const before = fmiss.length;
+    fmiss = fmiss.filter(x=>x.s!==T.scr);
+    if(!ok){ fmiss.push({t:Date.now(), at:today(), s:T.scr, c:T.cm, e:T.em, par:T.par});
+      fmiss = fmiss.slice(-FMISSMAX) }
+    if(!ok || before!==fmiss.length) put('bld:fmiss', fmiss);
+    if(days[days.length-1] !== today()){ days.push(today()); days = days.slice(-400); put('bld:days', days) }
+    logT('ftrial', ok, nc+ne, T.ms, T.par); syncPush();
+    ftrialHome();
+  };
+  qs('quit').onclick = ftrialHome;
+  qs('tok').onclick = ()=>fin(true);
+  qs('tng').onclick = ()=>fin(false);
+  bindFullPairs();
+  bindFlagInput(false, {inp:'fpC', add:'faddC', list:'flistC'});
+  bindFlagInput(true,  {inp:'fpE', add:'faddE', list:'flistE'});
+  const primary = () => { const ok=qs('tok');
+    (ok && ok.style.display!=='none' ? ok : qs('tng')).click() };
+  keys({Space: primary, '1': press('tok'), '2': press('tng')});
+}
+function bindFullPairs(){
+  T.stC = T.stC || {}; T.stE = T.stE || {};
+  const LB=['◯','✕','—'];
+  const mk = (memo, tbl, lbl, wrapId, state, edge) => {
+    const ps=[]; for(let i=0;i+1<memo.length;i+=2){ const p=memo.slice(i,i+2); if(tbl[p]) ps.push(p) }
+    ps.forEach(p=>{ if(state[p]===undefined) state[p]=0 });
+    const wrap = qs(wrapId);
+    const paint = () => {
+      wrap.innerHTML = ps.map(p=>`<span class="dp s${state[p]}" data-dp="${wrapId}:${p}">${p}<b>${
+        lbl[p[0]]}→${lbl[p[1]]}</b><i>${LB[state[p]]}</i></span>${
+        state[p]===1?`<div class="dpa">${edge?'':`<span class="wd">${W[p]||''}</span>`}${tbl[p]||''}</div>`:''}`).join('')
+        + (memo.length%2 ? `<span class="dp par">${memo[memo.length-1]}<b>パリティ</b></span>` : '');
+      wrap.querySelectorAll('[data-dp]').forEach(b=>b.onclick=()=>{
+        const p=b.dataset.dp.split(':')[1]; state[p]=(state[p]+1)%3; paint(); marks();
+      });
+    };
+    paint();
+    return () => {
+      const mode = edge?'ealg':'alg', store = edge?erep:rep, key = edge?'bld:erep':'bld:rep';
+      for(const p of ps){
+        const st = state[p]; if(st===2) continue;
+        noteSeen(mode, p);
+        const S2 = stats[mode] = stats[mode]||{};
+        const v = S2[p] || {seen:0,stuck:0,wrong:0,avg:0,debt:0};
+        v.seen++;
+        if(st===1){ v.wrong++; v.debt=(v.debt||0)+1; store[p]=(store[p]||0)+1 }
+        S2[p]=v;
+      }
+      put('bld:stats2', stats); put(key, store); put('bld:seen', seenToday);
+    };
+  };
+  const marks = () => {
+    const ng = Object.values(T.stC).includes(1) || Object.values(T.stE).includes(1);
+    const row = qs('tmarks'), ok = qs('tok');
+    if(!row || !ok) return;
+    ok.style.display = ng ? 'none' : '';
+    row.classList.toggle('two', !ng);
+  };
+  T.commitC = mk(T.cm, A, POS, 'dlistC', T.stC, false);
+  T.commitE = mk(T.em, EA, EPOS, 'dlistE', T.stE, true);
+  marks();
+}
+function fMiss(){
+  keys(null);
+  const rows = [...fmiss].reverse();
+  app.innerHTML = `
+    <div class="top"><div class="ttl">失敗したスクランブル</div><div class="cnt" id="quit">戻る</div></div>
+    <div class="note" style="margin-top:0;border-top:0;padding-top:0">最新${FMISSMAX}件まで残ります。古いものから消えます。<br>
+      「もう一度」で同じスクランブルをやり直せます。成功すれば一覧から消えます。</div>
+    ${rows.map((m,i)=>`<div class="fm">
+      <div class="hd"><span class="d">${m.at}</span>
+        <span class="p">コーナー${Math.ceil(m.c.length/2)}／エッジ${Math.ceil(m.e.length/2)}${m.par?'＋パリティ':''}</span>
+        <button class="chip" data-fmr="${fmiss.length-1-i}">もう一度</button>
+        <i class="ed" data-fmx="${fmiss.length-1-i}">消す</i></div>
+      <div class="scr">${m.s}</div></div>`).join('')}
+    ${rows.length ? `<button class="gh" id="fmclr">すべて消す</button>` : ''}`;
+  qs('quit').onclick = ftrialHome;
+  app.querySelectorAll('[data-fmr]').forEach(b=>b.onclick=()=>{
+    const m = fmiss[+b.dataset.fmr];
+    T = {scr:m.s, cm:m.c, em:m.e, par:m.par, full:true, retry:true};
+    app.innerHTML = `
+      <div class="top"><div class="ttl">やり直し　コーナー${Math.ceil(m.c.length/2)}／エッジ${
+        Math.ceil(m.e.length/2)}${m.par?'　パリティ有り':''}</div>
+        <div class="cnt" id="quit">やめる</div></div>
+      <div class="scr">${m.s}</div>
+      <button class="go" id="go">${TSET.fmode===2?'解き終えた':`崩し終えた（${TAP}で計測開始）`}<span class="kbd">Space</span></button>
+      <div class="note">緑前・白上で崩し、y してから開始してください。</div>`;
+    qs('quit').onclick = fMiss;
+    qs('go').onclick = TSET.fmode===2
+      ? () => { T.ms = null; T.split = null; fResult() }
+      : fRun;
+    keys({Space: press('go')});
+  });
+  app.querySelectorAll('[data-fmx]').forEach(b=>b.onclick=()=>{
+    fmiss.splice(+b.dataset.fmx, 1); put('bld:fmiss', fmiss); syncPush();
+    fmiss.length ? fMiss() : ftrialHome();
+  });
+  if(rows.length) qs('fmclr').onclick = () => {
+    if(!confirm('失敗したスクランブルをすべて消します')) return;
+    fmiss = []; put('bld:fmiss', fmiss); syncPush(); ftrialHome();
+  };
+}
+function fHist(){
+  keys(null);
+  const rows = [...ftrials].reverse().slice(0,80);
+  app.innerHTML = `
+    <div class="top"><div class="ttl">フルの記録</div><div class="cnt" id="quit">戻る</div></div>
+    <div class="list">${rows.map(t=>`<div class="li">
+      <div class="k" style="font-family:var(--mono);font-size:15px">${t.ms==null?'—':ms(t.ms)}</div>
+      <div class="v">${t.at}　C${t.nc}／E${t.ne}${t.par?'＋P':''}${t.split!=null?`　記憶 ${ms(t.split)}`:''}</div>
+      <div class="m2" style="color:${t.ok?'var(--mint)':'var(--coral)'}">${t.ok?'成功':'ミス'}</div>
+    </div>`).join('')}</div>
+    <button class="gh" id="clrt">記録を消す</button>`;
+  qs('quit').onclick = ftrialHome;
+  qs('clrt').onclick = () => {
+    if(!confirm('フルの記録をすべて消します')) return;
+    ftrials = []; put('bld:ftrials', ftrials); ftrialHome();
+  };
 }
 
 /* ---------- 練習タイマー ---------- */
@@ -7893,7 +9538,7 @@ function settings(){
       <div><div class="big">${days.length}</div><div class="sub">練習した日数</div></div>
       <div><div class="big">${totQ}</div><div class="sub">のべ出題数</div></div>
       <div><div class="big">${trials.length + etrials.length}</div><div class="sub">実地</div></div></div>
-    <div class="note" style="margin-top:0">保存の状態：${STORE_OK
+    <div class="note" style="margin-top:4px">保存の状態：${STORE_OK
       ? `<span style="color:var(--mint)">保存されます（${BACKEND===LS?'ブラウザ内':'アプリ内'}）</span>`
       : '<span style="color:var(--coral)">保存されません（閉じると消えます）</span>'}</div>
     <div class="lab" style="margin-top:18px">記録</div>
@@ -7991,11 +9636,14 @@ function bindDonePairs(edge){
 }
 
 /* ---------- 回せなかったペアの入力 ---------- */
-function bindFlagInput(edge){
+function bindFlagInput(edge, ids){
+  const I = ids || {inp:'fp', add:'fadd', list:'flist'};
   const store = edge ? erep : rep, key = edge ? 'bld:erep' : 'bld:rep';
   const tbl = edge ? EA : A, lbl = edge ? EPOS : POS;
+  const posOf = () => lbl, algOf = p => tbl[p], has = p => !!tbl[p], isEdge = () => !!edge;
   const added = [];
-  const inp = qs('fp'), list = qs('flist'), btn = qs('fadd');
+  const inp = qs(I.inp), list = qs(I.list), btn = qs(I.add);
+  if(!inp || !list || !btn) return;
   const paint = () => {
     list.innerHTML = added.map(p=>`<div class="fx1">
       <div class="hd"><b>${p}</b><span class="ps">${lbl[p[0]]}→${lbl[p[1]]}</span>${
@@ -8136,7 +9784,7 @@ function etrialResult(){
       <button class="chip" id="fadd">追加</button></div>
     <div id="flist"></div>
     <button class="gh" id="elk">手順を調べる</button>
-    <div class="scr" style="margin-top:14px;font-size:12px">${T.scr}</div>`;
+    <div class="scr" style="margin-top:14px">${T.scr}</div>`;
   const fin = ok => {
     if(T.commit) T.commit();
     etrials.push({at:today(), ms:T.ms, split:T.split, ok, memo:T.memo, n:np});
@@ -8356,7 +10004,7 @@ function browse(q){
 function snapshot(){
   return {v:2, at:today(), ts:Date.now(),
     stats, days, th:TH, log, ltr:LTR, words:wOver, algs:aOver, conf:CONF, rep, seen:seenToday, sel:SEL,
-    trials, etrials, tset:TSET, ealgs:eaOver, erep, hist};
+    trials, etrials, ftrials, fmiss, tset:TSET, ealgs:eaOver, erep, hist};
 }
 function applyDump(d, merge, counters){
   const nz = o => o && typeof o === 'object' ? o : {};
@@ -8383,6 +10031,8 @@ function applyDump(d, merge, counters){
     const mix = (a,b) => { const seen=new Set(a.map(key)); 
       return [...a, ...b.filter(t=>!seen.has(key(t)))].sort((x,y)=>x.at<y.at?-1:1).slice(-400) };
     trials = mix(trials, d.trials||[]); etrials = mix(etrials, d.etrials||[]);
+    ftrials = mix(ftrials, d.ftrials||[]);
+    if(d.fmiss) fmiss = mixMiss(fmiss, d.fmiss);
     if(d.hist) hist = mergeHist(hist, d.hist);
     if(d.seen) for(const m of ['memo','alg','ealg'])
       seenToday[m] = [...new Set([...(seenToday[m]||[]), ...((d.seen[m])||[])])];
@@ -8392,7 +10042,8 @@ function applyDump(d, merge, counters){
   } else {
     stats = d.stats||{memo:{},alg:{},ealg:{}}; days = d.days||[]; log = d.log||[];
     wOver = nz(d.words); aOver = nz(d.algs); eaOver = nz(d.ealgs); if(d.conf) CONF = d.conf;
-    rep = nz(d.rep); erep = nz(d.erep); trials = d.trials||[]; etrials = d.etrials||[];
+    rep = nz(d.rep); erep = nz(d.erep); trials = d.trials||[]; etrials = d.etrials||[]; ftrials = d.ftrials||[];
+    fmiss = d.fmiss || [];
     hist = d.hist || [];
     seenToday = d.seen || {d:'',memo:[],alg:[],ealg:[]};
   }
@@ -8404,7 +10055,7 @@ function applyDump(d, merge, counters){
   put('bld:stats2',stats); put('bld:days',days); put('bld:th2',TH); put('bld:log',log);
   put('bld:ltr',LTR); put('bld:words',wOver); put('bld:algs',aOver); put('bld:conf',CONF);
   put('bld:rep',rep); put('bld:seen',seenToday); put('bld:sel',SEL); put('bld:erep',erep);
-  put('bld:ealgs',eaOver); put('bld:trials',trials); put('bld:etrials',etrials); put('bld:tset',TSET); put('bld:hist',hist);
+  put('bld:ealgs',eaOver); put('bld:trials',trials); put('bld:etrials',etrials); put('bld:tset',TSET); put('bld:hist',hist); put('bld:ftrials',ftrials); put('bld:fmiss',fmiss);
   if(!merge){ BASE = null; put('bld:base', null) }
 }
 function backup(){
@@ -8414,7 +10065,7 @@ function backup(){
   app.innerHTML = `
     <div class="top"><div class="ttl">記録の持ち出し / 取り込み</div>
       <div class="cnt" id="back">戻る</div></div>
-    <div class="note" style="margin-top:0">
+    <div class="note" style="margin-top:0;border-top:0;padding-top:0">
       実地 ${n(trials)}＋${n(etrials)}件　連続日数 ${n(days)}日分　編集 ${
         Object.keys(wOver).length + Object.keys(aOver).length + Object.keys(eaOver).length}件<br>
       保存の状態：${STORE_OK ? `<span style="color:var(--mint)">保存されます（${BACKEND===LS?'ブラウザ内':'アプリ内'}）</span>`
