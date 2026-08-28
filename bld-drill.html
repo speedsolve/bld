@@ -8833,7 +8833,7 @@ function trialResult(){
       <button class="mk ng" id="tng">ミス<span class="kbd">Space</span></button></div>
     <div class="lab" style="margin-top:16px">こなしたペア（${TAP}で ◯ → 手✕ → ${EDGE()?"":"語✕ → "}対象外）</div>
     <div id="dlist"></div>
-    <div class="note" style="margin-top:2px">${EDGE()?"":"手✕＝手順が回せなかった／語✕＝語が出てこなかった。<br>"}ブレークインの選び方で変わるので、違っていたら「対象外」にして下で足してください。</div>
+    <div class="note" style="margin-top:2px">${EDGE()?"":"手✕＝手順が回せなかった（揃わない）／語✕＝語は出なかったが回せた。<br>"}ブレークインの選び方で変わるので、違っていたら「対象外」にして下で足してください。</div>
     <div class="fl2" style="margin-top:10px"><input id="fp" placeholder="実際にやったペアを追加" autocapitalize="off">
       <button class="chip" id="fadd">追加</button></div>
     <div id="flist"></div>
@@ -9132,7 +9132,7 @@ function fResult(){
 function bindFullPairs(){
   T.stC = T.stC || {}; T.stE = T.stE || {};
   const marks = () => {
-    const ng = Object.values(T.stC).some(v=>v===1||v===2) || Object.values(T.stE).some(v=>v===1||v===2);
+    const ng = Object.values(T.stC).some(v=>v===1) || Object.values(T.stE).some(v=>v===1);
     const row = qs('tmarks'), ok = qs('tok');
     if(!row || !ok) return;
     ok.style.display = ng ? 'none' : '';
@@ -9585,7 +9585,7 @@ function bindDonePairs(edge){
 /* 0=◯ / 1=手順ミス / 2=想起ミス（コーナーのみ）/ 3=対象外 */
 const DLB = ['◯','手✕','語✕','—'];
 function doneMarks(ps, state){
-  const ng = ps.some(p=>state[p]===1 || state[p]===2);
+  const ng = ps.some(p=>state[p]===1);   // 手順ミスだけが「揃わなかった」を意味する
   const row = qs('tmarks'), ok = qs('tok');
   if(!row || !ok) return;
   ok.style.display = ng ? 'none' : '';
@@ -9780,7 +9780,7 @@ function etrialResult(){
       <button class="mk ng" id="tng">ミス<span class="kbd">Space</span></button></div>
     <div class="lab" style="margin-top:16px">こなしたペア（${TAP}で ◯ → 手✕ → ${EDGE()?"":"語✕ → "}対象外）</div>
     <div id="dlist"></div>
-    <div class="note" style="margin-top:2px">${EDGE()?"":"手✕＝手順が回せなかった／語✕＝語が出てこなかった。<br>"}ブレークインの選び方で変わるので、違っていたら「対象外」にして下で足してください。</div>
+    <div class="note" style="margin-top:2px">${EDGE()?"":"手✕＝手順が回せなかった（揃わない）／語✕＝語は出なかったが回せた。<br>"}ブレークインの選び方で変わるので、違っていたら「対象外」にして下で足してください。</div>
     <div class="fl2" style="margin-top:10px"><input id="fp" placeholder="実際にやったペアを追加" autocapitalize="off">
       <button class="chip" id="fadd">追加</button></div>
     <div id="flist"></div>
