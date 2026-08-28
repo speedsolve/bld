@@ -8831,9 +8831,9 @@ function trialResult(){
     <div class="marks two" id="tmarks" style="margin-top:14px">
       <button class="mk ok" id="tok">成功<span class="kbd">Space</span></button>
       <button class="mk ng" id="tng">ミス<span class="kbd">Space</span></button></div>
-    <div class="lab" style="margin-top:16px">こなしたペア（${TAP}で ◯ → ✕ → 対象外）</div>
+    <div class="lab" style="margin-top:16px">こなしたペア（${TAP}で ◯ → 手✕ → ${EDGE()?"":"語✕ → "}対象外）</div>
     <div id="dlist"></div>
-    <div class="note" style="margin-top:2px">ブレークインの選び方で変わるので、違っていたら「対象外」にして下で足してください。</div>
+    <div class="note" style="margin-top:2px">${EDGE()?"":"手✕＝手順が回せなかった／語✕＝語が出てこなかった。<br>"}ブレークインの選び方で変わるので、違っていたら「対象外」にして下で足してください。</div>
     <div class="fl2" style="margin-top:10px"><input id="fp" placeholder="実際にやったペアを追加" autocapitalize="off">
       <button class="chip" id="fadd">追加</button></div>
     <div id="flist"></div>
@@ -9090,7 +9090,7 @@ function fResult(){
     ${T.ms!=null?`<div class="clock"><div class="now">${ms(T.ms)}</div>
       <div class="prog">${T.split!=null?`記憶 ${ms(T.split)} ／ 実行 ${ms(T.ms-T.split)}`:''}</div></div>`:''}
     <div class="note">コーナー${nc}／エッジ${ne}ペア${T.par?'＋パリティ':''}${T.ms==null?'　（計測なし）':''}</div>
-    <div class="lab" style="margin-top:16px">コーナー（${TAP}で ◯ → ✕ → 対象外）</div>
+    <div class="lab" style="margin-top:16px">コーナー（${TAP}で ◯ → 手✕ → 語✕ → 対象外）</div>
     <div id="dlistC"></div>
     <div class="fl2" style="margin-top:8px"><input id="fpC" placeholder="コーナーのペアを追加" autocapitalize="off">
       <button class="chip" id="faddC">追加</button></div>
@@ -9131,41 +9131,19 @@ function fResult(){
 }
 function bindFullPairs(){
   T.stC = T.stC || {}; T.stE = T.stE || {};
-  const LB=['◯','✕','—'];
-  const mk = (memo, tbl, lbl, wrapId, state, edge) => {
-    const ps=[]; for(let i=0;i+1<memo.length;i+=2){ const p=memo.slice(i,i+2); if(tbl[p]) ps.push(p) }
-    ps.forEach(p=>{ if(state[p]===undefined) state[p]=0 });
-    const wrap = qs(wrapId);
-    const paint = () => {
-      wrap.innerHTML = ps.map(p=>`<span class="dp s${state[p]}" data-dp="${wrapId}:${p}">${p}<b>${
-        lbl[p[0]]}→${lbl[p[1]]}</b><i>${LB[state[p]]}</i></span>${
-        state[p]===1?`<div class="dpa">${edge?'':`<span class="wd">${W[p]||''}</span>`}${tbl[p]||''}</div>`:''}`).join('')
-        + (memo.length%2 ? `<span class="dp par">${memo[memo.length-1]}<b>パリティ</b></span>` : '');
-      wrap.querySelectorAll('[data-dp]').forEach(b=>b.onclick=()=>{
-        const p=b.dataset.dp.split(':')[1]; state[p]=(state[p]+1)%3; paint(); marks();
-      });
-    };
-    paint();
-    return () => {
-      const mode = edge?'ealg':'alg', store = edge?erep:rep, key = edge?'bld:erep':'bld:rep';
-      for(const p of ps){
-        const st = state[p]; if(st===2) continue;
-        noteSeen(mode, p);
-        const S2 = stats[mode] = stats[mode]||{};
-        const v = S2[p] || {seen:0,stuck:0,wrong:0,avg:0,debt:0};
-        v.seen++;
-        if(st===1){ v.wrong++; v.debt=(v.debt||0)+1; store[p]=(store[p]||0)+1 }
-        S2[p]=v;
-      }
-      put('bld:stats2', stats); put(key, store); put('bld:seen', seenToday);
-    };
-  };
   const marks = () => {
-    const ng = Object.values(T.stC).includes(1) || Object.values(T.stE).includes(1);
+    const ng = Object.values(T.stC).some(v=>v===1||v===2) || Object.values(T.stE).some(v=>v===1||v===2);
     const row = qs('tmarks'), ok = qs('tok');
     if(!row || !ok) return;
     ok.style.display = ng ? 'none' : '';
     row.classList.toggle('two', !ng);
+  };
+  const mk = (memo, tbl, lbl, wrapId, state, edge) => {
+    const ps=[]; for(let i=0;i+1<memo.length;i+=2){ const p=memo.slice(i,i+2); if(tbl[p]) ps.push(p) }
+    ps.forEach(p=>{ if(state[p]===undefined) state[p]=0 });
+    const par = memo.length%2 ? memo[memo.length-1] : null;
+    donePaint(qs(wrapId), ps, state, tbl, lbl, edge, marks, par);
+    return doneCommit(ps, state, edge?'ealg':'alg', edge?erep:rep, edge?'bld:erep':'bld:rep', edge);
   };
   T.commitC = mk(T.cm, A, POS, 'dlistC', T.stC, false);
   T.commitE = mk(T.em, EA, EPOS, 'dlistE', T.stE, true);
@@ -9596,34 +9574,57 @@ function bindDonePairs(edge){
   const tbl = edge ? EA : A, lbl = edge ? EPOS : POS, mode = edge ? 'ealg' : 'alg';
   const store = edge ? erep : rep, key = edge ? 'bld:erep' : 'bld:rep';
   const wrap = qs('dlist'); if(!wrap) return;
-  // 0=済 / 1=できなかった / 2=対象外
   T.state = T.state || {};
   const ps = [];
   for(let i=0;i+1<T.memo.length;i+=2){ const p=T.memo.slice(i,i+2); if(tbl[p]) ps.push(p) }
   T.pairs = ps;
   ps.forEach(p=>{ if(T.state[p]===undefined) T.state[p]=0 });
-  const LB=['◯','✕','—'];
-  const marks = () => {
-    const ng = ps.some(p=>T.state[p]===1);
-    const row = qs('tmarks'), ok = qs('tok');
-    if(!row || !ok) return;
-    ok.style.display = ng ? 'none' : '';
-    row.classList.toggle('two', !ng);
-  };
+  const cycle = donePaint(wrap, ps, T.state, tbl, lbl, edge, ()=>doneMarks(ps, T.state));
+  T.commit = doneCommit(ps, T.state, mode, store, key, edge);
+}
+/* 0=◯ / 1=手順ミス / 2=想起ミス（コーナーのみ）/ 3=対象外 */
+const DLB = ['◯','手✕','語✕','—'];
+function doneMarks(ps, state){
+  const ng = ps.some(p=>state[p]===1 || state[p]===2);
+  const row = qs('tmarks'), ok = qs('tok');
+  if(!row || !ok) return;
+  ok.style.display = ng ? 'none' : '';
+  row.classList.toggle('two', !ng);
+}
+function donePaint(wrap, ps, state, tbl, lbl, edge, onChange, par){
+  const N = edge ? 3 : 4;                       // エッジは語が無いので3状態
+  const idx = st => edge && st>=2 ? 3 : st;
   const paint = () => {
-    wrap.innerHTML = ps.map(p=>`<span class="dp s${T.state[p]}" data-dp="${p}">${p}<b>${
-      lbl[p[0]]}→${lbl[p[1]]}</b><i>${LB[T.state[p]]}</i></span>${
-      T.state[p]===1 ? `<div class="dpa">${edge?'':`<span class="wd">${W[p]||''}</span>`}${tbl[p]||'未登録'}</div>` : ''}`).join('');
+    wrap.innerHTML = ps.map(p=>{
+      const st = state[p];
+      const detail = st===1 ? `<div class="dpa">${tbl[p]||'未登録'}</div>`
+        : st===2 ? `<div class="dpa"><span class="wd">${W[p]||'（語なし）'}</span></div>` : '';
+      return `<span class="dp s${st===3?2:st===2?4:st}" data-dp="${p}">${p}<b>${
+        lbl[p[0]]}→${lbl[p[1]]}</b><i>${DLB[st]}</i></span>${detail}`;
+    }).join('') + (par ? `<span class="dp par">${par}<b>パリティ</b></span>` : '');
     wrap.querySelectorAll('[data-dp]').forEach(b=>b.onclick=()=>{
-      const p=b.dataset.dp; T.state[p]=(T.state[p]+1)%3; paint();
+      const p=b.dataset.dp;
+      let n = state[p]+1;
+      if(edge && n===2) n = 3;
+      if(n>3) n = 0;
+      state[p]=n; paint(); if(onChange) onChange();
     });
-    marks();
   };
   paint();
-  T.commit = () => {
+  return paint;
+}
+function doneCommit(ps, state, mode, store, key, edge){
+  return () => {
     for(const p of ps){
-      const st = T.state[p];
-      if(st===2) continue;
+      const st = state[p];
+      if(st===3) continue;
+      if(st===2){                               // 想起できなかった＝変換のミス
+        stats.memo = stats.memo||{};
+        const m = stats.memo[p] || {seen:0,stuck:0,wrong:0,avg:0,debt:0};
+        m.seen++; m.wrong++; m.debt = (m.debt||0)+1;
+        stats.memo[p] = m; noteSeen('memo', p);
+        continue;
+      }
       noteSeen(mode, p);
       const S2 = stats[mode] = stats[mode]||{};
       const v = S2[p] || {seen:0,stuck:0,wrong:0,avg:0,debt:0};
@@ -9777,9 +9778,9 @@ function etrialResult(){
     <div class="marks two" id="tmarks" style="margin-top:14px">
       <button class="mk ok" id="tok">成功<span class="kbd">Space</span></button>
       <button class="mk ng" id="tng">ミス<span class="kbd">Space</span></button></div>
-    <div class="lab" style="margin-top:16px">こなしたペア（${TAP}で ◯ → ✕ → 対象外）</div>
+    <div class="lab" style="margin-top:16px">こなしたペア（${TAP}で ◯ → 手✕ → ${EDGE()?"":"語✕ → "}対象外）</div>
     <div id="dlist"></div>
-    <div class="note" style="margin-top:2px">ブレークインの選び方で変わるので、違っていたら「対象外」にして下で足してください。</div>
+    <div class="note" style="margin-top:2px">${EDGE()?"":"手✕＝手順が回せなかった／語✕＝語が出てこなかった。<br>"}ブレークインの選び方で変わるので、違っていたら「対象外」にして下で足してください。</div>
     <div class="fl2" style="margin-top:10px"><input id="fp" placeholder="実際にやったペアを追加" autocapitalize="off">
       <button class="chip" id="fadd">追加</button></div>
     <div id="flist"></div>
