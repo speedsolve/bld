@@ -87,17 +87,26 @@
   .fl2 input{flex:1;margin:0}
   .fl2 .chip{white-space:nowrap}
   .fl2 input.bad2{border-color:var(--coral)}
-  .dp{display:inline-flex;align-items:baseline;gap:7px;border:1px solid var(--line);
-      border-radius:8px;padding:8px 11px;margin:0 8px 8px 0;cursor:pointer;
-      font-family:var(--mincho);font-size:18px;color:var(--ink)}
+  .dp{display:flex;align-items:baseline;gap:10px;border:1px solid var(--line);
+      border-radius:8px;padding:9px 12px;margin:0 0 6px;cursor:pointer;
+      font-family:var(--mincho);font-size:19px;color:var(--ink)}
   .dp b{font-family:var(--mono);font-size:10px;font-weight:400;color:var(--muted)}
-  .dp i{font-style:normal;font-size:11px;font-family:var(--sans)}
+  .dp i{font-style:normal;font-size:11px;font-family:var(--sans);margin-left:auto;
+        min-width:2.6em;text-align:right}
   .dp.s0{border-color:var(--mint)} .dp.s0 i{color:var(--mint)}
   .dp.s1{border-color:var(--coral);color:var(--coral)} .dp.s1 i{color:var(--coral)}
   .dp.s2{opacity:.45} .dp.s2 i{color:var(--muted)}
   .dpa{display:block;font-family:var(--mono);font-size:13px;color:var(--cy);
-       line-height:1.6;margin:-2px 0 10px;padding-left:2px;word-break:break-word;animation:fade .18s}
+       line-height:1.6;margin:-2px 0 8px;padding-left:13px;word-break:break-word;animation:fade .18s}
   .dpa .wd{font-family:var(--mincho);font-size:14px;color:var(--key);margin-right:10px}
+  .dl{display:grid;grid-template-columns:1fr;gap:0}
+  .dlr{display:flex;align-items:baseline;gap:12px;padding:8px 2px;
+       border-bottom:1px solid var(--line);font-size:13px}
+  .dlr .dd{font-family:var(--mono);color:var(--ink);min-width:5.4em}
+  .dlr .dd small{font-family:var(--sans);font-size:11px;color:var(--muted);margin-left:5px}
+  .dlr .dq{font-family:var(--mono);color:var(--muted);min-width:4em}
+  .dlr .dm{color:var(--coral);font-size:12px;min-width:4.5em}
+  .dlr .dt{color:var(--cy);font-size:12px;margin-left:auto}
   .fm{background:var(--surface);border:1px solid var(--line);border-radius:10px;
       padding:12px 14px;margin-bottom:10px}
   .fm .hd{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
@@ -9506,6 +9515,49 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('pagehide', () => { if(syncOn()) autoSync(false) });
 
 /* ---------- 設定 ---------- */
+function dayLog(){
+  keys(null);
+  const byDay = {};
+  for(const r of hist){
+    const d = new Date(r[0]).toLocaleDateString('sv-SE');
+    const o = byDay[d] = byDay[d] || {q:0, t:0, miss:0};
+    if(r[1]<=2){ o.q++; if(r[3]===2) o.miss++ } else o.t++;
+  }
+  const all = [...new Set([...days, ...Object.keys(byDay)])].sort().reverse();
+  const mon = {};
+  for(const d of all){ const m=d.slice(0,7); (mon[m]=mon[m]||[]).push(d) }
+  const wd = ['日','月','火','水','木','金','土'];
+  app.innerHTML = `
+    <div class="top"><div class="ttl">練習した日</div><div class="cnt" id="back">戻る</div></div>
+    <div class="note" style="margin-top:0;border-top:0;padding-top:0">
+      ${all.length}日。連続 ${streak()}日。<br>
+      問題数とミスは1問ごとの記録から数えています（記録は最大${HMAX}件なので、
+      古い日は「—」になります）。</div>
+    ${Object.keys(mon).sort().reverse().map(m=>`
+      <div class="lab" style="margin-top:16px">${m.replace('-','年')}月　${mon[m].length}日</div>
+      <div class="dl">${mon[m].map(d=>{
+        const o = byDay[d];
+        const day = wd[new Date(d+'T00:00:00').getDay()];
+        return `<div class="dlr"><span class="dd">${d.slice(5).replace('-','/')}<small>${day}</small></span>
+          <span class="dq">${o ? o.q+'問' : '—'}</span>
+          <span class="dm">${o && o.miss ? 'ミス'+o.miss : ''}</span>
+          <span class="dt">${o && o.t ? '実地'+o.t : ''}</span></div>`}).join('')}</div>`).join('')}
+    <button class="gh" id="daycsv">この一覧を書き出す</button>`;
+  qs('back').onclick = settings;
+  qs('daycsv').onclick = () => {
+    const rows = [['日付','曜日','問題数','ミス','実地']];
+    for(const d of [...all].reverse()){
+      const o = byDay[d];
+      rows.push([d, wd[new Date(d+'T00:00:00').getDay()],
+        o?o.q:'', o?o.miss:'', o?o.t:'']);
+    }
+    const csv = '\ufeff' + rows.map(r=>r.join(',')).join('\n');
+    const b = new Blob([csv], {type:'text/csv'});
+    const u = URL.createObjectURL(b), a2 = document.createElement('a');
+    a2.href = u; a2.download = `bld-days-${today()}.csv`; a2.click();
+    setTimeout(()=>URL.revokeObjectURL(u), 2000);
+  };
+}
 function settings(){
   const nEdit = Object.keys(wOver).length + Object.keys(aOver).length + Object.keys(eaOver).length;
   const totQ = ['memo','alg','ealg'].reduce((a,m)=>a+Object.values(stats[m]||{}).reduce((x,v)=>x+(v.seen||0),0),0);
@@ -9522,6 +9574,7 @@ function settings(){
     <div class="lab" style="margin-top:18px">記録</div>
     <button class="gh" style="margin-top:0" id="bk">持ち出し / 取り込み</button>
     <button class="gh" id="csv">分析用に書き出す（${hist.length}件）</button>
+    <button class="gh" id="dlist2">練習した日（${days.length}日）</button>
     <div class="lab" style="margin-top:18px">一周の進み（消化したペア）</div>
     ${[['memo','変換',PAIRS.length],['alg','手順',Object.keys(A).length],
        ['ealg','エッジ手順',Object.keys(EA).length]].map(([m,l,n])=>{
@@ -9548,6 +9601,7 @@ function settings(){
     if(!confirm(l + 'の一周をリセットします（正答率などの記録はそのまま）')) return;
     seenReset(b.dataset.sr); syncPush(); settings();
   });
+  qs('dlist2').onclick = dayLog;
   qs('csv').onclick = () => {
     const MODES = ['変換','手順','エッジ手順','実地','エッジ実地'];
     const rows = [['日時','種別','ペア','語','結果','ミリ秒','ペア数','パリティ']];
