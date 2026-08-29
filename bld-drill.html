@@ -157,6 +157,7 @@
 
   .card.nx{cursor:pointer}
   .nxt{font-size:11px;color:var(--muted);opacity:.6;margin-top:10px;letter-spacing:.08em}
+  .card.tall{min-height:min(62vh,520px)}
   .card{background:var(--surface);border-radius:12px;padding:26px 16px;text-align:center;
         cursor:pointer;user-select:none;min-height:228px;
         display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
@@ -8549,6 +8550,13 @@ const keys = map => {
   };
 };
 const press = id => () => { const b = qs(id); if(b) b.click() };
+const clearTap = () => { app.onclick = null };
+const wideTap = fn => {
+  app.onclick = null;
+  setTimeout(() => {
+    app.onclick = e => { if(e.target.closest && e.target.closest('#quit')) return; fn() };
+  }, 0);
+};
 
 const BASEEA = EDATA.algs, EPOS = EDATA.pos;
 let W = {...BASEW}, A = {...BASEA}, CONF = JSON.parse(JSON.stringify(BASEC));
@@ -8733,6 +8741,7 @@ const bindTabs = () => {
 /* ---------- trial (実地) ---------- */
 const tPairs = t => { const o=[]; for(let i=0;i<t.length;i+=2) o.push(t.slice(i,i+2)); return o };
 function trialHome(){
+  clearTap();
   const ok = trials.filter(t=>t.ok), recent = trials.slice(-30);
   const timed = trials.filter(t=>t.ms!=null), rOk = recent.filter(t=>t.ok && t.ms!=null);
   const avg = a => a.length ? a.reduce((s,t)=>s+t.ms,0)/a.length : 0;
@@ -8812,14 +8821,14 @@ function trialRun(){
   app.innerHTML = `
     <div class="top"><div class="ttl">計測中</div>
       <div class="cnt" id="quit">やめる</div></div>
-    <div class="card" id="tcard" style="min-height:230px">
+    <div class="card tall" id="tcard">
       <div class="now" id="tnow" style="font-size:44px">0.00</div>
       <div class="hint" id="thint">${TSET.split?`記憶できたら${TAP}`:`揃ったら${TAP}`}</div></div>`;
   const nowEl = qs('tnow');
   const tick = setInterval(()=>{ nowEl.textContent = ms(performance.now()-t0) }, 31);
   keys({Space: press('tcard')});
   qs('quit').onclick = ()=>{ clearInterval(tick); keys(null); trialHome() };
-  qs('tcard').onclick = () => {
+  wideTap(() => {
     if(TSET.split && T.split===null){
       T.split = performance.now()-t0;
       qs('thint').textContent = `記憶 ${ms(T.split)}　揃ったら${TAP}`;
@@ -8828,9 +8837,10 @@ function trialRun(){
     clearInterval(tick);
     T.ms = performance.now()-t0;
     trialResult();
-  };
+  });
 }
 function trialResult(){
+  clearTap();
   const np = Math.ceil(T.memo.length/2);
   app.innerHTML = `
     <div class="top"><div class="ttl">結果</div><div class="cnt" id="quit">閉じる</div></div>
@@ -9015,6 +9025,7 @@ function chainDone(){
 
 /* ---------- フル実地（コーナー＋エッジ） ---------- */
 function ftrialHome(){
+  clearTap();
   VIEW='full'; keys(null); paint();
   const ok = ftrials.filter(t=>t.ok), recent = ftrials.slice(-30);
   const timed = ftrials.filter(t=>t.ms!=null), rOk = recent.filter(t=>t.ok && t.ms!=null);
@@ -9076,23 +9087,24 @@ function fRun(){
   const t0 = performance.now(); T.split = null;
   app.innerHTML = `
     <div class="top"><div class="ttl">計測中</div><div class="cnt" id="quit">やめる</div></div>
-    <div class="card" id="tcard" style="min-height:230px">
+    <div class="card tall" id="tcard">
       <div class="now" id="tnow" style="font-size:44px">0.00</div>
       <div class="hint" id="thint">${TSET.fmode===1?`記憶できたら${TAP}`:`揃ったら${TAP}`}</div></div>`;
   const nowEl = qs('tnow');
   const tick = setInterval(()=>{ nowEl.textContent = ms(performance.now()-t0) }, 31);
   keys({Space: press('tcard')});
   qs('quit').onclick = ()=>{ clearInterval(tick); keys(null); ftrialHome() };
-  qs('tcard').onclick = () => {
+  wideTap(() => {
     if(TSET.fmode===1 && T.split===null){
       T.split = performance.now()-t0;
       qs('thint').textContent = `記憶 ${ms(T.split)}　揃ったら${TAP}`;
       return;
     }
     clearInterval(tick); T.ms = performance.now()-t0; fResult();
-  };
+  });
 }
 function fResult(){
+  clearTap();
   const nc = Math.ceil(T.cm.length/2), ne = Math.ceil(T.em.length/2);
   app.innerHTML = `
     <div class="top"><div class="ttl">結果</div><div class="cnt" id="quit">閉じる</div></div>
@@ -9736,6 +9748,7 @@ function bindFlagInput(edge, ids){
 
 /* ---------- edge trial ---------- */
 function etrialHome(){
+  clearTap();
   const ok = etrials.filter(t=>t.ok), recent = etrials.slice(-30);
   const timed = etrials.filter(t=>t.ms!=null), rOk = recent.filter(t=>t.ok && t.ms!=null);
   const avg = a => a.length ? a.reduce((s,t)=>s+t.ms,0)/a.length : 0;
@@ -9806,23 +9819,24 @@ function etrialRun(){
   app.innerHTML = `
     <div class="top"><div class="ttl">計測中</div>
       <div class="cnt" id="quit">やめる</div></div>
-    <div class="card" id="tcard" style="min-height:230px">
+    <div class="card tall" id="tcard">
       <div class="now" id="tnow" style="font-size:44px">0.00</div>
       <div class="hint" id="thint">${TSET.esplit?`記憶できたら${TAP}`:`揃ったら${TAP}`}</div></div>`;
   const nowEl = qs('tnow');
   const tick = setInterval(()=>{ nowEl.textContent = ms(performance.now()-t0) }, 31);
   keys({Space: press('tcard')});
   qs('quit').onclick = ()=>{ clearInterval(tick); keys(null); etrialHome() };
-  qs('tcard').onclick = () => {
+  wideTap(() => {
     if(TSET.esplit && T.split===null){
       T.split = performance.now()-t0;
       qs('thint').textContent = `記憶 ${ms(T.split)}　揃ったら${TAP}`;
       return;
     }
     clearInterval(tick); T.ms = performance.now()-t0; etrialResult();
-  };
+  });
 }
 function etrialResult(){
+  clearTap();
   const np = T.memo.length/2;
   app.innerHTML = `
     <div class="top"><div class="ttl">結果</div><div class="cnt" id="quit">閉じる</div></div>
