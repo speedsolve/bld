@@ -92,6 +92,11 @@
   .fl2 input{flex:1;margin:0}
   .fl2 .chip{white-space:nowrap}
   .fl2 input.bad2{border-color:var(--coral)}
+  .mv{background:var(--surface);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+  .mvl{font-size:11px;letter-spacing:.14em;color:var(--muted);margin-bottom:8px}
+  .mvr{display:flex;flex-wrap:wrap;gap:8px 14px}
+  .mvp{font-family:var(--mincho);font-size:clamp(24px,7vw,32px);letter-spacing:.06em;line-height:1.3}
+  .mvp.par{color:var(--coral)}
   .dp{display:flex;align-items:baseline;gap:10px;border:1px solid var(--line);
       border-radius:8px;padding:9px 12px;margin:0 0 6px;cursor:pointer;
       font-family:var(--mincho);font-size:19px;color:var(--ink)}
@@ -8556,6 +8561,11 @@ const keys = map => {
 };
 const press = id => () => { const b = qs(id); if(b) b.click() };
 const clearTap = () => { app.onclick = null };
+const pairsOf = m => { const r=[]; for(let i=0;i+1<m.length;i+=2) r.push(m.slice(i,i+2));
+  if(m.length%2) r.push(m[m.length-1]); return r };
+const memoView = (memo, label) => `<div class="mv">${label?`<div class="mvl">${label}</div>`:''}
+  <div class="mvr">${pairsOf(memo).map(p=>
+    `<span class="${p.length===2?'mvp':'mvp par'}">${p}</span>`).join('')}</div></div>`;
 const wideTap = fn => {
   app.onclick = null;
   setTimeout(() => {
@@ -8569,7 +8579,7 @@ let eaOver = {}, EA = {...BASEEA};
 let wOver = {}, aOver = {}, stats = {memo:{}, alg:{}}, days = [], log = [], LTR = 'あ', rep = {},
     seenToday = {d:'', memo:[], alg:[], ealg:[]},
     SEL = {memo:{n:10, src:'all', fmt:'one'}, alg:{n:10, src:'all'}, ealg:{n:10, src:'all'}},
-    trials = [], etrials = [], ftrials = [], fmiss = [], erep = {}, hist = [], TSET = {pairs:0, split:false, mode:0, emode:0, ebk:-1, cbk:-1};
+    trials = [], etrials = [], ftrials = [], fmiss = [], erep = {}, hist = [], TSET = {pairs:0, split:false, mode:0, emode:0, ebk:-1, cbk:-1, tform:0, eform:0, fform:0};
 const saveSel = (n, src) => { SEL[MODE] = {...SEL[MODE], n, src}; put('bld:sel', SEL) };
 const LETTERS = [...'あいえかくけさしすせたちつてにぬねはひふへ'];
 let TH = {memo:1000, alg:4000, ealg:4500}, MODE = 'memo', S = null, T = null, VIEW = 'main';
@@ -8767,6 +8777,7 @@ function trialHome(){
       <div class="fld"><div class="lab">パリティ</div><div class="row" id="tpar"></div></div>
       <div class="fld"><div class="lab">ブレークイン</div><div class="row" id="tbk"></div></div>
       <div class="fld"><div class="lab">計測</div><div class="row" id="tsp"></div></div>
+      <div class="fld wide"><div class="lab">出題</div><div class="row" id="tfm"></div></div>
     </div>
     <button class="go" id="tstart">スクランブルを出す<span class="kbd">Space</span></button>
     ${trials.length ? `<button class="gh" id="thist">記録を見る（${trials.length}件）</button>` : ''}
@@ -8775,7 +8786,8 @@ function trialHome(){
   const pO=[[0,'おまかせ'],[3,'3ペア'],[4,'4ペア']],
         sO=[[0,'通し'],[1,'記憶と実行を分ける'],[2,'計測しない']],
         rO=[[0,'なし'],[1,'あり'],[2,'混ぜる']],
-        bO=[[-1,'おまかせ'],[0,'なし'],[1,'1回'],[2,'2回'],[3,'3回以上']];
+        bO=[[-1,'おまかせ'],[0,'なし'],[1,'1回'],[2,'2回'],[3,'3回以上']],
+        fO=[[0,'スクランブル'],[1,'文字だけ（キューブなし）']];
   const draw = () => {
     qs('tp').innerHTML = pO.map(([v,l])=>`<button class="chip ${TSET.pairs===v?'on':''}" data-tp="${v}">${l}</button>`).join('');
     qs('tpar').innerHTML = rO.map(([v,l])=>`<button class="chip ${(TSET.par|0)===v?'on':''}" data-tr="${v}">${l}</button>`).join('');
@@ -8788,6 +8800,8 @@ function trialHome(){
     qs('tbk').innerHTML = bO.map(([v,l])=>`<button class="chip ${(TSET.cbk??-1)===v?'on':''}" data-cb="${v}" ${
       cnt(v)?'':'disabled'}>${l}</button>`).join('');
     app.querySelectorAll('[data-cb]').forEach(b=>b.onclick=()=>{if(!b.disabled){TSET.cbk=+b.dataset.cb;put('bld:tset',TSET);draw()}});
+    qs('tfm').innerHTML = fO.map(([v,l])=>`<button class="chip ${(TSET.tform|0)===v?'on':''}" data-tf="${v}">${l}</button>`).join('');
+    app.querySelectorAll('[data-tf]').forEach(b=>b.onclick=()=>{TSET.tform=+b.dataset.tf;put('bld:tset',TSET);draw()});
     app.querySelectorAll('[data-ts]').forEach(b=>b.onclick=()=>{TSET.mode=+b.dataset.ts;TSET.split=TSET.mode===1;put('bld:tset',TSET);draw()});
   };
   draw(); bindTabs();
@@ -8809,9 +8823,13 @@ function trialScramble(){
   app.innerHTML = `
     <div class="top"><div class="ttl">実地　${np(pick)}ペア${pick.b?'・BI'+pick.b:''}${par?'　パリティ有り':''}</div>
       <div class="cnt" id="quit">やめる</div></div>
-    <div class="scr">${pick.s}</div>
-    <button class="go" id="go">${TSET.mode===2?'解き終えた':`崩し終えた（${TAP}で計測開始）`}<span class="kbd">Space</span></button>
-    <div class="note">緑前・白上で崩し、y してから開始してください。${par
+    ${TSET.tform===1 ? memoView(pick.m) : `<div class="scr">${pick.s}</div>`}
+    <button class="go" id="go">${TSET.tform===1
+      ? (TSET.mode===2?'終わった':`はじめる（${TAP}で計測開始）`)
+      : (TSET.mode===2?'解き終えた':`崩し終えた（${TAP}で計測開始）`)}<span class="kbd">Space</span></button>
+    <div class="note">${TSET.tform===1
+      ? 'キューブは要りません。文字から語を思い出し、手順を頭の中で回してください。'
+      : '緑前・白上で崩し、y してから開始してください。'}${par
       ? '<br>エッジは UF-UR の2点交換だけがずれています。'
       : ''}</div>`;
   qs('quit').onclick = trialHome;
@@ -8826,9 +8844,11 @@ function trialRun(){
   app.innerHTML = `
     <div class="top"><div class="ttl">計測中</div>
       <div class="cnt" id="quit">やめる</div></div>
-    <div class="card tall" id="tcard">
+    ${TSET.tform===1 ? memoView(T.memo) : ''}
+    <div class="card ${TSET.tform===1?'':'tall'}" id="tcard">
       <div class="now" id="tnow" style="font-size:44px">0.00</div>
-      <div class="hint" id="thint">${TSET.split?`記憶できたら${TAP}`:`揃ったら${TAP}`}</div></div>`;
+      <div class="hint" id="thint">${TSET.split?`記憶できたら${TAP}`
+        :TSET.tform===1?`終わったら${TAP}`:`揃ったら${TAP}`}</div></div>`;
   const nowEl = qs('tnow');
   const tick = setInterval(()=>{ nowEl.textContent = ms(performance.now()-t0) }, 31);
   keys({Space: press('tcard')});
@@ -9050,18 +9070,22 @@ function ftrialHome(){
     <div class="cfg">
       <div class="fld"><div class="lab">パリティ</div><div class="row" id="fpar"></div></div>
       <div class="fld"><div class="lab">計測</div><div class="row" id="fsp"></div></div>
+      <div class="fld wide"><div class="lab">出題</div><div class="row" id="ffm"></div></div>
     </div>
     <button class="go" id="fstart">スクランブルを出す<span class="kbd">Space</span></button>
     ${fmiss.length ? `<button class="gh" id="fmb">失敗したスクランブル（${fmiss.length}件）</button>` : ''}
     ${ftrials.length ? `<button class="gh" id="fhist">記録を見る（${ftrials.length}件）</button>` : ''}
     <div class="note">コーナーとエッジの両方が崩れます。ひねり・フリップのみのケースは含みません。<br>
       緑前・白上で崩し、y してから分析してください。</div>`;
-  const rO=[[-1,'混ぜる'],[0,'なし'],[1,'あり']], sO=[[0,'通し'],[1,'記憶と実行を分ける'],[2,'計測しない']];
+  const rO=[[-1,'混ぜる'],[0,'なし'],[1,'あり']], sO=[[0,'通し'],[1,'記憶と実行を分ける'],[2,'計測しない']],
+        fO=[[0,'スクランブル'],[1,'文字だけ（キューブなし）']];
   const draw = () => {
     qs('fpar').innerHTML = rO.map(([v,l])=>`<button class="chip ${(TSET.fpar??-1)===v?'on':''}" data-fr="${v}">${l}</button>`).join('');
     qs('fsp').innerHTML = sO.map(([v,l])=>`<button class="chip ${(TSET.fmode|0)===v?'on':''}" data-fs="${v}">${l}</button>`).join('');
     app.querySelectorAll('[data-fr]').forEach(b=>b.onclick=()=>{TSET.fpar=+b.dataset.fr;put('bld:tset',TSET);draw()});
     app.querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>{TSET.fmode=+b.dataset.fs;put('bld:tset',TSET);draw()});
+    qs('ffm').innerHTML = fO.map(([v,l])=>`<button class="chip ${(TSET.fform|0)===v?'on':''}" data-ff="${v}">${l}</button>`).join('');
+    app.querySelectorAll('[data-ff]').forEach(b=>b.onclick=()=>{TSET.fform=+b.dataset.ff;put('bld:tset',TSET);draw()});
   };
   draw(); bindTabs();
   qs('fstart').onclick = fScramble;
@@ -9079,9 +9103,13 @@ function fScramble(){
     <div class="top"><div class="ttl">フル　コーナー${Math.ceil(pick.c.length/2)}／エッジ${
       Math.ceil(pick.e.length/2)}ペア${pick.par?'　パリティ有り':''}</div>
       <div class="cnt" id="quit">やめる</div></div>
-    <div class="scr">${pick.s}</div>
-    <button class="go" id="go">${TSET.fmode===2?'解き終えた':`崩し終えた（${TAP}で計測開始）`}<span class="kbd">Space</span></button>
-    <div class="note">緑前・白上で崩し、y してから開始してください。</div>`;
+    ${TSET.fform===1 ? memoView(pick.c,'コーナー')+memoView(pick.e,'エッジ') : `<div class="scr">${pick.s}</div>`}
+    <button class="go" id="go">${TSET.fform===1
+      ? (TSET.fmode===2?'終わった':`はじめる（${TAP}で計測開始）`)
+      : (TSET.fmode===2?'解き終えた':`崩し終えた（${TAP}で計測開始）`)}<span class="kbd">Space</span></button>
+    <div class="note">${TSET.fform===1
+      ? 'キューブは要りません。文字から語を思い出し、手順を頭の中で回してください。'
+      : '緑前・白上で崩し、y してから開始してください。'}</div>`;
   qs('quit').onclick = ftrialHome;
   qs('go').onclick = TSET.fmode===2
     ? () => { T.ms = null; T.split = null; fResult() }
@@ -9092,9 +9120,11 @@ function fRun(){
   const t0 = performance.now(); T.split = null;
   app.innerHTML = `
     <div class="top"><div class="ttl">計測中</div><div class="cnt" id="quit">やめる</div></div>
-    <div class="card tall" id="tcard">
+    ${TSET.fform===1 ? memoView(T.cm,'コーナー')+memoView(T.em,'エッジ') : ''}
+    <div class="card ${TSET.fform===1?'':'tall'}" id="tcard">
       <div class="now" id="tnow" style="font-size:44px">0.00</div>
-      <div class="hint" id="thint">${TSET.fmode===1?`記憶できたら${TAP}`:`揃ったら${TAP}`}</div></div>`;
+      <div class="hint" id="thint">${TSET.fmode===1?`記憶できたら${TAP}`
+        :TSET.fform===1?`終わったら${TAP}`:`揃ったら${TAP}`}</div></div>`;
   const nowEl = qs('tnow');
   const tick = setInterval(()=>{ nowEl.textContent = ms(performance.now()-t0) }, 31);
   keys({Space: press('tcard')});
@@ -9197,8 +9227,10 @@ function fMiss(){
       <div class="top"><div class="ttl">やり直し　コーナー${Math.ceil(m.c.length/2)}／エッジ${
         Math.ceil(m.e.length/2)}${m.par?'　パリティ有り':''}</div>
         <div class="cnt" id="quit">やめる</div></div>
-      <div class="scr">${m.s}</div>
-      <button class="go" id="go">${TSET.fmode===2?'解き終えた':`崩し終えた（${TAP}で計測開始）`}<span class="kbd">Space</span></button>
+      ${TSET.fform===1 ? memoView(m.c,'コーナー')+memoView(m.e,'エッジ') : `<div class="scr">${m.s}</div>`}
+      <button class="go" id="go">${TSET.fform===1
+        ? (TSET.fmode===2?'終わった':`はじめる（${TAP}で計測開始）`)
+        : (TSET.fmode===2?'解き終えた':`崩し終えた（${TAP}で計測開始）`)}<span class="kbd">Space</span></button>
       <div class="note">緑前・白上で崩し、y してから開始してください。</div>`;
     qs('quit').onclick = fMiss;
     qs('go').onclick = TSET.fmode===2
@@ -9773,6 +9805,7 @@ function etrialHome(){
       <div class="fld wide"><div class="lab">ペア数</div><div class="row" id="ep"></div></div>
       <div class="fld"><div class="lab">ブレークイン</div><div class="row" id="ebk"></div></div>
       <div class="fld"><div class="lab">計測</div><div class="row" id="esp"></div></div>
+      <div class="fld wide"><div class="lab">出題</div><div class="row" id="efm"></div></div>
     </div>
     <button class="go" id="estart">スクランブルを出す<span class="kbd">Space</span></button>
     ${etrials.length ? `<button class="gh" id="ehist">記録を見る（${etrials.length}件）</button>` : ''}
@@ -9780,7 +9813,8 @@ function etrialHome(){
       エッジが揃えば完成します。フリップのみのケースは含みません。</div>`;
   const pO=[[0,'おまかせ'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6'],[7,'7ペア']],
         sO=[[0,'通し'],[1,'記憶と実行を分ける'],[2,'計測しない']],
-        bO=[[-1,'おまかせ'],[0,'なし'],[1,'1回'],[2,'2回'],[3,'3回以上']];
+        bO=[[-1,'おまかせ'],[0,'なし'],[1,'1回'],[2,'2回'],[3,'3回以上']],
+        fO=[[0,'スクランブル'],[1,'文字だけ（キューブなし）']];
   const draw = () => {
     qs('ep').innerHTML = pO.map(([v,l])=>`<button class="chip ${TSET.epairs===v?'on':''}" data-ep="${v}">${l}</button>`).join('');
     qs('esp').innerHTML = sO.map(([v,l])=>`<button class="chip ${(TSET.emode|0)===v?'on':''}" data-es="${v}">${l}</button>`).join('');
@@ -9789,6 +9823,8 @@ function etrialHome(){
     qs('ebk').innerHTML = bO.map(([v,l])=>`<button class="chip ${(TSET.ebk??-1)===v?'on':''}" data-eb="${v}" ${
       cnt(v)?'':'disabled'}>${l}</button>`).join('');
     app.querySelectorAll('[data-eb]').forEach(b=>b.onclick=()=>{if(!b.disabled){TSET.ebk=+b.dataset.eb;put('bld:tset',TSET);draw()}});
+    qs('efm').innerHTML = fO.map(([v,l])=>`<button class="chip ${(TSET.eform|0)===v?'on':''}" data-ef="${v}">${l}</button>`).join('');
+    app.querySelectorAll('[data-ef]').forEach(b=>b.onclick=()=>{TSET.eform=+b.dataset.ef;put('bld:tset',TSET);draw()});
     app.querySelectorAll('[data-ep]').forEach(b=>b.onclick=()=>{TSET.epairs=+b.dataset.ep;put('bld:tset',TSET);draw()});
     app.querySelectorAll('[data-es]').forEach(b=>b.onclick=()=>{TSET.emode=+b.dataset.es;TSET.esplit=TSET.emode===1;put('bld:tset',TSET);draw()});
   };
@@ -9809,9 +9845,13 @@ function etrialScramble(){
   app.innerHTML = `
     <div class="top"><div class="ttl">エッジ実地　${np(pick)}ペア${pick.b?`・ブレークイン${pick.b}`:''}</div>
       <div class="cnt" id="quit">やめる</div></div>
-    <div class="scr">${pick.s}</div>
-    <button class="go" id="go">${TSET.emode===2?'解き終えた':`崩し終えた（${TAP}で計測開始）`}<span class="kbd">Space</span></button>
-    <div class="note">緑前・白上で崩し、y してから開始してください。</div>`;
+    ${TSET.eform===1 ? memoView(pick.m) : `<div class="scr">${pick.s}</div>`}
+    <button class="go" id="go">${TSET.eform===1
+      ? (TSET.emode===2?'終わった':`はじめる（${TAP}で計測開始）`)
+      : (TSET.emode===2?'解き終えた':`崩し終えた（${TAP}で計測開始）`)}<span class="kbd">Space</span></button>
+    <div class="note">${TSET.eform===1
+      ? 'キューブは要りません。文字を見ながら手順を頭の中で回してください。'
+      : '緑前・白上で崩し、y してから開始してください。'}</div>`;
   qs('quit').onclick = etrialHome;
   qs('go').onclick = TSET.emode===2
     ? () => { T.ms = null; T.split = null; etrialResult() }
@@ -9824,9 +9864,11 @@ function etrialRun(){
   app.innerHTML = `
     <div class="top"><div class="ttl">計測中</div>
       <div class="cnt" id="quit">やめる</div></div>
-    <div class="card tall" id="tcard">
+    ${TSET.eform===1 ? memoView(T.memo) : ''}
+    <div class="card ${TSET.eform===1?'':'tall'}" id="tcard">
       <div class="now" id="tnow" style="font-size:44px">0.00</div>
-      <div class="hint" id="thint">${TSET.esplit?`記憶できたら${TAP}`:`揃ったら${TAP}`}</div></div>`;
+      <div class="hint" id="thint">${TSET.esplit?`記憶できたら${TAP}`
+        :TSET.eform===1?`終わったら${TAP}`:`揃ったら${TAP}`}</div></div>`;
   const nowEl = qs('tnow');
   const tick = setInterval(()=>{ nowEl.textContent = ms(performance.now()-t0) }, 31);
   keys({Space: press('tcard')});
