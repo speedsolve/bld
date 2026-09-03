@@ -8566,6 +8566,44 @@ const pairsOf = m => { const r=[]; for(let i=0;i+1<m.length;i+=2) r.push(m.slice
 const memoView = (memo, label) => `<div class="mv">${label?`<div class="mvl">${label}</div>`:''}
   <div class="mvr">${pairsOf(memo).map(p=>
     `<span class="${p.length===2?'mvp':'mvp par'}">${p}</span>`).join('')}</div></div>`;
+let SESS = null;
+const sessStart = (kind, n, next, home) => { SESS = {kind, n, i:0, res:[], next, home} };
+function sessStep(ok, ms){
+  if(!SESS) return false;
+  if(SESS.n <= 1){ SESS = null; return false }   // 1回のときは従来どおりトップへ
+  SESS.res.push({ok, ms});
+  SESS.i++;
+  if(SESS.i < SESS.n){ SESS.next(); return true }
+  const done = SESS; SESS = null; sessDone(done); return true;
+}
+function sessDone(S2){
+  clearTap(); keys(null);
+  const n = S2.res.length, ok = S2.res.filter(r=>r.ok).length;
+  const timed = S2.res.filter(r=>r.ms!=null);
+  const avg = timed.length ? timed.reduce((a,r)=>a+r.ms,0)/timed.length : null;
+  const best = timed.length ? Math.min(...timed.map(r=>r.ms)) : null;
+  const mx = Math.max(1, ...timed.map(r=>r.ms));
+  const label = {trial:'コーナー', etrial:'エッジ', ftrial:'フル'}[S2.kind];
+  app.innerHTML = `
+    <div class="top"><div class="ttl">${label}　${n}回のまとめ</div>
+      <div class="cnt" id="top">トップ</div></div>
+    <div class="sum">
+      <div><div class="big">${pct(ok,n)}<small style="font-size:13px">%</small></div><div class="sub">成功 ${ok}/${n}</div></div>
+      <div><div class="big" style="font-size:22px">${avg!=null?ms(avg):'—'}</div><div class="sub">平均</div></div>
+      <div><div class="big" style="font-size:22px">${best!=null?ms(best):'—'}</div><div class="sub">最速</div></div></div>
+    <div class="strip">${S2.res.map(r=>
+      `<div class="bar ${r.ok?'':'k2'}" style="height:${r.ms==null?6:Math.max(6,r.ms/mx*50)}px;${
+        r.ms==null?'opacity:.4':''}"></div>`).join('')}</div>
+    <div class="rt" style="margin-top:18px">${S2.res.map((r,i)=>`<div class="rr ${r.ok?'':'k2'}">
+      <div class="p" style="font-family:var(--mono);font-size:15px">${i+1}</div>
+      <div class="w">${r.ok?'成功':'ミス'}</div>
+      <div class="t">${r.ms==null?'—':ms(r.ms)}</div></div>`).join('')}</div>
+    <button class="go" style="margin-top:18px" id="again">もう一度<span class="kbd">Space</span></button>
+    <button class="gh" id="home">トップへ</button>`;
+  qs('top').onclick = S2.home; qs('home').onclick = S2.home;
+  qs('again').onclick = () => { sessStart(S2.kind, S2.n, S2.next, S2.home); S2.next() };
+  keys({Space: press('again')});
+}
 const wideTap = fn => {
   app.onclick = null;
   setTimeout(() => {
@@ -8579,7 +8617,7 @@ let eaOver = {}, EA = {...BASEEA};
 let wOver = {}, aOver = {}, stats = {memo:{}, alg:{}}, days = [], log = [], LTR = 'あ', rep = {},
     seenToday = {d:'', memo:[], alg:[], ealg:[]},
     SEL = {memo:{n:10, src:'all', fmt:'one'}, alg:{n:10, src:'all'}, ealg:{n:10, src:'all'}},
-    trials = [], etrials = [], ftrials = [], fmiss = [], erep = {}, hist = [], TSET = {pairs:0, split:false, mode:0, emode:0, ebk:-1, cbk:-1, tform:0, eform:0, fform:0};
+    trials = [], etrials = [], ftrials = [], fmiss = [], erep = {}, hist = [], TSET = {pairs:0, split:false, mode:0, emode:0, ebk:-1, cbk:-1, tform:0, eform:0, fform:0, tn:1, en:1, fn:1};
 const saveSel = (n, src) => { SEL[MODE] = {...SEL[MODE], n, src}; put('bld:sel', SEL) };
 const LETTERS = [...'あいえかくけさしすせたちつてにぬねはひふへ'];
 let TH = {memo:1000, alg:4000, ealg:4500}, MODE = 'memo', S = null, T = null, VIEW = 'main';
@@ -8777,12 +8815,14 @@ function trialHome(){
       <div class="fld"><div class="lab">パリティ</div><div class="row" id="tpar"></div></div>
       <div class="fld"><div class="lab">ブレークイン</div><div class="row" id="tbk"></div></div>
       <div class="fld"><div class="lab">計測</div><div class="row" id="tsp"></div></div>
-      <div class="fld wide"><div class="lab">出題</div><div class="row" id="tfm"></div></div>
+      <div class="fld"><div class="lab">出題</div><div class="row" id="tfm"></div></div>
+      <div class="fld"><div class="lab">回数</div><div class="row" id="tnn"></div></div>
     </div>
     <button class="go" id="tstart">スクランブルを出す<span class="kbd">Space</span></button>
     ${trials.length ? `<button class="gh" id="thist">記録を見る（${trials.length}件）</button>` : ''}
     <div class="note">コーナーだけが崩れるスクランブルです。エッジは揃ったままなので、
       コーナーが揃えば完成します。ひねりのみのケースは含みません。</div>`;
+  const nO2=[[1,'1'],[4,'4'],[8,'8'],[12,'12回']];
   const pO=[[0,'おまかせ'],[3,'3ペア'],[4,'4ペア']],
         sO=[[0,'通し'],[1,'記憶と実行を分ける'],[2,'計測しない']],
         rO=[[0,'なし'],[1,'あり'],[2,'混ぜる']],
@@ -8802,10 +8842,12 @@ function trialHome(){
     app.querySelectorAll('[data-cb]').forEach(b=>b.onclick=()=>{if(!b.disabled){TSET.cbk=+b.dataset.cb;put('bld:tset',TSET);draw()}});
     qs('tfm').innerHTML = fO.map(([v,l])=>`<button class="chip ${(TSET.tform|0)===v?'on':''}" data-tf="${v}">${l}</button>`).join('');
     app.querySelectorAll('[data-tf]').forEach(b=>b.onclick=()=>{TSET.tform=+b.dataset.tf;put('bld:tset',TSET);draw()});
+    qs('tnn').innerHTML = nO2.map(([v,l])=>`<button class="chip ${(TSET.tn||1)===v?'on':''}" data-tn="${v}">${l}</button>`).join('');
+    app.querySelectorAll('[data-tn]').forEach(b=>b.onclick=()=>{TSET.tn=+b.dataset.tn;put('bld:tset',TSET);draw()});
     app.querySelectorAll('[data-ts]').forEach(b=>b.onclick=()=>{TSET.mode=+b.dataset.ts;TSET.split=TSET.mode===1;put('bld:tset',TSET);draw()});
   };
   draw(); bindTabs();
-  qs('tstart').onclick = trialScramble;
+  qs('tstart').onclick = () => { sessStart('trial', TSET.tn||1, trialScramble, trialHome); trialScramble() };
   keys({Space: press('tstart')});
   if(trials.length) qs('thist').onclick = trialHist;
 }
@@ -8821,7 +8863,7 @@ function trialScramble(){
   const pick = pool[Math.floor(Math.random()*pool.length)];
   T = {scr:pick.s, memo:pick.m, par};
   app.innerHTML = `
-    <div class="top"><div class="ttl">実地　${np(pick)}ペア${pick.b?'・BI'+pick.b:''}${par?'　パリティ有り':''}</div>
+    <div class="top"><div class="ttl">実地　${np(pick)}ペア${pick.b?'・BI'+pick.b:''}${par?'　パリティ有り':''}${SESS&&SESS.n>1?`　${SESS.i+1}/${SESS.n}`:""}</div>
       <div class="cnt" id="quit">やめる</div></div>
     ${TSET.tform===1 ? memoView(pick.m) : `<div class="scr">${pick.s}</div>`}
     <button class="go" id="go">${TSET.tform===1
@@ -8832,7 +8874,7 @@ function trialScramble(){
       : '緑前・白上で崩し、y してから開始してください。'}${par
       ? '<br>エッジは UF-UR の2点交換だけがずれています。'
       : ''}</div>`;
-  qs('quit').onclick = trialHome;
+  qs('quit').onclick = () => { SESS = null; trialHome() };
   qs('go').onclick = TSET.mode===2
     ? () => { T.ms = null; T.split = null; trialResult() }
     : trialRun;
@@ -8889,9 +8931,9 @@ function trialResult(){
     trials = trials.slice(-400); put('bld:trials', trials);
     logT('trial', ok, np, T.ms, T.par); syncPush();
     if(days[days.length-1] !== today()){ days.push(today()); days = days.slice(-400); put('bld:days', days) }
-    trialHome();
+    if(!sessStep(ok, T.ms)) trialHome();
   };
-  qs('quit').onclick = trialHome;
+  qs('quit').onclick = () => { SESS = null; trialHome() };
   qs('tok').onclick = ()=>fin(true);
   qs('tng').onclick = ()=>fin(false);
   qs('tlk').onclick = ()=>trialLookup('');
@@ -8942,7 +8984,7 @@ function trialHist(){
       <div class="m2" style="color:${t.ok?'var(--mint)':'var(--coral)'}">${t.ok?'成功':'ミス'}</div>
     </div>`).join('')}</div>
     <button class="gh" id="clrt">記録を消す</button>`;
-  qs('quit').onclick = trialHome;
+  qs('quit').onclick = () => { SESS = null; trialHome() };
   qs('clrt').onclick = () => {
     if(!confirm('実地の記録をすべて消します')) return;
     trials = []; put('bld:trials', trials); trialHome();
@@ -9070,13 +9112,15 @@ function ftrialHome(){
     <div class="cfg">
       <div class="fld"><div class="lab">パリティ</div><div class="row" id="fpar"></div></div>
       <div class="fld"><div class="lab">計測</div><div class="row" id="fsp"></div></div>
-      <div class="fld wide"><div class="lab">出題</div><div class="row" id="ffm"></div></div>
+      <div class="fld"><div class="lab">出題</div><div class="row" id="ffm"></div></div>
+      <div class="fld"><div class="lab">回数</div><div class="row" id="fnn"></div></div>
     </div>
     <button class="go" id="fstart">スクランブルを出す<span class="kbd">Space</span></button>
     ${fmiss.length ? `<button class="gh" id="fmb">失敗したスクランブル（${fmiss.length}件）</button>` : ''}
     ${ftrials.length ? `<button class="gh" id="fhist">記録を見る（${ftrials.length}件）</button>` : ''}
     <div class="note">コーナーとエッジの両方が崩れます。ひねり・フリップのみのケースは含みません。<br>
       緑前・白上で崩し、y してから分析してください。</div>`;
+  const nO2=[[1,'1'],[4,'4'],[8,'8'],[12,'12回']];
   const rO=[[-1,'混ぜる'],[0,'なし'],[1,'あり']], sO=[[0,'通し'],[1,'記憶と実行を分ける'],[2,'計測しない']],
         fO=[[0,'スクランブル'],[1,'文字だけ（キューブなし）']];
   const draw = () => {
@@ -9086,9 +9130,11 @@ function ftrialHome(){
     app.querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>{TSET.fmode=+b.dataset.fs;put('bld:tset',TSET);draw()});
     qs('ffm').innerHTML = fO.map(([v,l])=>`<button class="chip ${(TSET.fform|0)===v?'on':''}" data-ff="${v}">${l}</button>`).join('');
     app.querySelectorAll('[data-ff]').forEach(b=>b.onclick=()=>{TSET.fform=+b.dataset.ff;put('bld:tset',TSET);draw()});
+    qs('fnn').innerHTML = nO2.map(([v,l])=>`<button class="chip ${(TSET.fn||1)===v?'on':''}" data-fn="${v}">${l}</button>`).join('');
+    app.querySelectorAll('[data-fn]').forEach(b=>b.onclick=()=>{TSET.fn=+b.dataset.fn;put('bld:tset',TSET);draw()});
   };
   draw(); bindTabs();
-  qs('fstart').onclick = fScramble;
+  qs('fstart').onclick = () => { sessStart('ftrial', TSET.fn||1, fScramble, ftrialHome); fScramble() };
   if(fmiss.length) qs('fmb').onclick = fMiss;
   if(ftrials.length) qs('fhist').onclick = fHist;
   keys({Space: press('fstart')});
@@ -9101,7 +9147,8 @@ function fScramble(){
   T = {scr:pick.s, cm:pick.c, em:pick.e, par:pick.par, full:true};
   app.innerHTML = `
     <div class="top"><div class="ttl">フル　コーナー${Math.ceil(pick.c.length/2)}／エッジ${
-      Math.ceil(pick.e.length/2)}ペア${pick.par?'　パリティ有り':''}</div>
+      Math.ceil(pick.e.length/2)}ペア${pick.par?'　パリティ有り':''}${
+      SESS&&SESS.n>1?`　${SESS.i+1}/${SESS.n}`:''}</div>
       <div class="cnt" id="quit">やめる</div></div>
     ${TSET.fform===1 ? memoView(pick.c,'コーナー')+memoView(pick.e,'エッジ') : `<div class="scr">${pick.s}</div>`}
     <button class="go" id="go">${TSET.fform===1
@@ -9110,7 +9157,7 @@ function fScramble(){
     <div class="note">${TSET.fform===1
       ? 'キューブは要りません。文字から語を思い出し、手順を頭の中で回してください。'
       : '緑前・白上で崩し、y してから開始してください。'}</div>`;
-  qs('quit').onclick = ftrialHome;
+  qs('quit').onclick = () => { SESS = null; ftrialHome() };
   qs('go').onclick = TSET.fmode===2
     ? () => { T.ms = null; T.split = null; fResult() }
     : fRun;
@@ -9173,9 +9220,9 @@ function fResult(){
     if(!ok || before!==fmiss.length) put('bld:fmiss', fmiss);
     if(days[days.length-1] !== today()){ days.push(today()); days = days.slice(-400); put('bld:days', days) }
     logT('ftrial', ok, nc+ne, T.ms, T.par); syncPush();
-    ftrialHome();
+    if(!sessStep(ok, T.ms)) ftrialHome();
   };
-  qs('quit').onclick = ftrialHome;
+  qs('quit').onclick = () => { SESS = null; ftrialHome() };
   qs('tok').onclick = ()=>fin(true);
   qs('tng').onclick = ()=>fin(false);
   bindFullPairs();
@@ -9219,9 +9266,10 @@ function fMiss(){
         <i class="ed" data-fmx="${fmiss.length-1-i}">消す</i></div>
       <div class="scr">${m.s}</div></div>`).join('')}
     ${rows.length ? `<button class="gh" id="fmclr">すべて消す</button>` : ''}`;
-  qs('quit').onclick = ftrialHome;
+  qs('quit').onclick = () => { SESS = null; ftrialHome() };
   app.querySelectorAll('[data-fmr]').forEach(b=>b.onclick=()=>{
     const m = fmiss[+b.dataset.fmr];
+    SESS = null;
     T = {scr:m.s, cm:m.c, em:m.e, par:m.par, full:true, retry:true};
     app.innerHTML = `
       <div class="top"><div class="ttl">やり直し　コーナー${Math.ceil(m.c.length/2)}／エッジ${
@@ -9258,7 +9306,7 @@ function fHist(){
       <div class="m2" style="color:${t.ok?'var(--mint)':'var(--coral)'}">${t.ok?'成功':'ミス'}</div>
     </div>`).join('')}</div>
     <button class="gh" id="clrt">記録を消す</button>`;
-  qs('quit').onclick = ftrialHome;
+  qs('quit').onclick = () => { SESS = null; ftrialHome() };
   qs('clrt').onclick = () => {
     if(!confirm('フルの記録をすべて消します')) return;
     ftrials = []; put('bld:ftrials', ftrials); ftrialHome();
@@ -9805,12 +9853,14 @@ function etrialHome(){
       <div class="fld wide"><div class="lab">ペア数</div><div class="row" id="ep"></div></div>
       <div class="fld"><div class="lab">ブレークイン</div><div class="row" id="ebk"></div></div>
       <div class="fld"><div class="lab">計測</div><div class="row" id="esp"></div></div>
-      <div class="fld wide"><div class="lab">出題</div><div class="row" id="efm"></div></div>
+      <div class="fld"><div class="lab">出題</div><div class="row" id="efm"></div></div>
+      <div class="fld"><div class="lab">回数</div><div class="row" id="enn"></div></div>
     </div>
     <button class="go" id="estart">スクランブルを出す<span class="kbd">Space</span></button>
     ${etrials.length ? `<button class="gh" id="ehist">記録を見る（${etrials.length}件）</button>` : ''}
     <div class="note">エッジだけが崩れるスクランブルです。コーナーは揃ったままなので、
       エッジが揃えば完成します。フリップのみのケースは含みません。</div>`;
+  const nO2=[[1,'1'],[4,'4'],[8,'8'],[12,'12回']];
   const pO=[[0,'おまかせ'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6'],[7,'7ペア']],
         sO=[[0,'通し'],[1,'記憶と実行を分ける'],[2,'計測しない']],
         bO=[[-1,'おまかせ'],[0,'なし'],[1,'1回'],[2,'2回'],[3,'3回以上']],
@@ -9825,11 +9875,13 @@ function etrialHome(){
     app.querySelectorAll('[data-eb]').forEach(b=>b.onclick=()=>{if(!b.disabled){TSET.ebk=+b.dataset.eb;put('bld:tset',TSET);draw()}});
     qs('efm').innerHTML = fO.map(([v,l])=>`<button class="chip ${(TSET.eform|0)===v?'on':''}" data-ef="${v}">${l}</button>`).join('');
     app.querySelectorAll('[data-ef]').forEach(b=>b.onclick=()=>{TSET.eform=+b.dataset.ef;put('bld:tset',TSET);draw()});
+    qs('enn').innerHTML = nO2.map(([v,l])=>`<button class="chip ${(TSET.en||1)===v?'on':''}" data-en="${v}">${l}</button>`).join('');
+    app.querySelectorAll('[data-en]').forEach(b=>b.onclick=()=>{TSET.en=+b.dataset.en;put('bld:tset',TSET);draw()});
     app.querySelectorAll('[data-ep]').forEach(b=>b.onclick=()=>{TSET.epairs=+b.dataset.ep;put('bld:tset',TSET);draw()});
     app.querySelectorAll('[data-es]').forEach(b=>b.onclick=()=>{TSET.emode=+b.dataset.es;TSET.esplit=TSET.emode===1;put('bld:tset',TSET);draw()});
   };
   draw(); bindTabs();
-  qs('estart').onclick = etrialScramble;
+  qs('estart').onclick = () => { sessStart('etrial', TSET.en||1, etrialScramble, etrialHome); etrialScramble() };
   keys({Space: press('estart')});
   if(etrials.length) qs('ehist').onclick = etrialHist;
 }
@@ -9843,7 +9895,8 @@ function etrialScramble(){
   const pick = pool[Math.floor(Math.random()*pool.length)];
   T = {scr:pick.s, memo:pick.m, edge:true};
   app.innerHTML = `
-    <div class="top"><div class="ttl">エッジ実地　${np(pick)}ペア${pick.b?`・ブレークイン${pick.b}`:''}</div>
+    <div class="top"><div class="ttl">エッジ実地　${np(pick)}ペア${pick.b?`・ブレークイン${pick.b}`:''}${
+      SESS&&SESS.n>1?`　${SESS.i+1}/${SESS.n}`:''}</div>
       <div class="cnt" id="quit">やめる</div></div>
     ${TSET.eform===1 ? memoView(pick.m) : `<div class="scr">${pick.s}</div>`}
     <button class="go" id="go">${TSET.eform===1
@@ -9852,7 +9905,7 @@ function etrialScramble(){
     <div class="note">${TSET.eform===1
       ? 'キューブは要りません。文字を見ながら手順を頭の中で回してください。'
       : '緑前・白上で崩し、y してから開始してください。'}</div>`;
-  qs('quit').onclick = etrialHome;
+  qs('quit').onclick = () => { SESS = null; etrialHome() };
   qs('go').onclick = TSET.emode===2
     ? () => { T.ms = null; T.split = null; etrialResult() }
     : etrialRun;
@@ -9907,9 +9960,9 @@ function etrialResult(){
     etrials = etrials.slice(-400); put('bld:etrials', etrials);
     logT('etrial', ok, np, T.ms); syncPush();
     if(days[days.length-1] !== today()){ days.push(today()); days = days.slice(-400); put('bld:days', days) }
-    etrialHome();
+    if(!sessStep(ok, T.ms)) etrialHome();
   };
-  qs('quit').onclick = etrialHome;
+  qs('quit').onclick = () => { SESS = null; etrialHome() };
   qs('tok').onclick = ()=>fin(true);
   qs('tng').onclick = ()=>fin(false);
   qs('elk').onclick = ()=>etrialLookup('');
@@ -9953,7 +10006,7 @@ function etrialHist(){
       <div class="m2" style="color:${t.ok?'var(--mint)':'var(--coral)'}">${t.ok?'成功':'ミス'}</div>
     </div>`).join('')}</div>
     <button class="gh" id="clrt">記録を消す</button>`;
-  qs('quit').onclick = etrialHome;
+  qs('quit').onclick = () => { SESS = null; etrialHome() };
   qs('clrt').onclick = () => {
     if(!confirm('エッジ実地の記録をすべて消します')) return;
     etrials = []; put('bld:etrials', etrials); etrialHome();
