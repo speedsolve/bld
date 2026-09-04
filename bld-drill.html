@@ -9661,6 +9661,14 @@ function settings(){
   keys(null);
   app.innerHTML = `
     <div class="top"><div class="ttl">設定</div><div class="cnt" id="back">戻る</div></div>
+    <div class="streak">
+      <div><div class="sk">${streak()}<small>日連続</small></div>
+        <div class="sub">${days.length ? (() => {
+          const last = days[days.length-1];
+          const gap = Math.round((new Date(today()) - new Date(last))/864e5);
+          return gap===0?'今日は実施済み':gap===1?'最終 昨日':`最終 ${gap}日前`;
+        })() : '記録なし'}</div></div>
+      <div class="cal">${calendar()}</div></div>
     <div class="tst" style="grid-template-columns:repeat(3,1fr)">
       <div><div class="big">${days.length}</div><div class="sub">練習した日数</div></div>
       <div><div class="big">${totQ}</div><div class="sub">のべ出題数</div></div>
@@ -10016,19 +10024,13 @@ function etrialHist(){
 /* ---------- setup ---------- */
 function setup(){
   const isE = MODE==='ealg';
-  const w = weakList(16), miss = missList(), st = streak(),
+  const w = weakList(16), miss = missList(),
     rpL = MODE==='alg' ? repList() : MODE==='ealg' ? erepList() : [];
-  const last = days.length ? days[days.length-1] : null;
-  const gap = last ? Math.round((new Date(today()) - new Date(last))/864e5) : null;
   const pool = MODE==='memo' ? PAIRS : isE ? Object.keys(EA) : Object.keys(A);
   const tdy = (seenSet()[MODE]||[]).filter(p=>MODE==='memo'||(isE?EA[p]:A[p])).length;
   const rest = pool.length - tdy;
   app.innerHTML = tabs() + `
-    <div class="streak">
-      <div><div class="sk">${st}<small>日連続</small></div>
-        <div class="sub">${last ? (gap===0?'今日は実施済み':gap===1?'最終 昨日':`最終 ${gap}日前`) : '記録なし'}</div></div>
-      <div class="cal">${calendar()}</div></div>
-    <div class="tdy"><b>${tdy}</b><small> / ${pool.length}</small>
+    <div class="tdy" style="margin-top:2px"><b>${tdy}</b><small> / ${pool.length}</small>
       <span>一周の進み</span></div>
     ${trend(MODE)}
     <div class="cfg">
